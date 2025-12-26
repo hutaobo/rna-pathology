@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  
-  <!-- Google tag (gtag.js) -->
+  <title>RNA-Pathology | Database Overview</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="RNA-Pathology database overview: a schema-driven framework for spatial molecular pathology data.">
+
+  <!-- Google tag (gtag.js) --> 
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-B2L5CDD57"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -11,792 +14,199 @@
     gtag('js', new Date());
     gtag('config', 'G-B2L5CDD57');
   </script>
-  
-  <title>RNA-Pathology | Database Overview</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="RNA-Pathology database overview: a schema-driven framework for spatial molecular pathology data.">
 
   <style>
-    :root{
-      --bg: #f6f8fb;
-      --text: #0f172a;
-      --muted: #475569;
-
-      --card: rgba(255,255,255,0.92);
-      --border: rgba(15,23,42,0.12);
-
-      --brand: #1d4ed8;
-      --brand-rgb: 29, 78, 216;
-
-      --shadow: 0 14px 34px rgba(15,23,42,0.10);
-      --shadow-soft: 0 8px 22px rgba(15,23,42,0.08);
-      --radius: 16px;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root{
-        --bg: #070b14;
-        --text: #e2e8f0;
-        --muted: #a6b0c3;
-
-        --card: rgba(15,23,42,0.80);
-        --border: rgba(148,163,184,0.18);
-
-        --brand: #60a5fa;
-        --brand-rgb: 96, 165, 250;
-
-        --shadow: 0 16px 40px rgba(0,0,0,0.55);
-        --shadow-soft: 0 10px 26px rgba(0,0,0,0.40);
-      }
-    }
-
-    html{ scroll-behavior: smooth; }
-    @media (prefers-reduced-motion: reduce) {
-      html{ scroll-behavior: auto; }
-    }
-
-    body{
+    body {
       margin: 0;
-      color: var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f6f8fb;
+      color: #0f172a;
       line-height: 1.7;
-
-      /* 高级一点的背景（轻微渐变光晕） */
-      background:
-        radial-gradient(900px 500px at 12% -10%, rgba(var(--brand-rgb),0.14), transparent 60%),
-        radial-gradient(760px 460px at 110% 0%, rgba(var(--brand-rgb),0.10), transparent 55%),
-        var(--bg);
+      padding: 0;
     }
-
-    .container{
+    .container {
       max-width: 1020px;
       margin: 0 auto;
       padding: 44px 20px 80px;
     }
-
-    /* ===== Header / Hero ===== */
-    header{
-      margin-bottom: 22px;
+    h1 {
+      font-size: 2.6rem;
+      margin-bottom: 8px;
+      text-align: center;
     }
-
-    .hero h1{
-      margin: 0;
-      font-size: clamp(2.2rem, 4.2vw, 3.4rem);
-      letter-spacing: -0.02em;
-      line-height: 1.1;
-    }
-
-    .hero p{
-      margin: 10px 0 0;
-      color: var(--muted);
-      max-width: 72ch;
+    p.subtitle {
+      text-align: center;
+      color: #475569;
       font-size: 1.05rem;
+      margin-bottom: 30px;
     }
-
-    /* ===== Top Navigation ===== */
-    .top-nav{
-      position: sticky;
-      top: 14px;
-      z-index: 40;
-
-      margin-top: 18px;
+    nav a {
+      margin: 0 16px;
+      text-decoration: none;
+      color: #1d4ed8;
+      font-weight: bold;
+      padding: 6px 10px;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    .btn-group {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-
-      background: rgba(255,255,255,0.70);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-
-      box-shadow: var(--shadow-soft);
+      gap: 20px;
+      justify-content: center;
+      margin-top: 30px;
+      margin-bottom: 42px;
     }
-    @media (prefers-color-scheme: dark) {
-      .top-nav{
-        background: rgba(15,23,42,0.62);
-      }
-    }
-
-    .top-nav a{
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-
-      padding: 10px 14px;
-      border-radius: 999px;
-
+    .btn-entry {
+      background: #2563eb;
+      color: #fff;
+      font-size: 1.1rem;
+      padding: 14px 22px;
+      border-radius: 8px;
       text-decoration: none;
-      color: var(--text);
-      font-weight: 650;
-
-      border: 1px solid transparent;
-      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
-      user-select: none;
+      font-weight: 600;
+      min-width: 280px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      transition: background 0.2s ease, transform 0.2s ease;
     }
-
-    .top-nav a:hover{
-      background: rgba(15,23,42,0.06);
-      border-color: var(--border);
-      transform: translateY(-1px);
+    .btn-entry:hover {
+      background: #1e40af;
+      transform: translateY(-2px);
     }
-
-    .top-nav a:focus-visible{
-      outline: 3px solid rgba(var(--brand-rgb),0.35);
-      outline-offset: 2px;
-    }
-
-    /* Home：做成“返回键”质感（keycap） */
-    .nav-back{
-      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(241,245,249,0.95));
-      border-color: rgba(15,23,42,0.16);
-      box-shadow:
-        0 1px 0 rgba(255,255,255,0.85) inset,
-        0 10px 22px rgba(15,23,42,0.14);
-    }
-    @media (prefers-color-scheme: dark) {
-      .nav-back{
-        background: linear-gradient(180deg, rgba(30,41,59,0.92), rgba(15,23,42,0.92));
-        border-color: rgba(148,163,184,0.22);
-        box-shadow:
-          0 1px 0 rgba(255,255,255,0.06) inset,
-          0 14px 26px rgba(0,0,0,0.55);
-      }
-    }
-    .nav-back .arrow{
-      color: var(--brand);
-      font-weight: 900;
-    }
-
-    /* Gallery：导航里稍微强调一下 */
-    .nav-gallery{
-      color: var(--brand);
-      border-color: rgba(var(--brand-rgb),0.28);
-      background: rgba(var(--brand-rgb),0.08);
-    }
-    .nav-gallery:hover{
-      background: rgba(var(--brand-rgb),0.12);
-    }
-
-    /* ===== Cards / Sections ===== */
-    main{
-      margin-top: 22px;
-      display: grid;
-      gap: 18px;
-    }
-
-    section{
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 22px 24px;
-      box-shadow: var(--shadow);
-    }
-
-    /* 锚点跳转时避免被 sticky nav 覆盖 */
-    section[id]{ scroll-margin-top: 110px; }
-
-    section h2{
-      margin: 0 0 10px;
-      font-size: 1.4rem;
-      letter-spacing: -0.01em;
-
-      padding-left: 12px;
-      border-left: 4px solid rgba(var(--brand-rgb),0.85);
-    }
-
-    section p{
-      margin: 10px 0 0;
-    }
-
-    ul{
-      margin: 12px 0 0;
-      padding-left: 18px;
-    }
-    li{ margin: 8px 0; }
-
-    /* ===== Table polish ===== */
-    .table-wrap{
-      margin-top: 14px;
-      overflow-x: auto;
+    section {
+      background: white;
       border-radius: 12px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.55);
+      padding: 22px 24px;
+      margin-bottom: 26px;
+      border: 1px solid rgba(15,23,42,0.12);
+      box-shadow: 0 8px 22px rgba(15,23,42,0.08);
     }
-    @media (prefers-color-scheme: dark) {
-      .table-wrap{ background: rgba(2,6,23,0.35); }
+    section h2 {
+      margin-top: 0;
+      color: #1a1a1a;
+      font-size: 1.45rem;
     }
-
-    table{
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 14px;
+    }
+    table {
       border-collapse: collapse;
       width: 100%;
       min-width: 720px;
     }
-    thead th{
-      text-align: left;
-      padding: 12px;
-      font-weight: 750;
-      color: var(--text);
+    th, td {
+      padding: 10px;
+      border: 1px solid rgba(15,23,42,0.12);
+    }
+    th {
       background: rgba(15,23,42,0.04);
-      border-bottom: 1px solid var(--border);
+      text-align: left;
     }
-    tbody td{
-      padding: 12px;
-      border-bottom: 1px solid var(--border);
-      vertical-align: top;
-    }
-    tbody tr:hover td{
-      background: rgba(15,23,42,0.03);
-    }
-    @media (prefers-color-scheme: dark) {
-      thead th{ background: rgba(148,163,184,0.08); }
-      tbody tr:hover td{ background: rgba(148,163,184,0.06); }
-    }
-
-    .pill{
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 10px;
-      border-radius: 999px;
-      font-size: 0.86em;
-      font-weight: 650;
-      border: 1px solid var(--border);
-      background: rgba(148,163,184,0.14);
-      color: var(--muted);
-      white-space: nowrap;
-    }
-    .pill-ok{
-      background: rgba(16,185,129,0.14);
-      border-color: rgba(16,185,129,0.28);
-      color: #065f46;
-    }
-    .pill-warn{
-      background: rgba(245,158,11,0.18);
-      border-color: rgba(245,158,11,0.30);
-      color: #7a4b00;
-    }
-    .pill-planned{
-      background: rgba(148,163,184,0.14);
-      border-color: rgba(148,163,184,0.22);
-      color: var(--muted);
-    }
-    @media (prefers-color-scheme: dark) {
-      .pill-ok{ color: #86efac; }
-      .pill-warn{ color: #fde68a; }
-      .pill-planned{ color: var(--muted); }
-    }
-
-    /* ===== Gallery ===== */
-    .gallery-note{
-      color: var(--muted);
-      margin-top: 10px;
-    }
-
-    .gallery-group{
-      margin-top: 18px;
-      padding-top: 6px;
-    }
-    .gallery-group + .gallery-group{
-      margin-top: 22px;
-      padding-top: 20px;
-      border-top: 1px dashed var(--border);
-    }
-
-    .group-head{
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px 14px;
-      align-items: baseline;
-      justify-content: space-between;
-      margin-bottom: 12px;
-    }
-    .group-head h3{
-      margin: 0;
-      font-size: 1.05rem;
-      letter-spacing: -0.01em;
-    }
-    .group-head p{
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    .gallery{
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 16px;
-    }
-
-    .gallery figure{
-      margin: 0;
-      border-radius: 14px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.55);
-      box-shadow: var(--shadow-soft);
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-    }
-    @media (prefers-color-scheme: dark) {
-      .gallery figure{ background: rgba(2,6,23,0.35); }
-    }
-
-    .gallery figure:hover{
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
-    }
-
-    .gallery img{
-      width: 100%;
-      height: auto;
-      display: block;
-      cursor: pointer;
-    }
-
-    figcaption{
-      padding: 10px 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      background: rgba(15,23,42,0.03);
-      font-size: 0.92em;
-      color: var(--text);
-    }
-    @media (prefers-color-scheme: dark) {
-      figcaption{ background: rgba(148,163,184,0.06); }
-    }
-
-    .caption-link{
-      font-size: 0.82em;
-      font-weight: 700;
-      color: var(--brand);
-      text-decoration: none;
-      border: 1px solid rgba(var(--brand-rgb),0.28);
-      background: rgba(var(--brand-rgb),0.08);
-      padding: 3px 10px;
-      border-radius: 999px;
-      white-space: nowrap;
-    }
-    .caption-link:hover{
-      background: rgba(var(--brand-rgb),0.12);
-    }
-
-    /* ===== Footer ===== */
-    footer{
-      margin-top: 34px;
-      color: var(--muted);
-      font-size: 0.95em;
+    footer {
       text-align: center;
-    }
-
-    /* ===== Lightbox ===== */
-    .lightbox{
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.86);
-      z-index: 999;
-      align-items: center;
-      justify-content: center;
-      padding: 26px;
-    }
-    .lightbox.is-open{ display: flex; }
-
-    .lightbox-content{
-      max-width: min(1200px, 96vw);
-      max-height: 92vh;
-      width: 100%;
-      display: grid;
-      gap: 10px;
-      position: relative;
-    }
-
-    .lightbox-close{
-      position: absolute;
-      top: -8px;
-      right: -8px;
-      width: 42px;
-      height: 42px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.25);
-      background: rgba(255,255,255,0.12);
-      color: #fff;
-      font-size: 22px;
-      line-height: 1;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.18s ease, background 0.18s ease;
-    }
-    .lightbox-close:hover{
-      background: rgba(255,255,255,0.18);
-      transform: scale(1.03);
-    }
-    .lightbox-close:focus-visible{
-      outline: 3px solid rgba(96,165,250,0.55);
-      outline-offset: 2px;
-    }
-
-    .lightbox img{
-      width: 100%;
-      max-height: 82vh;
-      object-fit: contain;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.02);
-    }
-
-    .lightbox-caption{
-      color: rgba(255,255,255,0.92);
-      font-size: 0.95em;
-      text-align: center;
-    }
-
-    .lightbox-hint{
-      color: rgba(255,255,255,0.70);
-      font-size: 0.82em;
-      text-align: center;
-    }
-
-    @media (max-width: 560px){
-      .container{ padding-top: 34px; }
-      section{ padding: 18px; }
-      .top-nav{ border-radius: 16px; }
-      .top-nav a{ padding: 9px 12px; }
+      color: #666;
+      margin-top: 38px;
+      font-size: 0.9em;
     }
   </style>
-</head>
 
+</head>
 <body>
   <div class="container">
-
     <header>
-      <div class="hero">
-        <h1>Database Overview</h1>
-        <p>
-          RNA-Pathology is a schema-driven framework for organizing spatial molecular pathology data,
-          connecting tissue context, spatial coordinates, and reproducible computational analysis.
-        </p>
-      </div>
-
-      <nav class="top-nav" aria-label="Primary">
-        <a class="nav-back" href="index.html" aria-label="Back to Home">
-          <span class="arrow">←</span> Home
-        </a>
-        <a class="nav-gallery" href="#gallery">Gallery</a>
+      <h1>Database Overview</h1>
+      <p class="subtitle">RNA-Pathology: a schema-driven framework for spatial molecular pathology data.</p>
+      <nav>
+        <a href="index.html">Home</a>
         <a href="docs/schema_v0.2.md">Schema</a>
         <a href="docs/roadmap.md">Roadmap</a>
-        <a href="https://github.com/hutaobo/rna-pathology" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+        <a href="https://github.com/hutaobo/rna-pathology" target="_blank">GitHub ↗</a>
       </nav>
     </header>
 
-    <main>
+    <section id="about">
+      <h2>About RNA-Pathology</h2>
+      <p>
+        RNA-Pathology is an open research database designed to organize,
+        standardize, and contextualize spatially resolved molecular pathology data,
+        with emphasis on RNA-based spatial technologies.
+      </p>
+    </section>
 
-      <section id="about">
-        <h2>What is RNA-Pathology?</h2>
-        <p>
-          RNA-Pathology is an evolving open research database designed to organize,
-          standardize, and contextualize spatially resolved molecular pathology data,
-          with a particular emphasis on RNA-based spatial technologies.
-        </p>
-        <p>
-          The project aims to bridge raw spatial omics data, pathological tissue
-          context, and reproducible computational analysis through a schema-driven
-          design.
-        </p>
-      </section>
+    <section id="view-galleries">
+      <h2>View Galleries</h2>
+      <p>Select a dataset group below to view the associated image galleries.</p>
 
-      <!-- Gallery moved up + anchor target -->
-      <section id="gallery">
-        <h2>Gallery</h2>
-        <p class="gallery-note">
-          Representative H&amp;E previews and spatial pathology examples currently hosted in the RNA-Pathology repository.
-          Click any image to view it at full resolution.
-        </p>
+      <div class="btn-group">
+        <a href="gallery_human_breast_biomarkers.html" class="btn-entry">
+          Human Breast Biomarkers
+        </a>
+        <a href="gallery_xenium_v1_ffpe_human_breast.html" class="btn-entry">
+          Xenium v1 FFPE Human Breast
+        </a>
+      </div>
+    </section>
 
-        <div class="gallery-group">
-          <div class="group-head">
-            <h3>Human Breast Biomarkers</h3>
-            <p>H&amp;E previews across sections S1–S4</p>
-          </div>
+    <section id="principles">
+      <h2>Core Design Principles</h2>
+      <ul>
+        <li><strong>Schema-first design:</strong> data structures are defined before data ingestion.</li>
+        <li><strong>Spatial context as a first-class entity:</strong> spatial information is not auxiliary metadata.</li>
+        <li><strong>Modality-agnostic, pathology-aware:</strong> multiple technologies, consistent interpretation.</li>
+        <li><strong>Reproducibility over volume:</strong> clarity and provenance are prioritized.</li>
+      </ul>
+    </section>
 
-          <div class="gallery">
-            <figure>
-              <img loading="lazy" decoding="async"
-                   src="images/gallery/Human_Breast_Biomarkers_S1_Top_he_image_preview_L-2.jpg"
-                   alt="Human Breast Biomarkers S1 Top"
-                   data-caption="Human Breast Biomarkers – Section S1 (Top)">
-              <figcaption>
-                <span>S1 · Top</span>
-                <a class="caption-link" href="datasets/human_breast_biomarkers_s1.html">Dataset</a>
-              </figcaption>
-            </figure>
+    <section id="layers">
+      <h2>Data Layers (Schema v0.2)</h2>
+      <div class="table-wrap">
+        <table>
+          <tr>
+            <th>Layer</th>
+            <th>Description</th>
+            <th>Status</th>
+          </tr>
+          <tr>
+            <td>Sample</td><td>Biological origin, condition, acquisition metadata.</td><td>Available</td>
+          </tr>
+          <tr>
+            <td>Spatial</td><td>Coordinates, tissue geometry, regions of interest.</td><td>Partial</td>
+          </tr>
+          <tr>
+            <td>Molecular</td><td>RNA expression and other molecular measurements</td><td>Planned</td>
+          </tr>
+          <tr>
+            <td>Annotation</td><td>Cell types, niches, pathological structures</td><td>Planned</td>
+          </tr>
+          <tr>
+            <td>Derived</td><td>Computed spatial features and representations</td><td>Planned</td>
+          </tr>
+        </table>
+      </div>
+    </section>
 
-            <figure>
-              <img loading="lazy" decoding="async"
-                   src="images/gallery/Human_Breast_Biomarkers_S1_Mid_he_image_preview_L-2.jpg"
-                   alt="Human Breast Biomarkers S1 Mid"
-                   data-caption="Human Breast Biomarkers – Section S1 (Mid)">
-              <figcaption>
-                <span>S1 · Mid</span>
-                <a class="caption-link" href="datasets/human_breast_biomarkers_s1.html">Dataset</a>
-              </figcaption>
-            </figure>
+    <section id="access">
+      <h2>Access Model (Planned)</h2>
+      <p>
+        RNA-Pathology will support public datasets, controlled-access datasets,
+        and programmatic access via APIs.
+      </p>
+    </section>
 
-            <figure>
-              <img loading="lazy" decoding="async"
-                   src="images/gallery/Human_Breast_Biomarkers_S1_Bot_he_image_preview_L-2.jpg"
-                   alt="Human Breast Biomarkers S1 Bottom"
-                   data-caption="Human Breast Biomarkers – Section S1 (Bottom)">
-              <figcaption>
-                <span>S1 · Bottom</span>
-                <a class="caption-link" href="datasets/human_breast_biomarkers_s1.html">Dataset</a>
-              </figcaption>
-            </figure>
-
-            <figure>
-              <img loading="lazy" decoding="async"
-                   src="images/gallery/Human_Breast_Biomarkers_S2_Top_he_image_preview_L-2.jpg"
-                   alt="Human Breast Biomarkers S2 Top"
-                   data-caption="Human Breast Biomarkers – Section S2 (Top)">
-              <figcaption><span>S2 · Top</span></figcaption>
-            </figure>
-
-            <figure>
-              <img loading="lazy" decoding="async"
-                   src="images/gallery/Human_Breast_Biomarkers_S2_Mid_he_image_preview_L-2.jpg"
-                   alt="Human Breast Biomarkers S2 Mid"
-                   data-caption="Human Breast Biomarkers – Section S2 (Mid)">
-              <figcaption><span>S2 · Mid</span></figcaption>
-            </figure>
-
-            <figure>
-              <img loading="lazy" decoding="async"
-                   src="images/gallery/Human_Breast_Biomarkers_S2_Bot_he_image_preview_L-2.jpg"
-                   alt="Human Breast Biomarkers S2 Bottom"
-                   data-caption="Human Breast Biomarkers – Section S2 (Bottom)">
-              <figcaption><span>S2 · Bottom</span></figcaption>
-            </figure>
-
-            <figure>
-              <img loading="lazy" decoding="async"
-                   src="images/gallery/Human_Breast_Biomarkers_S3_Top_he_image_preview_L-2.jpg"
-                   alt="Human Breast Biomarkers S3 Top"
-                   data-caption="Human Breast Biomarkers – Section S3 (Top)">
-              <figcaption><span>S3 · Top</span></figcaption>
-            </figure>
-
-            <figure>
-              <img loading="lazy" decoding="async"
-                   src="images/gallery/Human_Breast_Biomarkers_S3_Mid_he_image_preview_L-2.jpg"
-                   alt="Human Breast Biomarkers S3 Mid"
-                   data-caption="Human Breast Biomarkers – Section S3 (Mid)">
-              <figcaption><span>S3 · Mid</span></figcaption>
-            </figure>
-
-            <figure>
-              <img loading="lazy" decoding="async"
-                   src="images/gallery/Human_Breast_Biomarkers_S3_Bot_he_image_preview_L-2.jpg"
-                   alt="Human Breast Biomarkers S3 Bottom"
-                   data-caption="Human Breast Biomarkers – Section S3 (Bottom)">
-              <figcaption><span>S3 · Bottom</span></figcaption>
-            </figure>
-
-            <figure>
-              <img loading="lazy" decoding="async"
-                   src="images/gallery/Human_Breast_Biomarkers_S4_Top_he_image_preview_L-2.jpg"
-                   alt="Human Breast Biomarkers S4 Top"
-                   data-caption="Human Breast Biomarkers – Section S4 (Top)">
-              <figcaption><span>S4 · Top</span></figcaption>
-            </figure>
-
-            <figure>
-              <img loading="lazy" decoding="async"
-                   src="images/gallery/Human_Breast_Biomarkers_S4_Mid_he_image_preview_L-2.jpg"
-                   alt="Human Breast Biomarkers S4 Mid"
-                   data-caption="Human Breast Biomarkers – Section S4 (Mid)">
-              <figcaption><span>S4 · Mid</span></figcaption>
-            </figure>
-
-            <figure>
-              <img loading="lazy" decoding="async"
-                   src="images/gallery/Human_Breast_Biomarkers_S4_Bot_he_image_preview_L-2.jpg"
-                   alt="Human Breast Biomarkers S4 Bottom"
-                   data-caption="Human Breast Biomarkers – Section S4 (Bottom)">
-              <figcaption><span>S4 · Bottom</span></figcaption>
-            </figure>
-          </div>
-        </div>
-
-        <div class="gallery-group">
-          <div class="group-head">
-            <h3>Xenium v1 FFPE Human Breast</h3>
-            <p>Example previews for IDC / ILC</p>
-          </div>
-
-          <div class="gallery">
-            <figure>
-              <img loading="lazy" decoding="async"
-                   src="images/gallery/Xenium_V1_FFPE_Human_Breast_IDC_he_image_preview_L-2.jpg"
-                   alt="Xenium FFPE Human Breast IDC"
-                   data-caption="Xenium v1 FFPE – Human Breast IDC">
-              <figcaption><span>Xenium · IDC</span></figcaption>
-            </figure>
-
-            <figure>
-              <img loading="lazy" decoding="async"
-                   src="images/gallery/Xenium_V1_FFPE_Human_Breast_IDC_With_Addon_he_image_preview_L-2.jpg"
-                   alt="Xenium FFPE Human Breast IDC With Addon"
-                   data-caption="Xenium v1 FFPE – Human Breast IDC (With Addon)">
-              <figcaption><span>Xenium · IDC + Addon</span></figcaption>
-            </figure>
-
-            <figure>
-              <img loading="lazy" decoding="async"
-                   src="images/gallery/Xenium_V1_FFPE_Human_Breast_ILC_he_image_preview_L-2.jpg"
-                   alt="Xenium FFPE Human Breast ILC"
-                   data-caption="Xenium v1 FFPE – Human Breast ILC">
-              <figcaption><span>Xenium · ILC</span></figcaption>
-            </figure>
-          </div>
-        </div>
-
-      </section>
-
-      <section id="principles">
-        <h2>Core Design Principles</h2>
-        <ul>
-          <li><strong>Schema-first design:</strong> data structures are defined before data ingestion.</li>
-          <li><strong>Spatial context as a first-class entity:</strong> spatial information is not auxiliary metadata.</li>
-          <li><strong>Modality-agnostic, pathology-aware:</strong> multiple technologies, consistent interpretation.</li>
-          <li><strong>Reproducibility over volume:</strong> clarity and provenance are prioritized.</li>
-        </ul>
-      </section>
-
-      <section id="layers">
-        <h2>Data Layers (Schema v0.2)</h2>
-
-        <div class="table-wrap" role="region" aria-label="Data Layers Table">
-          <table>
-            <thead>
-              <tr>
-                <th>Layer</th>
-                <th>Description</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Sample</td>
-                <td>Biological origin, condition, and acquisition metadata</td>
-                <td><span class="pill pill-ok">Available</span></td>
-              </tr>
-              <tr>
-                <td>Spatial</td>
-                <td>Coordinates, tissue geometry, and regions of interest</td>
-                <td><span class="pill pill-warn">Partial</span></td>
-              </tr>
-              <tr>
-                <td>Molecular</td>
-                <td>RNA expression and other molecular measurements</td>
-                <td><span class="pill pill-planned">Planned</span></td>
-              </tr>
-              <tr>
-                <td>Annotation</td>
-                <td>Cell types, niches, and pathological structures</td>
-                <td><span class="pill pill-planned">Planned</span></td>
-              </tr>
-              <tr>
-                <td>Derived</td>
-                <td>Computed spatial features and representations</td>
-                <td><span class="pill pill-planned">Planned</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section id="access">
-        <h2>Access Model (Planned)</h2>
-        <p>
-          RNA-Pathology will support public datasets, controlled-access datasets,
-          and programmatic access via APIs. User accounts and access control are part
-          of the long-term roadmap.
-        </p>
-      </section>
-
-      <section id="status">
-        <h2>Project Status</h2>
-        <p>
-          RNA-Pathology is currently in an early public architecture phase, focusing
-          on schema definition and documentation.
-        </p>
-      </section>
-
-    </main>
-
-    <footer>
-      <p>RNA-Pathology is an open research initiative.</p>
-    </footer>
+    <section id="status">
+      <h2>Project Status</h2>
+      <p>
+        Early public architecture phase focused on schema definition and documentation.
+      </p>
+    </section>
 
   </div>
 
-  <!-- ===== Lightbox ===== -->
-  <div class="lightbox" id="lightbox" aria-hidden="true">
-    <div class="lightbox-content">
-      <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Close">×</button>
-      <img id="lightboxImg" src="" alt="">
-      <div class="lightbox-caption" id="lightboxCaption"></div>
-      <div class="lightbox-hint">Click outside image or press Esc to close</div>
-    </div>
-  </div>
-
-  <script>
-    (function () {
-      const lightbox = document.getElementById('lightbox');
-      const imgEl = document.getElementById('lightboxImg');
-      const capEl = document.getElementById('lightboxCaption');
-      const closeBtn = document.getElementById('lightboxClose');
-
-      function openLightbox(src, alt, caption) {
-        imgEl.src = src;
-        imgEl.alt = alt || '';
-        capEl.textContent = caption || alt || '';
-        lightbox.classList.add('is-open');
-        lightbox.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
-        closeBtn.focus();
-      }
-
-      function closeLightbox() {
-        lightbox.classList.remove('is-open');
-        lightbox.setAttribute('aria-hidden', 'true');
-        imgEl.src = '';
-        document.body.style.overflow = '';
-      }
-
-      document.querySelectorAll('.gallery img').forEach(img => {
-        img.addEventListener('click', () => {
-          openLightbox(img.src, img.alt, img.dataset.caption);
-        });
-      });
-
-      closeBtn.addEventListener('click', closeLightbox);
-
-      lightbox.addEventListener('click', e => {
-        if (e.target === lightbox) closeLightbox();
-      });
-
-      document.addEventListener('keydown', e => {
-        if (e.key === 'Escape' && lightbox.classList.contains('is-open')) {
-          closeLightbox();
-        }
-      });
-    })();
-  </script>
-
+  <footer>
+    <p>RNA-Pathology is an open research initiative.</p>
+  </footer>
 </body>
 </html>
