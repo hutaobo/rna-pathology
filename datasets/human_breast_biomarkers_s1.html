@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dataset: Human Breast Biomarkers S1</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Dataset card for Human Breast Biomarkers – Section S1. RNA-Pathology database.">
+
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+      line-height: 1.6;
+      color: #222;
+    }
+
+    nav a {
+      margin-right: 16px;
+      text-decoration: none;
+      color: #0066cc;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    h1, h2, h3 {
+      font-weight: 600;
+    }
+
+    section {
+      margin-bottom: 42px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 12px;
+    }
+
+    table th, table td {
+      border: 1px solid #ccc;
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    table th {
+      width: 240px;
+      background: #f7f7f7;
+    }
+
+    code {
+      background: #eee;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-size: 0.9em;
+    }
+
+    footer {
+      margin-top: 80px;
+      font-size: 0.85em;
+      color: #666;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.8em;
+      background: #e6f0ff;
+      color: #003a8f;
+      margin-right: 6px;
+    }
+
+    .preview {
+      margin-top: 16px;
+      max-width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>Dataset: Human Breast Biomarkers – S1</h1>
+  <nav>
+    <a href="../database.html">← Database Overview</a>
+    <a href="../index.html">Home</a>
+    <a href="../docs/schema_v0.2.md">Schema</a>
+    <a href="https://github.com/hutaobo/rna-pathology" target="_blank">GitHub</a>
+  </nav>
+</header>
+
+<section>
+  <h2>Dataset Summary</h2>
+  <p>
+    This dataset contains spatial pathology previews from a human breast tissue
+    biomarker study. Section S1 represents a representative tissue slice used
+    for method benchmarking and visualization.
+  </p>
+</section>
+
+<section>
+  <h2>Core Metadata</h2>
+
+  <table>
+    <tr>
+      <th>Dataset ID</th>
+      <td><code>human_breast_biomarkers_s1</code></td>
+    </tr>
+    <tr>
+      <th>Species</th>
+      <td>Human</td>
+    </tr>
+    <tr>
+      <th>Tissue</th>
+      <td>Breast</td>
+    </tr>
+    <tr>
+      <th>Pathology</th>
+      <td>Biomarker reference tissue</td>
+    </tr>
+    <tr>
+      <th>Technology</th>
+      <td>
+        <span class="badge">H&amp;E</span>
+        <span class="badge">Spatial transcriptomics (preview)</span>
+      </td>
+    </tr>
+    <tr>
+      <th>Schema Version</th>
+      <td><code>v0.2</code></td>
+    </tr>
+    <tr>
+      <th>Status</th>
+      <td>Preview available</td>
+    </tr>
+  </table>
+</section>
+
+<section>
+  <h2>Available Data Layers</h2>
+  <ul>
+    <li>Sample metadata</li>
+    <li>Tissue section geometry (preview)</li>
+    <li>Histology image (H&amp;E)</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Associated Images</h2>
+  <p>Representative previews linked to this dataset:</p>
+
+  <img
+    class="preview"
+    src="../images/gallery/Human_Breast_Biomarkers_S1_Top_he_image_preview_L-2.jpg"
+    alt="Human Breast Biomarkers S1 – Top section preview"
+  >
+</section>
+
+<section>
+  <h2>Usage Notes</h2>
+  <p>
+    Images provided here are for visualization and reference only.
+    Raw spatial omics matrices and full-resolution images may be subject
+    to controlled access in future releases.
+  </p>
+</section>
+
+<footer>
+  <p>
+    RNA-Pathology Dataset Card · Version 0.1
+  </p>
+</footer>
+
+</body>
+</html>
