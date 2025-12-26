@@ -7,39 +7,62 @@
 
   <style>
     body { margin: 0; font-family: Arial, sans-serif; background: #f6f8fb; color: #222; }
-    .container { max-width: 960px; margin: 40px auto; padding: 0 20px; }
-    h1 { text-align: center; font-size: 2rem; margin-bottom: 12px; }
-    .btn-back {
-      display: inline-block;
-      margin-bottom: 24px;
-      text-decoration: none;
-      color: #1d4ed8;
-      font-weight: 600;
+    .container { max-width: 960px; margin: 32px auto; padding: 0 20px; }
+    a { text-decoration: none; color: #1d4ed8; }
+    a:hover { text-decoration: underline; }
+
+    .nav-back {
+      display: flex;
+      gap: 18px;
+      margin-bottom: 22px;
+      font-size: 1rem;
     }
+
+    h1 { text-align: center; font-size: 2.2rem; margin-bottom: 12px; }
+    .meta {
+      background: white;
+      padding: 16px 20px;
+      border-radius: 8px;
+      border: 1px solid rgba(15,23,42,0.14);
+      margin-bottom: 28px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.04);
+    }
+    .meta p { margin: 6px 0; font-size: 0.95rem; }
+
     .gallery {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(220px,1fr));
       gap: 16px;
+    }
+    .gallery figure {
+      margin: 0;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(15,23,42,0.12);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
     .gallery img {
       width: 100%;
-      border-radius: 6px;
+      display: block;
       cursor: pointer;
-      transition: transform .18s ease, box-shadow .18s ease;
     }
-    .gallery img:hover {
-      transform: scale(1.02);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    figure figcaption {
+      padding: 8px 10px;
+      font-size: 0.88em;
+      color: #444;
+      text-align: center;
     }
+
     .lightbox {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.87);
-      z-index: 999;
+      background: rgba(0,0,0,0.88);
       align-items: center;
       justify-content: center;
       padding: 24px;
+      z-index: 999;
     }
     .lightbox.is-open { display: flex; }
     .lightbox img {
@@ -49,48 +72,77 @@
     }
     .lightbox-close {
       position: absolute;
-      top: 18px;
-      right: 22px;
+      top: 14px;
+      right: 18px;
       font-size: 22px;
       color: #fff;
-      text-decoration: none;
       font-weight: bold;
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <a href="database.html" class="btn-back">← Back to Database Overview</a>
-    <h1>Gallery — Xenium v1 FFPE Human Breast</h1>
+<div class="container">
 
-    <div class="gallery">
+  <div class="nav-back">
+    <a href="database.html">← Database Overview</a>
+    <span>·</span>
+    <a href="datasets/xenium_v1_ffpe_human_breast_idc.html">← Dataset Card</a>
+  </div>
+
+  <h1>Gallery — Xenium v1 FFPE Human Breast</h1>
+
+  <div class="meta">
+    <p><strong>Dataset ID:</strong> <code>xenium_v1_ffpe_human_breast_idc</code></p>
+    <p><strong>Species:</strong> Human</p>
+    <p><strong>Tissue:</strong> Breast</p>
+    <p><strong>Technology:</strong> Xenium v1 FFPE</p>
+    <p><strong>Description:</strong> Representative FFPE spatial pathology previews, including IDC / ILC variants.</p>
+  </div>
+
+  <div class="gallery">
+    <figure>
       <img src="images/gallery/Xenium_V1_FFPE_Human_Breast_IDC_he_image_preview_L-2.jpg" alt="Xenium FFPE IDC" data-caption="Xenium FFPE – IDC">
-      <img src="images/gallery/Xenium_V1_FFPE_Human_Breast_IDC_With_Addon_he_image_preview_L-2.jpg" alt="Xenium FFPE IDC With Addon" data-caption="Xenium FFPE – IDC + Addon">
-      <img src="images/gallery/Xenium_V1_FFPE_Human_Breast_ILC_he_image_preview_L-2.jpg" alt="Xenium FFPE ILC" data-caption="Xenium FFPE – ILC">
-    </div>
+      <figcaption>Xenium · IDC</figcaption>
+    </figure>
+
+    <figure>
+      <img src="images/gallery/Xenium_V1_FFPE_Human_Breast_IDC_With_Addon_he_image_preview_L-2.jpg"
+           alt="Xenium FFPE IDC With Addon" data-caption="Xenium FFPE – IDC + Addon">
+      <figcaption>Xenium · IDC + Addon</figcaption>
+    </figure>
+
+    <figure>
+      <img src="images/gallery/Xenium_V1_FFPE_Human_Breast_ILC_he_image_preview_L-2.jpg"
+           alt="Xenium FFPE ILC" data-caption="Xenium FFPE – ILC">
+      <figcaption>Xenium · ILC</figcaption>
+    </figure>
   </div>
 
-  <!-- Lightbox -->
-  <div class="lightbox" id="lightbox">
-    <a href="#" class="lightbox-close" id="closeBtn">×</a>
-    <img id="lightboxImg" src="" alt="">
-  </div>
+</div>
 
-  <script>
-    const lightbox = document.getElementById("lightbox");
-    const lightboxImg = document.getElementById("lightboxImg");
-    const closeBtn = document.getElementById("closeBtn");
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <a href="#" class="lightbox-close" id="closeBtn">×</a>
+  <img id="lightboxImg" src="" alt="">
+</div>
 
-    document.querySelectorAll(".gallery img").forEach(img => {
-      img.addEventListener("click", () => {
-        lightboxImg.src = img.src;
-        lightbox.classList.add("is-open");
-      });
+<script>
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightboxImg");
+  const closeBtn = document.getElementById("closeBtn");
+
+  document.querySelectorAll(".gallery img").forEach(img => {
+    img.addEventListener("click", () => {
+      lightboxImg.src = img.src;
+      lightbox.classList.add("is-open");
     });
-    closeBtn.addEventListener("click", () => lightbox.classList.remove("is-open"));
-    lightbox.addEventListener("click", e => { if(e.target === lightbox) lightbox.classList.remove("is-open"); });
-  </script>
+  });
+
+  closeBtn.addEventListener("click", () => lightbox.classList.remove("is-open"));
+  lightbox.addEventListener("click", e => { if (e.target === lightbox) lightbox.classList.remove("is-open"); });
+</script>
 
 </body>
 </html>
