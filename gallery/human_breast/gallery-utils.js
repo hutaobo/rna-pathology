@@ -1,6 +1,8 @@
 /**
  * gallery-utils.js
- * Explain: load JSON metadata + render with filter + pagination + lightbox
+ * 自动渲染 Human Breast Gallery
+ * 标题可点击跳转到 Dataset Card
+ * 点击图片默认跳 Dataset Card；按住 Ctrl/Cmd 点击则打开大图（Lightbox）
  */
 
 (async function () {
@@ -18,9 +20,16 @@
   let currentPage = 1;
   let currentFilter = "All";
 
-  // load JSON metadata
+  // fetch metadata.json
   const resp = await fetch(metadataJson);
   galleryData = await resp.json();
+
+  function slugify(str) {
+    return str.toLowerCase()
+      .trim()
+      .replace(/[\s]+/g, "_")
+      .replace(/[^\w\-]+/g, "");
+  }
 
   function populateFilterOptions() {
     const sections = ["All", ...new Set(galleryData.map(x => x.section))];
@@ -43,25 +52,45 @@
     const start = (currentPage - 1) * pageSize;
     const items = filtered.slice(start, start + pageSize);
 
-    // ✅ 核心改动：用 figure + figcaption 包起来
     galleryGrid.innerHTML = items
-      .map(item => `
-        <figure class="gallery-item">
-          <figcaption>${item.id}</figcaption>
-          <img src="${item.src}" alt="${item.id}" data-caption="${item.id}">
-        </figure>
-      `)
+      .map(item => {
+        // 自动构造 dataset card 跳转链接
+        const target = `/datasets/human_breast_biomarkers_${slugify(item.section)}.html`;
+        return `
+          <figure class="gallery-item">
+            <figcaption>
+              <a class="gallery-link" href="${target}">
+                ${item.id}
+              </a>
+            </figcaption>
+            <img 
+              src="${item.src}"
+              alt="${item.id}"
+              data-caption="${item.id}"
+              data-href="${target}"
+            >
+          </figure>
+        `;
+      })
       .join("");
 
     pageInfo.textContent = `${currentPage} / ${totalPages}`;
     prevBtn.disabled = currentPage <= 1;
     nextBtn.disabled = currentPage >= totalPages;
 
+    // 图片点击行为
     document.querySelectorAll("#galleryGrid img").forEach(img => {
-      img.addEventListener("click", () => {
-        lightboxImg.src = img.src;
-        lightboxImg.alt = img.getAttribute("data-caption") || "";
-        lightbox.classList.add("is-open");
+      img.addEventListener("click", (e) => {
+        const target = img.getAttribute("data-href");
+        if (e.ctrlKey || e.metaKey) {
+          // ctrl/cmd + click → lightbox 查看大图
+          lightboxImg.src = img.src;
+          lightboxImg.alt = img.getAttribute("data-caption") || "";
+          lightbox.classList.add("is-open");
+        } else {
+          // 普通点击 → 跳 dataset card
+          window.location.href = target;
+        }
       });
     });
   }
