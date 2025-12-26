@@ -1,1 +1,17 @@
+[
+  { "id": "S1 Top", "section": "S1", "src": "../../images/gallery/Human_Breast_Biomarkers_S1_Top_he_image_preview_L-2.jpg" },
+  { "id": "S1 Mid", "section": "S1", "src": "../../images/gallery/Human_Breast_Biomarkers_S1_Mid_he_image_preview_L-2.jpg" },
+  { "id": "S1 Bottom", "section": "S1", "src": "../../images/gallery/Human_Breast_Biomarkers_S1_Bot_he_image_preview_L-2.jpg" },
 
+  { "id": "S2 Top", "section": "S2", "src": "../../images/gallery/Human_Breast_Biomarkers_S2_Top_he_image_preview_L-2.jpg" },
+  { "id": "S2 Mid", "section": "S2", "src": "../../images/gallery/Human_Breast_Biomarkers_S2_Mid_he_image_preview_L-2.jpg" },
+  { "id": "S2 Bottom", "section": "S2", "src": "../../images/gallery/Human_Breast_Biomarkers_S2_Bot_he_image_preview_L-2.jpg" },
+
+  { "id": "S3 Top", "section": "S3", "src": "../../images/gallery/Human_Breast_Biomarkers_S3_Top_he_image_preview_L-2.jpg" },
+  { "id": "S3 Mid", "section": "S3", "src": "../../images/gallery/Human_Breast_Biomarkers_S3_Mid_he_image_preview_L-2.jpg" },
+  { "id": "S3 Bottom", "section": "S3", "src": "../../images/gallery/Human_Breast_Biomarkers_S3_Bot_he_image_preview_L-2.jpg" },
+
+  { "id": "S4 Top", "section": "S4", "src": "../../images/gallery/Human_Breast_Biomarkers_S4_Top_he_image_preview_L-2.jpg" },
+  { "id": "S4 Mid", "section": "S4", "src": "../../images/gallery/Human_Breast_Biomarkers_S4_Mid_he_image_preview_L-2.jpg" },
+  { "id": "S4 Bottom", "section": "S4", "src": "../../images/gallery/Human_Breast_Biomarkers_S4_Bot_he_image_preview_L-2.jpg" }
+]
