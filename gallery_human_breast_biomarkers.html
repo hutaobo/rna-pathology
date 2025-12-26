@@ -7,39 +7,71 @@
 
   <style>
     body { margin: 0; font-family: Arial, sans-serif; background: #f6f8fb; color: #222; }
-    .container { max-width: 960px; margin: 40px auto; padding: 0 20px; }
-    h1 { text-align: center; font-size: 2rem; margin-bottom: 12px; }
-    .btn-back {
-      display: inline-block;
-      margin-bottom: 24px;
-      text-decoration: none;
-      color: #1d4ed8;
-      font-weight: 600;
+    .container { max-width: 960px; margin: 32px auto; padding: 0 20px; }
+    a { text-decoration: none; color: #1d4ed8; }
+    a:hover { text-decoration: underline; }
+
+    .nav-back {
+      display: flex;
+      gap: 18px;
+      margin-bottom: 22px;
+      font-size: 1rem;
     }
+
+    h1 { text-align: center; font-size: 2.2rem; margin-bottom: 12px; }
+    .meta {
+      background: white;
+      padding: 16px 20px;
+      border-radius: 8px;
+      border: 1px solid rgba(15,23,42,0.14);
+      margin-bottom: 28px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.04);
+    }
+    .meta p { margin: 6px 0; font-size: 0.95rem; }
+
+    .gallery-group { margin-top: 28px; }
+    .gallery-group h3 {
+      font-size: 1.2rem;
+      color: #1a1a1a;
+      margin-bottom: 10px;
+      border-left: 4px solid #2563eb;
+      padding-left: 10px;
+    }
+
     .gallery {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(220px,1fr));
       gap: 16px;
+    }
+    .gallery figure {
+      margin: 0;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(15,23,42,0.12);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
     .gallery img {
       width: 100%;
-      border-radius: 6px;
+      display: block;
       cursor: pointer;
-      transition: transform .18s ease, box-shadow .18s ease;
     }
-    .gallery img:hover {
-      transform: scale(1.02);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    figure figcaption {
+      padding: 8px 10px;
+      font-size: 0.88em;
+      color: #444;
+      text-align: center;
     }
+
     .lightbox {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.87);
-      z-index: 999;
+      background: rgba(0,0,0,0.88);
       align-items: center;
       justify-content: center;
       padding: 24px;
+      z-index: 999;
     }
     .lightbox.is-open { display: flex; }
     .lightbox img {
@@ -49,57 +81,130 @@
     }
     .lightbox-close {
       position: absolute;
-      top: 18px;
-      right: 22px;
+      top: 14px;
+      right: 18px;
       font-size: 22px;
       color: #fff;
-      text-decoration: none;
       font-weight: bold;
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <a href="database.html" class="btn-back">← Back to Database Overview</a>
-    <h1>Gallery — Human Breast Biomarkers</h1>
+<div class="container">
 
+  <div class="nav-back">
+    <a href="database.html">← Database Overview</a>
+    <span>·</span>
+    <a href="datasets/human_breast_biomarkers_s1.html">← Dataset Card</a>
+  </div>
+
+  <h1>Gallery — Human Breast Biomarkers</h1>
+
+  <div class="meta">
+    <p><strong>Dataset ID:</strong> <code>human_breast_biomarkers_s1</code></p>
+    <p><strong>Species:</strong> Human</p>
+    <p><strong>Tissue:</strong> Breast</p>
+    <p><strong>Technology:</strong> H&E, Spatial Preview</p>
+    <p><strong>Description:</strong> H&E preview images across multiple sections (S1 – S4).</p>
+  </div>
+
+  <div class="gallery-group">
+    <h3>Section S1</h3>
     <div class="gallery">
-      <img src="images/gallery/Human_Breast_Biomarkers_S1_Top_he_image_preview_L-2.jpg" alt="S1 Top" data-caption="S1 Top">
-      <img src="images/gallery/Human_Breast_Biomarkers_S1_Mid_he_image_preview_L-2.jpg" alt="S1 Mid" data-caption="S1 Mid">
-      <img src="images/gallery/Human_Breast_Biomarkers_S1_Bot_he_image_preview_L-2.jpg" alt="S1 Bottom" data-caption="S1 Bottom">
-      <img src="images/gallery/Human_Breast_Biomarkers_S2_Top_he_image_preview_L-2.jpg" alt="S2 Top" data-caption="S2 Top">
-      <img src="images/gallery/Human_Breast_Biomarkers_S2_Mid_he_image_preview_L-2.jpg" alt="S2 Mid" data-caption="S2 Mid">
-      <img src="images/gallery/Human_Breast_Biomarkers_S2_Bot_he_image_preview_L-2.jpg" alt="S2 Bottom" data-caption="S2 Bottom">
-      <img src="images/gallery/Human_Breast_Biomarkers_S3_Top_he_image_preview_L-2.jpg" alt="S3 Top" data-caption="S3 Top">
-      <img src="images/gallery/Human_Breast_Biomarkers_S3_Mid_he_image_preview_L-2.jpg" alt="S3 Mid" data-caption="S3 Mid">
-      <img src="images/gallery/Human_Breast_Biomarkers_S3_Bot_he_image_preview_L-2.jpg" alt="S3 Bottom" data-caption="S3 Bottom">
-      <img src="images/gallery/Human_Breast_Biomarkers_S4_Top_he_image_preview_L-2.jpg" alt="S4 Top" data-caption="S4 Top">
-      <img src="images/gallery/Human_Breast_Biomarkers_S4_Mid_he_image_preview_L-2.jpg" alt="S4 Mid" data-caption="S4 Mid">
-      <img src="images/gallery/Human_Breast_Biomarkers_S4_Bot_he_image_preview_L-2.jpg" alt="S4 Bottom" data-caption="S4 Bottom">
+      <figure>
+        <img src="images/gallery/Human_Breast_Biomarkers_S1_Top_he_image_preview_L-2.jpg" alt="S1 Top" data-caption="S1 Top">
+        <figcaption>S1 · Top</figcaption>
+      </figure>
+      <figure>
+        <img src="images/gallery/Human_Breast_Biomarkers_S1_Mid_he_image_preview_L-2.jpg" alt="S1 Mid" data-caption="S1 Mid">
+        <figcaption>S1 · Mid</figcaption>
+      </figure>
+      <figure>
+        <img src="images/gallery/Human_Breast_Biomarkers_S1_Bot_he_image_preview_L-2.jpg" alt="S1 Bottom" data-caption="S1 Bottom">
+        <figcaption>S1 · Bottom</figcaption>
+      </figure>
     </div>
   </div>
 
-  <!-- Lightbox -->
-  <div class="lightbox" id="lightbox">
-    <a href="#" class="lightbox-close" id="closeBtn">×</a>
-    <img id="lightboxImg" src="" alt="">
+  <div class="gallery-group">
+    <h3>Section S2</h3>
+    <div class="gallery">
+      <figure>
+        <img src="images/gallery/Human_Breast_Biomarkers_S2_Top_he_image_preview_L-2.jpg" alt="S2 Top" data-caption="S2 Top">
+        <figcaption>S2 · Top</figcaption>
+      </figure>
+      <figure>
+        <img src="images/gallery/Human_Breast_Biomarkers_S2_Mid_he_image_preview_L-2.jpg" alt="S2 Mid" data-caption="S2 Mid">
+        <figcaption>S2 · Mid</figcaption>
+      </figure>
+      <figure>
+        <img src="images/gallery/Human_Breast_Biomarkers_S2_Bot_he_image_preview_L-2.jpg" alt="S2 Bottom" data-caption="S2 Bottom">
+        <figcaption>S2 · Bottom</figcaption>
+      </figure>
+    </div>
   </div>
 
-  <script>
-    const lightbox = document.getElementById("lightbox");
-    const lightboxImg = document.getElementById("lightboxImg");
-    const closeBtn = document.getElementById("closeBtn");
+  <div class="gallery-group">
+    <h3>Section S3</h3>
+    <div class="gallery">
+      <figure>
+        <img src="images/gallery/Human_Breast_Biomarkers_S3_Top_he_image_preview_L-2.jpg" alt="S3 Top" data-caption="S3 Top">
+        <figcaption>S3 · Top</figcaption>
+      </figure>
+      <figure>
+        <img src="images/gallery/Human_Breast_Biomarkers_S3_Mid_he_image_preview_L-2.jpg" alt="S3 Mid" data-caption="S3 Mid">
+        <figcaption>S3 · Mid</figcaption>
+      </figure>
+      <figure>
+        <img src="images/gallery/Human_Breast_Biomarkers_S3_Bot_he_image_preview_L-2.jpg" alt="S3 Bottom" data-caption="S3 Bottom">
+        <figcaption>S3 · Bottom</figcaption>
+      </figure>
+    </div>
+  </div>
 
-    document.querySelectorAll(".gallery img").forEach(img => {
-      img.addEventListener("click", () => {
-        lightboxImg.src = img.src;
-        lightbox.classList.add("is-open");
-      });
+  <div class="gallery-group">
+    <h3>Section S4</h3>
+    <div class="gallery">
+      <figure>
+        <img src="images/gallery/Human_Breast_Biomarkers_S4_Top_he_image_preview_L-2.jpg" alt="S4 Top" data-caption="S4 Top">
+        <figcaption>S4 · Top</figcaption>
+      </figure>
+      <figure>
+        <img src="images/gallery/Human_Breast_Biomarkers_S4_Mid_he_image_preview_L-2.jpg" alt="S4 Mid" data-caption="S4 Mid">
+        <figcaption>S4 · Mid</figcaption>
+      </figure>
+      <figure>
+        <img src="images/gallery/Human_Breast_Biomarkers_S4_Bot_he_image_preview_L-2.jpg" alt="S4 Bottom" data-caption="S4 Bottom">
+        <figcaption>S4 · Bottom</figcaption>
+      </figure>
+    </div>
+  </div>
+
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <a href="#" class="lightbox-close" id="closeBtn">×</a>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<script>
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightboxImg");
+  const closeBtn = document.getElementById("closeBtn");
+
+  document.querySelectorAll(".gallery img").forEach(img => {
+    img.addEventListener("click", () => {
+      lightboxImg.src = img.src;
+      lightbox.classList.add("is-open");
     });
-    closeBtn.addEventListener("click", () => lightbox.classList.remove("is-open"));
-    lightbox.addEventListener("click", e => { if(e.target === lightbox) lightbox.classList.remove("is-open"); });
-  </script>
+  });
+
+  closeBtn.addEventListener("click", () => lightbox.classList.remove("is-open"));
+  lightbox.addEventListener("click", e => { if (e.target === lightbox) lightbox.classList.remove("is-open"); });
+</script>
 
 </body>
 </html>
