@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gallery — Xenium v1 FFPE Human Breast</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; background: #f6f8fb; color: #222; }
+    .container { max-width: 960px; margin: 40px auto; padding: 0 20px; }
+    h1 { text-align: center; font-size: 2rem; margin-bottom: 12px; }
+    .btn-back {
+      display: inline-block;
+      margin-bottom: 24px;
+      text-decoration: none;
+      color: #1d4ed8;
+      font-weight: 600;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .gallery img {
+      width: 100%;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .gallery img:hover {
+      transform: scale(1.02);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    }
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.87);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .lightbox.is-open { display: flex; }
+    .lightbox img {
+      max-width: 90%;
+      max-height: 85vh;
+      border-radius: 8px;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 18px;
+      right: 22px;
+      font-size: 22px;
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <a href="database.html" class="btn-back">← Back to Database Overview</a>
+    <h1>Gallery — Xenium v1 FFPE Human Breast</h1>
+
+    <div class="gallery">
+      <img src="images/gallery/Xenium_V1_FFPE_Human_Breast_IDC_he_image_preview_L-2.jpg" alt="Xenium FFPE IDC" data-caption="Xenium FFPE – IDC">
+      <img src="images/gallery/Xenium_V1_FFPE_Human_Breast_IDC_With_Addon_he_image_preview_L-2.jpg" alt="Xenium FFPE IDC With Addon" data-caption="Xenium FFPE – IDC + Addon">
+      <img src="images/gallery/Xenium_V1_FFPE_Human_Breast_ILC_he_image_preview_L-2.jpg" alt="Xenium FFPE ILC" data-caption="Xenium FFPE – ILC">
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <a href="#" class="lightbox-close" id="closeBtn">×</a>
+    <img id="lightboxImg" src="" alt="">
+  </div>
+
+  <script>
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightboxImg");
+    const closeBtn = document.getElementById("closeBtn");
+
+    document.querySelectorAll(".gallery img").forEach(img => {
+      img.addEventListener("click", () => {
+        lightboxImg.src = img.src;
+        lightbox.classList.add("is-open");
+      });
+    });
+    closeBtn.addEventListener("click", () => lightbox.classList.remove("is-open"));
+    lightbox.addEventListener("click", e => { if(e.target === lightbox) lightbox.classList.remove("is-open"); });
+  </script>
+
+</body>
+</html>
