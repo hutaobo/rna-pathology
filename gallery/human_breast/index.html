@@ -4,53 +4,123 @@
   <meta charset="UTF-8">
   <title>Gallery — Human Breast Biomarkers</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
-    body { margin:0; font-family:Arial,Helvetica,sans-serif; background:#f6f8fb; color:#222; }
-    .container{max-width:960px; margin:32px auto; padding:0 20px;}
-    .nav-back a{color:#1d4ed8; text-decoration:none;}
-    .nav-back a:hover{text-decoration:underline;}
-    h1{text-align:center; margin-bottom:16px;}
-    .controls{display:flex; justify-content:center; gap:12px; margin-bottom:22px;}
-    select{padding:6px 10px; border:1px solid #ccc; border-radius:4px;}
-
-    .gallery{
-      display:grid;
-      gap:14px;
-      grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f6f8fb;
+      color: #222;
+    }
+    .container {
+      max-width: 980px;
+      margin: 32px auto;
+      padding: 0 20px;
+    }
+    .nav-back a {
+      color: #1d4ed8;
+      text-decoration: none;
+    }
+    .nav-back a:hover {
+      text-decoration: underline;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 18px;
+      font-size: 1.8rem;
     }
 
-    /* ✅ 新增：每张图用 figure + figcaption */
-    .gallery-item{
-      background:#fff;
-      border:1px solid #e6e8ef;
-      border-radius:8px;
-      overflow:hidden;
-      box-shadow:0 2px 6px rgba(0,0,0,0.06);
+    .controls {
+      text-align: center;
+      margin-bottom: 16px;
     }
-    .gallery-item figcaption{
-      text-align:center;
-      font-size:0.9rem;
-      font-weight:600;
-      padding:8px 10px;
-      border-bottom:1px solid #eef0f6;
-      color:#333;
-      background:#fff;
-    }
-    .gallery-item img{
-      width:100%;
-      display:block;
-      cursor:pointer;
+    select {
+      padding: 6px 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
 
-    .pagination{text-align:center; margin-top:22px;}
-    .pagination button{padding:6px 14px; border:1px solid #1d4ed8; background:#fff; color:#1d4ed8; border-radius:6px; cursor:pointer;}
-    .pagination button:disabled{border-color:#aaa; color:#aaa; cursor:not-allowed;}
+    .gallery {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      margin-top: 12px;
+    }
 
-    .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;padding:26px;z-index:999;}
-    .lightbox.is-open{display:flex;}
-    .lightbox img{max-width:90%; max-height:85vh;}
-    .lightbox-close{position:absolute;top:14px;right:18px;font-size:22px;color:#fff;cursor:pointer;font-weight:bold;}
+    .gallery-item {
+      background: #fff;
+      border: 1px solid #e6e8ef;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    }
+    .gallery-item figcaption {
+      text-align: center;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 8px 10px;
+      border-bottom: 1px solid #e8ebf0;
+      background: #fff;
+    }
+    .gallery-link {
+      color: #1d4ed8;
+      text-decoration: none;
+    }
+    .gallery-link:hover {
+      text-decoration: underline;
+    }
+    .gallery-item img {
+      width: 100%;
+      display: block;
+      cursor: pointer;
+    }
+
+    .pagination {
+      text-align: center;
+      margin-top: 22px;
+    }
+    .pagination button {
+      padding: 6px 14px;
+      border: 1px solid #1d4ed8;
+      background: #fff;
+      color: #1d4ed8;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .pagination button:disabled {
+      border-color: #aaa;
+      color: #aaa;
+      cursor: not-allowed;
+    }
+
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      align-items: center;
+      justify-content: center;
+      padding: 26px;
+      z-index: 999;
+    }
+    .lightbox.is-open {
+      display: flex;
+    }
+    .lightbox img {
+      max-width: 90%;
+      max-height: 85vh;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      font-size: 26px;
+      color: #fff;
+      cursor: pointer;
+      font-weight: bold;
+    }
   </style>
+
 </head>
 <body>
 
