@@ -1,90 +1,248 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>RNA Pathology — Database</title>
+  <meta charset="UTF-8" />
+  <title>RNA Pathology Database</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <meta name="description" content="RNA Pathology Database – a schema-driven resource for spatial transcriptomics and RNA pathology." />
+
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; padding: 24px; }
-    h1 { margin: 0 0 10px 0; }
-    p { margin: 0 0 18px 0; color: #444; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
-    .card { border: 1px solid #ddd; border-radius: 10px; overflow: hidden; background: #fff; }
-    .card img { width: 100%; height: auto; display: block; }
-    .cap { padding: 10px 12px; font-size: 13px; color: #333; border-top: 1px solid #eee; word-break: break-all; }
-    .hint { font-size: 12px; color: #666; margin-top: 14px; }
-    a { text-decoration: none; color: inherit; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen;
+      margin: 0;
+      background: #fafafa;
+      color: #222;
+      line-height: 1.6;
+    }
+
+    header {
+      background: #111;
+      color: #fff;
+      padding: 1.2rem 2rem;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.6rem;
+    }
+
+    header p {
+      margin: 0.3rem 0 0;
+      font-size: 0.95rem;
+      color: #ccc;
+    }
+
+    main {
+      max-width: 960px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    section {
+      margin-bottom: 2.8rem;
+    }
+
+    h2 {
+      border-bottom: 2px solid #eee;
+      padding-bottom: 0.4rem;
+      margin-bottom: 1rem;
+      font-size: 1.4rem;
+    }
+
+    h3 {
+      margin-top: 1.5rem;
+      font-size: 1.1rem;
+    }
+
+    ul {
+      padding-left: 1.2rem;
+    }
+
+    li {
+      margin-bottom: 0.4rem;
+    }
+
+    code {
+      background: #eee;
+      padding: 0.15rem 0.35rem;
+      border-radius: 3px;
+      font-size: 0.9em;
+    }
+
+    a {
+      color: #0057b7;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* ===== Gallery (完全兼容现有页面) ===== */
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 1.2rem;
+    }
+
+    .gallery img {
+      width: 100%;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .gallery img:hover {
+      transform: scale(1.02);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    }
+
+    .lightbox {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lightbox img {
+      max-width: 92%;
+      max-height: 92%;
+      border-radius: 6px;
+    }
+
+    footer {
+      border-top: 1px solid #eee;
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #777;
+    }
   </style>
 </head>
+
 <body>
-  <h1>Database</h1>
-  <p>Images from <code>assets/database/</code> (auto-synced). Click to open full size.</p>
 
-  <div id="grid" class="grid"></div>
-  <div class="hint" id="hint"></div>
+<header>
+  <h1>RNA Pathology Database</h1>
+  <p>A schema-driven knowledge base for spatial transcriptomics & RNA pathology</p>
+</header>
 
-  <script>
-    // Change these only if you rename repo/owner:
-    const owner = "hutaobo";
-    const repo  = "rna-pathology";
-    const dir   = "assets/database";
+<main>
 
-    const api = `https://api.github.com/repos/${owner}/${repo}/contents/${dir}`;
+  <section>
+    <h2>Overview</h2>
+    <p>
+      The <strong>RNA Pathology Database</strong> is a structured, evolving resource
+      for spatial transcriptomics datasets, pathology annotations, and derived
+      computational features.
+    </p>
+    <p>
+      This page serves as a public-facing database index.
+      Programmatic access and large-scale hosting will follow.
+    </p>
+  </section>
 
-    function isJpg(name) {
-      const n = name.toLowerCase();
-      return n.endsWith(".jpg") || n.endsWith(".jpeg");
-    }
+  <section>
+    <h2>Core Data Modules</h2>
 
-    async function main() {
-      const grid = document.getElementById("grid");
-      const hint = document.getElementById("hint");
+    <h3>🧬 Dataset</h3>
+    <ul>
+      <li>Xenium, Visium, MERFISH, CosMx</li>
+      <li>Human and mouse tissues</li>
+      <li>Cancer, fibrosis, neuro-pathology</li>
+    </ul>
 
-      try {
-        const res = await fetch(api);
-        if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
-        const items = await res.json();
+    <h3>🧠 Annotation</h3>
+    <ul>
+      <li>Cell types and cell states</li>
+      <li>Tissue regions and niches</li>
+      <li>Expert pathology labels</li>
+    </ul>
 
-        const imgs = items
-          .filter(x => x.type === "file" && isJpg(x.name))
-          .sort((a,b) => a.name.localeCompare(b.name));
+    <h3>📐 Spatial Features</h3>
+    <ul>
+      <li>Neighborhood graphs</li>
+      <li>Spatial niches and domains</li>
+      <li>Convex hulls and density fields</li>
+    </ul>
+  </section>
 
-        if (imgs.length === 0) {
-          hint.textContent = "No .jpg/.jpeg found in assets/database.";
-          return;
-        }
+  <!-- ===== Gallery 正式嵌入位置 ===== -->
 
-        hint.textContent = `Found ${imgs.length} image(s).`;
+  <section>
+    <h2>Visual Gallery</h2>
+    <p>
+      Representative spatial transcriptomics datasets and RNA pathology features
+      hosted in the database.
+    </p>
 
-        for (const f of imgs) {
-          const a = document.createElement("a");
-          a.href = f.download_url;         // full-res
-          a.target = "_blank";
-          a.rel = "noopener";
+    <!-- 保留你现有 gallery 的结构即可 -->
+    <div class="gallery">
+      <img src="images/gallery/sample1.png" alt="Spatial transcriptomics overview">
+      <img src="images/gallery/sample2.png" alt="Cell-type annotation map">
+      <img src="images/gallery/sample3.png" alt="Spatial niche analysis">
+      <img src="images/gallery/sample4.png" alt="RNA pathology features">
+    </div>
+  </section>
 
-          const card = document.createElement("div");
-          card.className = "card";
+  <section>
+    <h2>Schema</h2>
+    <ul>
+      <li>Current schema: <code>v0.2</code></li>
+      <li>Next: <code>v0.3</code> (relations, provenance, access control)</li>
+    </ul>
 
-          const img = document.createElement("img");
-          img.src = f.download_url;        // preview (same as full-res)
-          img.alt = f.name;
-          img.loading = "lazy";
+    <p>
+      Documentation:
+      <a href="docs/schema_v0.2.md">schema_v0.2.md</a> ·
+      <a href="docs/roadmap.md">roadmap</a>
+    </p>
+  </section>
 
-          const cap = document.createElement("div");
-          cap.className = "cap";
-          cap.textContent = f.name;
+  <section>
+    <h2>Governance</h2>
+    <p>
+      The project follows open-science principles while respecting
+      data governance and clinical constraints.
+    </p>
+    <p>
+      See <a href="CONTRIBUTING.md">CONTRIBUTING.md</a> and
+      <a href="DATA_POLICY.md">DATA_POLICY.md</a>.
+    </p>
+  </section>
 
-          card.appendChild(img);
-          card.appendChild(cap);
-          a.appendChild(card);
-          grid.appendChild(a);
-        }
-      } catch (e) {
-        hint.textContent = "Failed to load images. " + e.message;
-      }
-    }
+</main>
 
-    main();
-  </script>
+<footer>
+  © RNA Pathology Initiative · Built openly on GitHub
+</footer>
+
+<!-- ===== Lightbox（与你现有页面行为一致） ===== -->
+<div class="lightbox" id="lightbox">
+  <img src="" alt="Expanded view">
+</div>
+
+<script>
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = lightbox.querySelector("img");
+
+  document.querySelectorAll(".gallery img").forEach(img => {
+    img.addEventListener("click", () => {
+      lightboxImg.src = img.src;
+      lightbox.style.display = "flex";
+    });
+  });
+
+  lightbox.addEventListener("click", () => {
+    lightbox.style.display = "none";
+  });
+</script>
+
 </body>
 </html>
