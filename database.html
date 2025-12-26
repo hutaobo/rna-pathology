@@ -7,122 +7,164 @@
   <meta name="description" content="RNA-Pathology database overview: a schema-driven framework for spatial molecular pathology data.">
 
   <style>
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      max-width: 960px;
-      margin: 40px auto;
-      padding: 0 20px;
-      line-height: 1.6;
-      color: #222;
-    }
+  /* --- 通用重置 + 布局 --- */
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    max-width: 960px;
+    margin: 40px auto;
+    padding: 0 20px;
+    line-height: 1.65;
+    color: #222;
+    background: #f8f9fa;
+  }
 
-    nav a {
-      margin-right: 20px;
-      text-decoration: none;
-      color: #0066cc;
-    }
-    nav a:hover {
-      text-decoration: underline;
-    }
+  nav a {
+    margin-right: 20px;
+    text-decoration: none;
+    color: #0b5ed7;
+    font-weight: 500;
+  }
+  nav a:hover {
+    text-decoration: underline;
+    color: #0a58ca;
+  }
 
-    h1, h2, h3 {
-      font-weight: 600;
-    }
+  header h1 {
+    font-size: 2.2rem;
+    margin-bottom: 6px;
+    color: #111;
+  }
+  header {
+    margin-bottom: 30px;
+    border-bottom: 3px solid #e9ecef;
+    padding-bottom: 14px;
+  }
 
-    section {
-      margin-bottom: 48px;
-    }
+  h2 {
+    font-size: 1.6rem;
+    color: #1a1a1a;
+    margin-bottom: 10px;
+  }
+  h3 {
+    font-size: 1.3rem;
+    color: #333;
+  }
 
-    table {
-      border-collapse: collapse;
-      width: 100%;
-    }
-    table th, table td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: left;
-    }
+  section {
+    background: #fff;
+    border-radius: 8px;
+    padding: 22px 24px;
+    margin-bottom: 26px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  }
 
-    footer {
-      margin-top: 80px;
-      font-size: 0.9em;
-      color: #666;
-    }
+  p, ul, table, .gallery {
+    margin-top: 12px;
+  }
 
-    /* ===== Gallery styles ===== */
-    .gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 14px;
-      margin-top: 16px;
-    }
+  /* --- 表格优化 --- */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    background: white;
+  }
+  table th, table td {
+    border: 1px solid #ccc;
+    padding: 10px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  table th {
+    background: #f1f3f5;
+    font-weight: 600;
+  }
+  table tr:hover td {
+    background: #fafbfc;
+  }
 
-    .gallery figure {
-      margin: 0;
-    }
+  /* --- Gallery 样式 --- */
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 18px;
+    margin-top: 18px;
+  }
+  .gallery figure {
+    margin: 0;
+    background: #fff;
+    border-radius: 8px;
+    padding: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .gallery img {
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .gallery img:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  }
+  .gallery figcaption {
+    margin-top: 6px;
+    font-size: 0.88em;
+    color: #444;
+    text-align: center;
+  }
 
-    .gallery img {
-      width: 100%;
-      height: auto;
-      border-radius: 6px;
-      cursor: pointer;
-      border: 1px solid #ddd;
-      background: #fff;
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-    }
+  /* --- Lightbox --- */
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.87);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+  }
+  .lightbox.is-open {
+    display: flex;
+  }
+  .lightbox-content {
+    max-width: 88vw;
+    max-height: 88vh;
+    width: 100%;
+  }
+  .lightbox img {
+    width: 100%;
+    max-height: 82vh;
+    object-fit: contain;
+    border-radius: 6px;
+  }
+  .lightbox-caption {
+    color: #eee;
+    font-size: 0.95em;
+    margin-top: 8px;
+    text-align: center;
+  }
+  .lightbox-hint {
+    color: #ccc;
+    font-size: 0.78em;
+    text-align: center;
+    margin-top: 4px;
+  }
 
-    .gallery img:hover {
-      transform: scale(1.01);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-    }
+  /* --- Footer --- */
+  footer {
+    margin-top: 40px;
+    font-size: 0.9em;
+    color: #666;
+    text-align: center;
+  }
 
-    .gallery figcaption {
-      font-size: 0.85em;
-      color: #555;
-      margin-top: 6px;
-    }
-
-    /* ===== Lightbox ===== */
-    .lightbox {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      z-index: 999;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-    }
-
-    .lightbox.is-open {
-      display: flex;
-    }
-
-    .lightbox-content {
-      max-width: min(1200px, 96vw);
-      max-height: 92vh;
-      width: 100%;
-      display: grid;
-      gap: 10px;
-    }
-
-    .lightbox img {
-      width: 100%;
-      max-height: 82vh;
-      object-fit: contain;
-      border-radius: 8px;
-    }
-
-    .lightbox-caption {
-      color: #eee;
-      font-size: 0.9em;
-    }
-
-    .lightbox-hint {
-      color: #bbb;
-      font-size: 0.8em;
-    }
-  </style>
+  @media (max-width: 580px) {
+    nav a { display: block; margin-bottom: 8px; }
+    header, section { padding: 18px; }
+  }
+</style>
 </head>
 
 <body>
