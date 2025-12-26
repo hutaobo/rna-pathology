@@ -5,6 +5,7 @@
   <title>RNA-Pathology | Database Overview</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="RNA-Pathology database overview: a schema-driven framework for spatial molecular pathology data.">
+
   <style>
     body {
       font-family: Arial, Helvetica, sans-serif;
@@ -14,6 +15,7 @@
       line-height: 1.6;
       color: #222;
     }
+
     nav a {
       margin-right: 20px;
       text-decoration: none;
@@ -22,12 +24,15 @@
     nav a:hover {
       text-decoration: underline;
     }
+
     h1, h2, h3 {
       font-weight: 600;
     }
+
     section {
       margin-bottom: 48px;
     }
+
     table {
       border-collapse: collapse;
       width: 100%;
@@ -37,22 +42,25 @@
       padding: 8px;
       text-align: left;
     }
+
     footer {
       margin-top: 80px;
       font-size: 0.9em;
       color: #666;
     }
 
-    /* ===== Added: Gallery styles (minimal + safe) ===== */
+    /* ===== Gallery styles ===== */
     .gallery {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
       gap: 14px;
-      margin-top: 14px;
+      margin-top: 16px;
     }
+
     .gallery figure {
       margin: 0;
     }
+
     .gallery img {
       width: 100%;
       height: auto;
@@ -62,17 +70,19 @@
       background: #fff;
       transition: transform 0.18s ease, box-shadow 0.18s ease;
     }
+
     .gallery img:hover {
       transform: scale(1.01);
       box-shadow: 0 6px 18px rgba(0,0,0,0.12);
     }
+
     .gallery figcaption {
-      font-size: 0.9em;
+      font-size: 0.85em;
       color: #555;
       margin-top: 6px;
     }
 
-    /* Lightbox */
+    /* ===== Lightbox ===== */
     .lightbox {
       display: none;
       position: fixed;
@@ -83,31 +93,34 @@
       justify-content: center;
       padding: 24px;
     }
+
     .lightbox.is-open {
       display: flex;
     }
+
     .lightbox-content {
-      max-width: min(1100px, 95vw);
+      max-width: min(1200px, 96vw);
       max-height: 92vh;
       width: 100%;
       display: grid;
       gap: 10px;
     }
+
     .lightbox img {
       width: 100%;
       max-height: 82vh;
       object-fit: contain;
       border-radius: 8px;
-      background: rgba(255,255,255,0.03);
     }
+
     .lightbox-caption {
-      color: #eaeaea;
-      font-size: 0.95em;
-      line-height: 1.4;
+      color: #eee;
+      font-size: 0.9em;
     }
+
     .lightbox-hint {
-      color: #bdbdbd;
-      font-size: 0.85em;
+      color: #bbb;
+      font-size: 0.8em;
     }
   </style>
 </head>
@@ -184,32 +197,91 @@
   </table>
 </section>
 
-<!-- ===== Added: Gallery section (you can place it anywhere) ===== -->
+<!-- ===== Gallery Section (12 images, exact filenames) ===== -->
 <section>
   <h2>Gallery</h2>
   <p>
-    Visual examples of spatial transcriptomics and RNA pathology outputs (figures, overlays, derived feature maps).
-    Click any image to view it larger.
+    Representative H&E previews and spatial pathology examples currently hosted in the RNA-Pathology repository.
+    Click any image to view it at full resolution.
   </p>
 
   <div class="gallery">
-    <!-- Replace these with your real files -->
+
     <figure>
-      <img src="images/gallery/sample1.png" alt="Example 1: Spatial overview" data-caption="Example 1: Spatial overview">
-      <figcaption>Example 1: Spatial overview</figcaption>
+      <img src="images/gallery/Human_Breast_Biomarkers_S1_Top_he_image_preview_L-2.jpg" alt="Human Breast Biomarkers S1 Top" data-caption="Human Breast Biomarkers – Section S1 (Top)">
+      <figcaption>S1 · Top</figcaption>
     </figure>
+
     <figure>
-      <img src="images/gallery/sample2.png" alt="Example 2: Cell-type map" data-caption="Example 2: Cell-type map">
-      <figcaption>Example 2: Cell-type map</figcaption>
+      <img src="images/gallery/Human_Breast_Biomarkers_S1_Mid_he_image_preview_L-2.jpg" alt="Human Breast Biomarkers S1 Mid" data-caption="Human Breast Biomarkers – Section S1 (Mid)">
+      <figcaption>S1 · Mid</figcaption>
     </figure>
+
     <figure>
-      <img src="images/gallery/sample3.png" alt="Example 3: Niche/domain analysis" data-caption="Example 3: Niche/domain analysis">
-      <figcaption>Example 3: Niche/domain analysis</figcaption>
+      <img src="images/gallery/Human_Breast_Biomarkers_S1_Bot_he_image_preview_L-2.jpg" alt="Human Breast Biomarkers S1 Bottom" data-caption="Human Breast Biomarkers – Section S1 (Bottom)">
+      <figcaption>S1 · Bottom</figcaption>
     </figure>
+
     <figure>
-      <img src="images/gallery/sample4.png" alt="Example 4: Derived pathology features" data-caption="Example 4: Derived pathology features">
-      <figcaption>Example 4: Derived pathology features</figcaption>
+      <img src="images/gallery/Human_Breast_Biomarkers_S2_Top_he_image_preview_L-2.jpg" alt="Human Breast Biomarkers S2 Top" data-caption="Human Breast Biomarkers – Section S2 (Top)">
+      <figcaption>S2 · Top</figcaption>
     </figure>
+
+    <figure>
+      <img src="images/gallery/Human_Breast_Biomarkers_S2_Mid_he_image_preview_L-2.jpg" alt="Human Breast Biomarkers S2 Mid" data-caption="Human Breast Biomarkers – Section S2 (Mid)">
+      <figcaption>S2 · Mid</figcaption>
+    </figure>
+
+    <figure>
+      <img src="images/gallery/Human_Breast_Biomarkers_S2_Bot_he_image_preview_L-2.jpg" alt="Human Breast Biomarkers S2 Bottom" data-caption="Human Breast Biomarkers – Section S2 (Bottom)">
+      <figcaption>S2 · Bottom</figcaption>
+    </figure>
+
+    <figure>
+      <img src="images/gallery/Human_Breast_Biomarkers_S3_Top_he_image_preview_L-2.jpg" alt="Human Breast Biomarkers S3 Top" data-caption="Human Breast Biomarkers – Section S3 (Top)">
+      <figcaption>S3 · Top</figcaption>
+    </figure>
+
+    <figure>
+      <img src="images/gallery/Human_Breast_Biomarkers_S3_Mid_he_image_preview_L-2.jpg" alt="Human Breast Biomarkers S3 Mid" data-caption="Human Breast Biomarkers – Section S3 (Mid)">
+      <figcaption>S3 · Mid</figcaption>
+    </figure>
+
+    <figure>
+      <img src="images/gallery/Human_Breast_Biomarkers_S3_Bot_he_image_preview_L-2.jpg" alt="Human Breast Biomarkers S3 Bottom" data-caption="Human Breast Biomarkers – Section S3 (Bottom)">
+      <figcaption>S3 · Bottom</figcaption>
+    </figure>
+
+    <figure>
+      <img src="images/gallery/Human_Breast_Biomarkers_S4_Top_he_image_preview_L-2.jpg" alt="Human Breast Biomarkers S4 Top" data-caption="Human Breast Biomarkers – Section S4 (Top)">
+      <figcaption>S4 · Top</figcaption>
+    </figure>
+
+    <figure>
+      <img src="images/gallery/Human_Breast_Biomarkers_S4_Mid_he_image_preview_L-2.jpg" alt="Human Breast Biomarkers S4 Mid" data-caption="Human Breast Biomarkers – Section S4 (Mid)">
+      <figcaption>S4 · Mid</figcaption>
+    </figure>
+
+    <figure>
+      <img src="images/gallery/Human_Breast_Biomarkers_S4_Bot_he_image_preview_L-2.jpg" alt="Human Breast Biomarkers S4 Bottom" data-caption="Human Breast Biomarkers – Section S4 (Bottom)">
+      <figcaption>S4 · Bottom</figcaption>
+    </figure>
+
+    <figure>
+      <img src="images/gallery/Xenium_V1_FFPE_Human_Breast_IDC_he_image_preview_L-2.jpg" alt="Xenium FFPE Human Breast IDC" data-caption="Xenium v1 FFPE – Human Breast IDC">
+      <figcaption>Xenium · IDC</figcaption>
+    </figure>
+
+    <figure>
+      <img src="images/gallery/Xenium_V1_FFPE_Human_Breast_IDC_With_Addon_he_image_preview_L-2.jpg" alt="Xenium FFPE Human Breast IDC With Addon" data-caption="Xenium v1 FFPE – Human Breast IDC (With Addon)">
+      <figcaption>Xenium · IDC + Addon</figcaption>
+    </figure>
+
+    <figure>
+      <img src="images/gallery/Xenium_V1_FFPE_Human_Breast_ILC_he_image_preview_L-2.jpg" alt="Xenium FFPE Human Breast ILC" data-caption="Xenium v1 FFPE – Human Breast ILC">
+      <figcaption>Xenium · ILC</figcaption>
+    </figure>
+
   </div>
 </section>
 
@@ -231,59 +303,47 @@
 </section>
 
 <footer>
-  <p>
-    RNA-Pathology is an open research initiative.
-  </p>
+  <p>RNA-Pathology is an open research initiative.</p>
 </footer>
 
-<!-- ===== Added: Lightbox HTML ===== -->
-<div class="lightbox" id="lightbox" aria-hidden="true">
+<!-- ===== Lightbox ===== -->
+<div class="lightbox" id="lightbox">
   <div class="lightbox-content">
     <img id="lightboxImg" src="" alt="">
     <div class="lightbox-caption" id="lightboxCaption"></div>
-    <div class="lightbox-hint">Click outside the image or press Esc to close.</div>
+    <div class="lightbox-hint">Click outside image or press Esc to close</div>
   </div>
 </div>
 
-<!-- ===== Added: Lightbox JS (no dependencies) ===== -->
 <script>
   (function () {
     const lightbox = document.getElementById('lightbox');
-    const lbImg = document.getElementById('lightboxImg');
-    const lbCap = document.getElementById('lightboxCaption');
-
-    function openLightbox(src, alt, caption) {
-      lbImg.src = src;
-      lbImg.alt = alt || '';
-      lbCap.textContent = caption || alt || '';
-      lightbox.classList.add('is-open');
-      lightbox.setAttribute('aria-hidden', 'false');
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closeLightbox() {
-      lightbox.classList.remove('is-open');
-      lightbox.setAttribute('aria-hidden', 'true');
-      lbImg.src = '';
-      document.body.style.overflow = '';
-    }
+    const imgEl = document.getElementById('lightboxImg');
+    const capEl = document.getElementById('lightboxCaption');
 
     document.querySelectorAll('.gallery img').forEach(img => {
       img.addEventListener('click', () => {
-        const caption = img.getAttribute('data-caption') || img.alt || '';
-        openLightbox(img.src, img.alt, caption);
+        imgEl.src = img.src;
+        imgEl.alt = img.alt || '';
+        capEl.textContent = img.dataset.caption || img.alt || '';
+        lightbox.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
       });
     });
 
-    // click outside image closes
-    lightbox.addEventListener('click', (e) => {
-      if (e.target === lightbox) closeLightbox();
+    lightbox.addEventListener('click', e => {
+      if (e.target === lightbox) {
+        lightbox.classList.remove('is-open');
+        imgEl.src = '';
+        document.body.style.overflow = '';
+      }
     });
 
-    // Esc closes
-    document.addEventListener('keydown', (e) => {
+    document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && lightbox.classList.contains('is-open')) {
-        closeLightbox();
+        lightbox.classList.remove('is-open');
+        imgEl.src = '';
+        document.body.style.overflow = '';
       }
     });
   })();
