@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gallery Hub — RNA-Pathology</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f6f8fb;
+      color: #222;
+      line-height: 1.65;
+    }
+    .container {
+      max-width: 1020px;
+      margin: 40px auto;
+      padding: 0 20px 80px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.4rem;
+      margin-bottom: 10px;
+    }
+    p.subtitle {
+      text-align: center;
+      color: #475569;
+      font-size: 1.05rem;
+      margin-bottom: 32px;
+    }
+
+    .nav-top {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .nav-top a {
+      margin: 0 14px;
+      text-decoration: none;
+      color: #1d4ed8;
+      font-weight: 600;
+      padding: 6px 8px;
+    }
+    .nav-top a:hover {
+      text-decoration: underline;
+    }
+
+    .gallery-hub {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 22px;
+      margin-top: 18px;
+    }
+
+    .hub-card {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid rgba(15,23,42,0.14);
+      box-shadow: 0 8px 22px rgba(15,23,42,0.08);
+      overflow: hidden;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .hub-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 32px rgba(15,23,42,0.12);
+    }
+
+    .hub-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .hub-card-content {
+      padding: 14px 16px;
+    }
+    .hub-card-title {
+      font-size: 1.18rem;
+      font-weight: 650;
+      margin: 6px 0;
+    }
+    .hub-card-desc {
+      font-size: 0.92rem;
+      color: #475569;
+      margin-top: 4px;
+    }
+
+    footer {
+      text-align: center;
+      color: #666;
+      margin-top: 42px;
+      font-size: 0.9em;
+    }
+  </style>
+
+</head>
+<body>
+
+  <div class="container">
+    <h1>Gallery Hub</h1>
+    <p class="subtitle">
+      Browse all image galleries available in the RNA-Pathology database.
+    </p>
+
+    <nav class="nav-top">
+      <a href="../database.html">← Back to Database Overview</a>
+      <a href="../index.html">Home</a>
+      <a href="../docs/schema_v0.2.md">Schema</a>
+    </nav>
+
+    <div class="gallery-hub">
+
+      <!-- Human Breast Biomarkers -->
+      <div class="hub-card">
+        <a href="human_breast/index.html">
+          <img
+            src="../images/gallery/Human_Breast_Biomarkers_S1_Top_he_image_preview_L-2.jpg"
+            alt="Human Breast Biomarkers Preview">
+          <div class="hub-card-content">
+            <div class="hub-card-title">Human Breast Biomarkers</div>
+            <div class="hub-card-desc">
+              H&E previews across multiple sections (S1–S4) with filter + pagination.
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <!-- Xenium v1 FFPE Human Breast -->
+      <div class="hub-card">
+        <a href="xenium_breast/index.html">
+          <img
+            src="../images/gallery/Xenium_V1_FFPE_Human_Breast_IDC_he_image_preview_L-2.jpg"
+            alt="Xenium v1 FFPE Human Breast Preview">
+          <div class="hub-card-content">
+            <div class="hub-card-title">Xenium v1 FFPE Human Breast</div>
+            <div class="hub-card-desc">
+              FFPE spatial pathology previews including IDC / ILC variants.
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <!-- (以后可继续添加更多 gallery 卡片) -->
+
+    </div>
+
+    <footer>
+      <p>RNA-Pathology Gallery Hub — Built on GitHub Pages</p>
+    </footer>
+  </div>
+
+</body>
+</html>
