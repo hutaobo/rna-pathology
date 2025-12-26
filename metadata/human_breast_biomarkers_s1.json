@@ -1,0 +1,10 @@
+{
+  "dataset_id": "human_breast_biomarkers_s1",
+  "species": "Human",
+  "tissue": "Breast",
+  "pathology": "Biomarker reference",
+  "technology": ["H&E", "Spatial transcriptomics"],
+  "status": "preview",
+  "image_preview": "images/gallery/Human_Breast_Biomarkers_S1_Top_he_image_preview_L-2.jpg",
+  "page": "datasets/human_breast_biomarkers_s1.html"
+}
