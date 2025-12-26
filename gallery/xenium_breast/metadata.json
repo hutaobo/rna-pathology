@@ -1,1 +1,5 @@
-
+[
+  { "id": "Xenium IDC", "section": "IDC", "src": "../../images/gallery/Xenium_V1_FFPE_Human_Breast_IDC_he_image_preview_L-2.jpg" },
+  { "id": "Xenium IDC + Addon", "section": "IDC_Addon", "src": "../../images/gallery/Xenium_V1_FFPE_Human_Breast_IDC_With_Addon_he_image_preview_L-2.jpg" },
+  { "id": "Xenium ILC", "section": "ILC", "src": "../../images/gallery/Xenium_V1_FFPE_Human_Breast_ILC_he_image_preview_L-2.jpg" }
+]
