@@ -1,127 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>RNA Pathology Database</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <meta name="description" content="RNA Pathology Database – a schema-driven resource for spatial transcriptomics and RNA pathology." />
-
+  <meta charset="UTF-8">
+  <title>RNA-Pathology | Database Overview</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="RNA-Pathology database overview: a schema-driven framework for spatial molecular pathology data.">
   <style>
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen;
-      margin: 0;
-      background: #fafafa;
-      color: #222;
-      line-height: 1.6;
-    }
-
-    header {
-      background: #111;
-      color: #fff;
-      padding: 1.2rem 2rem;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 1.6rem;
-    }
-
-    header p {
-      margin: 0.3rem 0 0;
-      font-size: 0.95rem;
-      color: #ccc;
-    }
-
-    main {
+      font-family: Arial, Helvetica, sans-serif;
       max-width: 960px;
-      margin: 2rem auto;
-      padding: 0 1.5rem;
+      margin: 40px auto;
+      padding: 0 20px;
+      line-height: 1.6;
+      color: #222;
     }
-
-    section {
-      margin-bottom: 2.8rem;
-    }
-
-    h2 {
-      border-bottom: 2px solid #eee;
-      padding-bottom: 0.4rem;
-      margin-bottom: 1rem;
-      font-size: 1.4rem;
-    }
-
-    h3 {
-      margin-top: 1.5rem;
-      font-size: 1.1rem;
-    }
-
-    ul {
-      padding-left: 1.2rem;
-    }
-
-    li {
-      margin-bottom: 0.4rem;
-    }
-
-    code {
-      background: #eee;
-      padding: 0.15rem 0.35rem;
-      border-radius: 3px;
-      font-size: 0.9em;
-    }
-
-    a {
-      color: #0057b7;
+    nav a {
+      margin-right: 20px;
       text-decoration: none;
+      color: #0066cc;
     }
-
-    a:hover {
+    nav a:hover {
       text-decoration: underline;
     }
+    h1, h2, h3 {
+      font-weight: 600;
+    }
+    section {
+      margin-bottom: 48px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    table th, table td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    footer {
+      margin-top: 80px;
+      font-size: 0.9em;
+      color: #666;
+    }
 
-    /* ===== Gallery (完全兼容现有页面) ===== */
-
+    /* ===== Added: Gallery styles (minimal + safe) ===== */
     .gallery {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 16px;
-      margin-top: 1.2rem;
+      gap: 14px;
+      margin-top: 14px;
     }
-
+    .gallery figure {
+      margin: 0;
+    }
     .gallery img {
       width: 100%;
+      height: auto;
       border-radius: 6px;
       cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border: 1px solid #ddd;
+      background: #fff;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
     }
-
     .gallery img:hover {
-      transform: scale(1.02);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+      transform: scale(1.01);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    }
+    .gallery figcaption {
+      font-size: 0.9em;
+      color: #555;
+      margin-top: 6px;
     }
 
+    /* Lightbox */
     .lightbox {
       display: none;
       position: fixed;
-      z-index: 999;
       inset: 0;
       background: rgba(0,0,0,0.85);
+      z-index: 999;
       align-items: center;
       justify-content: center;
+      padding: 24px;
     }
-
+    .lightbox.is-open {
+      display: flex;
+    }
+    .lightbox-content {
+      max-width: min(1100px, 95vw);
+      max-height: 92vh;
+      width: 100%;
+      display: grid;
+      gap: 10px;
+    }
     .lightbox img {
-      max-width: 92%;
-      max-height: 92%;
-      border-radius: 6px;
+      width: 100%;
+      max-height: 82vh;
+      object-fit: contain;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.03);
     }
-
-    footer {
-      border-top: 1px solid #eee;
-      padding: 1.5rem;
-      text-align: center;
-      font-size: 0.85rem;
-      color: #777;
+    .lightbox-caption {
+      color: #eaeaea;
+      font-size: 0.95em;
+      line-height: 1.4;
+    }
+    .lightbox-hint {
+      color: #bdbdbd;
+      font-size: 0.85em;
     }
   </style>
 </head>
@@ -129,119 +115,178 @@
 <body>
 
 <header>
-  <h1>RNA Pathology Database</h1>
-  <p>A schema-driven knowledge base for spatial transcriptomics & RNA pathology</p>
+  <h1>Database Overview</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="docs/schema_v0.2.md">Schema</a>
+    <a href="docs/roadmap.md">Roadmap</a>
+    <a href="https://github.com/hutaobo/rna-pathology" target="_blank">GitHub</a>
+  </nav>
 </header>
 
-<main>
+<section>
+  <h2>What is RNA-Pathology?</h2>
+  <p>
+    RNA-Pathology is an evolving open research database designed to organize,
+    standardize, and contextualize spatially resolved molecular pathology data,
+    with a particular emphasis on RNA-based spatial technologies.
+  </p>
+  <p>
+    The project aims to bridge raw spatial omics data, pathological tissue
+    context, and reproducible computational analysis through a schema-driven
+    design.
+  </p>
+</section>
 
-  <section>
-    <h2>Overview</h2>
-    <p>
-      The <strong>RNA Pathology Database</strong> is a structured, evolving resource
-      for spatial transcriptomics datasets, pathology annotations, and derived
-      computational features.
-    </p>
-    <p>
-      This page serves as a public-facing database index.
-      Programmatic access and large-scale hosting will follow.
-    </p>
-  </section>
+<section>
+  <h2>Core Design Principles</h2>
+  <ul>
+    <li><strong>Schema-first design:</strong> data structures are defined before data ingestion.</li>
+    <li><strong>Spatial context as a first-class entity:</strong> spatial information is not auxiliary metadata.</li>
+    <li><strong>Modality-agnostic, pathology-aware:</strong> multiple technologies, consistent interpretation.</li>
+    <li><strong>Reproducibility over volume:</strong> clarity and provenance are prioritized.</li>
+  </ul>
+</section>
 
-  <section>
-    <h2>Core Data Modules</h2>
+<section>
+  <h2>Data Layers (Schema v0.2)</h2>
+  <table>
+    <tr>
+      <th>Layer</th>
+      <th>Description</th>
+      <th>Status</th>
+    </tr>
+    <tr>
+      <td>Sample</td>
+      <td>Biological origin, condition, and acquisition metadata</td>
+      <td>Available</td>
+    </tr>
+    <tr>
+      <td>Spatial</td>
+      <td>Coordinates, tissue geometry, and regions of interest</td>
+      <td>Partial</td>
+    </tr>
+    <tr>
+      <td>Molecular</td>
+      <td>RNA expression and other molecular measurements</td>
+      <td>Planned</td>
+    </tr>
+    <tr>
+      <td>Annotation</td>
+      <td>Cell types, niches, and pathological structures</td>
+      <td>Planned</td>
+    </tr>
+    <tr>
+      <td>Derived</td>
+      <td>Computed spatial features and representations</td>
+      <td>Planned</td>
+    </tr>
+  </table>
+</section>
 
-    <h3>🧬 Dataset</h3>
-    <ul>
-      <li>Xenium, Visium, MERFISH, CosMx</li>
-      <li>Human and mouse tissues</li>
-      <li>Cancer, fibrosis, neuro-pathology</li>
-    </ul>
+<!-- ===== Added: Gallery section (you can place it anywhere) ===== -->
+<section>
+  <h2>Gallery</h2>
+  <p>
+    Visual examples of spatial transcriptomics and RNA pathology outputs (figures, overlays, derived feature maps).
+    Click any image to view it larger.
+  </p>
 
-    <h3>🧠 Annotation</h3>
-    <ul>
-      <li>Cell types and cell states</li>
-      <li>Tissue regions and niches</li>
-      <li>Expert pathology labels</li>
-    </ul>
+  <div class="gallery">
+    <!-- Replace these with your real files -->
+    <figure>
+      <img src="images/gallery/sample1.png" alt="Example 1: Spatial overview" data-caption="Example 1: Spatial overview">
+      <figcaption>Example 1: Spatial overview</figcaption>
+    </figure>
+    <figure>
+      <img src="images/gallery/sample2.png" alt="Example 2: Cell-type map" data-caption="Example 2: Cell-type map">
+      <figcaption>Example 2: Cell-type map</figcaption>
+    </figure>
+    <figure>
+      <img src="images/gallery/sample3.png" alt="Example 3: Niche/domain analysis" data-caption="Example 3: Niche/domain analysis">
+      <figcaption>Example 3: Niche/domain analysis</figcaption>
+    </figure>
+    <figure>
+      <img src="images/gallery/sample4.png" alt="Example 4: Derived pathology features" data-caption="Example 4: Derived pathology features">
+      <figcaption>Example 4: Derived pathology features</figcaption>
+    </figure>
+  </div>
+</section>
 
-    <h3>📐 Spatial Features</h3>
-    <ul>
-      <li>Neighborhood graphs</li>
-      <li>Spatial niches and domains</li>
-      <li>Convex hulls and density fields</li>
-    </ul>
-  </section>
+<section>
+  <h2>Access Model (Planned)</h2>
+  <p>
+    RNA-Pathology will support public datasets, controlled-access datasets,
+    and programmatic access via APIs. User accounts and access control are part
+    of the long-term roadmap.
+  </p>
+</section>
 
-  <!-- ===== Gallery 正式嵌入位置 ===== -->
-
-  <section>
-    <h2>Visual Gallery</h2>
-    <p>
-      Representative spatial transcriptomics datasets and RNA pathology features
-      hosted in the database.
-    </p>
-
-    <!-- 保留你现有 gallery 的结构即可 -->
-    <div class="gallery">
-      <img src="images/gallery/sample1.png" alt="Spatial transcriptomics overview">
-      <img src="images/gallery/sample2.png" alt="Cell-type annotation map">
-      <img src="images/gallery/sample3.png" alt="Spatial niche analysis">
-      <img src="images/gallery/sample4.png" alt="RNA pathology features">
-    </div>
-  </section>
-
-  <section>
-    <h2>Schema</h2>
-    <ul>
-      <li>Current schema: <code>v0.2</code></li>
-      <li>Next: <code>v0.3</code> (relations, provenance, access control)</li>
-    </ul>
-
-    <p>
-      Documentation:
-      <a href="docs/schema_v0.2.md">schema_v0.2.md</a> ·
-      <a href="docs/roadmap.md">roadmap</a>
-    </p>
-  </section>
-
-  <section>
-    <h2>Governance</h2>
-    <p>
-      The project follows open-science principles while respecting
-      data governance and clinical constraints.
-    </p>
-    <p>
-      See <a href="CONTRIBUTING.md">CONTRIBUTING.md</a> and
-      <a href="DATA_POLICY.md">DATA_POLICY.md</a>.
-    </p>
-  </section>
-
-</main>
+<section>
+  <h2>Project Status</h2>
+  <p>
+    RNA-Pathology is currently in an early public architecture phase, focusing
+    on schema definition and documentation.
+  </p>
+</section>
 
 <footer>
-  © RNA Pathology Initiative · Built openly on GitHub
+  <p>
+    RNA-Pathology is an open research initiative.
+  </p>
 </footer>
 
-<!-- ===== Lightbox（与你现有页面行为一致） ===== -->
-<div class="lightbox" id="lightbox">
-  <img src="" alt="Expanded view">
+<!-- ===== Added: Lightbox HTML ===== -->
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <div class="lightbox-content">
+    <img id="lightboxImg" src="" alt="">
+    <div class="lightbox-caption" id="lightboxCaption"></div>
+    <div class="lightbox-hint">Click outside the image or press Esc to close.</div>
+  </div>
 </div>
 
+<!-- ===== Added: Lightbox JS (no dependencies) ===== -->
 <script>
-  const lightbox = document.getElementById("lightbox");
-  const lightboxImg = lightbox.querySelector("img");
+  (function () {
+    const lightbox = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lightboxImg');
+    const lbCap = document.getElementById('lightboxCaption');
 
-  document.querySelectorAll(".gallery img").forEach(img => {
-    img.addEventListener("click", () => {
-      lightboxImg.src = img.src;
-      lightbox.style.display = "flex";
+    function openLightbox(src, alt, caption) {
+      lbImg.src = src;
+      lbImg.alt = alt || '';
+      lbCap.textContent = caption || alt || '';
+      lightbox.classList.add('is-open');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('is-open');
+      lightbox.setAttribute('aria-hidden', 'true');
+      lbImg.src = '';
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.gallery img').forEach(img => {
+      img.addEventListener('click', () => {
+        const caption = img.getAttribute('data-caption') || img.alt || '';
+        openLightbox(img.src, img.alt, caption);
+      });
     });
-  });
 
-  lightbox.addEventListener("click", () => {
-    lightbox.style.display = "none";
-  });
+    // click outside image closes
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+
+    // Esc closes
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && lightbox.classList.contains('is-open')) {
+        closeLightbox();
+      }
+    });
+  })();
 </script>
 
 </body>
