@@ -1,0 +1,16 @@
+[
+  {
+    "id": "human_breast",
+    "title": "Human Breast Biomarkers",
+    "description": "H&E previews across sections S1–S4 with filter + pagination.",
+    "thumbnail": "../images/gallery/Human_Breast_Biomarkers_S1_Top_he_image_preview_L-2.jpg",
+    "link": "human_breast/index.html"
+  },
+  {
+    "id": "xenium_breast",
+    "title": "Xenium v1 FFPE Human Breast",
+    "description": "FFPE spatial pathology previews including IDC / ILC variants.",
+    "thumbnail": "../images/gallery/Xenium_V1_FFPE_Human_Breast_IDC_he_image_preview_L-2.jpg",
+    "link": "xenium_breast/index.html"
+  }
+]
