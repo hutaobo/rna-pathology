@@ -1,144 +1,90 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>RNA-Pathology | Database Overview</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="RNA-Pathology database overview: a schema-driven framework for spatial molecular pathology data.">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RNA Pathology — Database</title>
   <style>
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      max-width: 960px;
-      margin: 40px auto;
-      padding: 0 20px;
-      line-height: 1.6;
-      color: #222;
-    }
-    nav a {
-      margin-right: 20px;
-      text-decoration: none;
-      color: #0066cc;
-    }
-    nav a:hover {
-      text-decoration: underline;
-    }
-    h1, h2, h3 {
-      font-weight: 600;
-    }
-    section {
-      margin-bottom: 48px;
-    }
-    table {
-      border-collapse: collapse;
-      width: 100%;
-    }
-    table th, table td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: left;
-    }
-    footer {
-      margin-top: 80px;
-      font-size: 0.9em;
-      color: #666;
-    }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; padding: 24px; }
+    h1 { margin: 0 0 10px 0; }
+    p { margin: 0 0 18px 0; color: #444; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+    .card { border: 1px solid #ddd; border-radius: 10px; overflow: hidden; background: #fff; }
+    .card img { width: 100%; height: auto; display: block; }
+    .cap { padding: 10px 12px; font-size: 13px; color: #333; border-top: 1px solid #eee; word-break: break-all; }
+    .hint { font-size: 12px; color: #666; margin-top: 14px; }
+    a { text-decoration: none; color: inherit; }
   </style>
 </head>
-
 <body>
+  <h1>Database</h1>
+  <p>Images from <code>assets/database/</code> (auto-synced). Click to open full size.</p>
 
-<header>
-  <h1>Database Overview</h1>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="docs/schema_v0.2.md">Schema</a>
-    <a href="docs/roadmap.md">Roadmap</a>
-    <a href="https://github.com/hutaobo/rna-pathology" target="_blank">GitHub</a>
-  </nav>
-</header>
+  <div id="grid" class="grid"></div>
+  <div class="hint" id="hint"></div>
 
-<section>
-  <h2>What is RNA-Pathology?</h2>
-  <p>
-    RNA-Pathology is an evolving open research database designed to organize,
-    standardize, and contextualize spatially resolved molecular pathology data,
-    with a particular emphasis on RNA-based spatial technologies.
-  </p>
-  <p>
-    The project aims to bridge raw spatial omics data, pathological tissue
-    context, and reproducible computational analysis through a schema-driven
-    design.
-  </p>
-</section>
+  <script>
+    // Change these only if you rename repo/owner:
+    const owner = "hutaobo";
+    const repo  = "rna-pathology";
+    const dir   = "assets/database";
 
-<section>
-  <h2>Core Design Principles</h2>
-  <ul>
-    <li><strong>Schema-first design:</strong> data structures are defined before data ingestion.</li>
-    <li><strong>Spatial context as a first-class entity:</strong> spatial information is not auxiliary metadata.</li>
-    <li><strong>Modality-agnostic, pathology-aware:</strong> multiple technologies, consistent interpretation.</li>
-    <li><strong>Reproducibility over volume:</strong> clarity and provenance are prioritized.</li>
-  </ul>
-</section>
+    const api = `https://api.github.com/repos/${owner}/${repo}/contents/${dir}`;
 
-<section>
-  <h2>Data Layers (Schema v0.2)</h2>
-  <table>
-    <tr>
-      <th>Layer</th>
-      <th>Description</th>
-      <th>Status</th>
-    </tr>
-    <tr>
-      <td>Sample</td>
-      <td>Biological origin, condition, and acquisition metadata</td>
-      <td>Available</td>
-    </tr>
-    <tr>
-      <td>Spatial</td>
-      <td>Coordinates, tissue geometry, and regions of interest</td>
-      <td>Partial</td>
-    </tr>
-    <tr>
-      <td>Molecular</td>
-      <td>RNA expression and other molecular measurements</td>
-      <td>Planned</td>
-    </tr>
-    <tr>
-      <td>Annotation</td>
-      <td>Cell types, niches, and pathological structures</td>
-      <td>Planned</td>
-    </tr>
-    <tr>
-      <td>Derived</td>
-      <td>Computed spatial features and representations</td>
-      <td>Planned</td>
-    </tr>
-  </table>
-</section>
+    function isJpg(name) {
+      const n = name.toLowerCase();
+      return n.endsWith(".jpg") || n.endsWith(".jpeg");
+    }
 
-<section>
-  <h2>Access Model (Planned)</h2>
-  <p>
-    RNA-Pathology will support public datasets, controlled-access datasets,
-    and programmatic access via APIs. User accounts and access control are part
-    of the long-term roadmap.
-  </p>
-</section>
+    async function main() {
+      const grid = document.getElementById("grid");
+      const hint = document.getElementById("hint");
 
-<section>
-  <h2>Project Status</h2>
-  <p>
-    RNA-Pathology is currently in an early public architecture phase, focusing
-    on schema definition and documentation.
-  </p>
-</section>
+      try {
+        const res = await fetch(api);
+        if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
+        const items = await res.json();
 
-<footer>
-  <p>
-    RNA-Pathology is an open research initiative.
-  </p>
-</footer>
+        const imgs = items
+          .filter(x => x.type === "file" && isJpg(x.name))
+          .sort((a,b) => a.name.localeCompare(b.name));
 
+        if (imgs.length === 0) {
+          hint.textContent = "No .jpg/.jpeg found in assets/database.";
+          return;
+        }
+
+        hint.textContent = `Found ${imgs.length} image(s).`;
+
+        for (const f of imgs) {
+          const a = document.createElement("a");
+          a.href = f.download_url;         // full-res
+          a.target = "_blank";
+          a.rel = "noopener";
+
+          const card = document.createElement("div");
+          card.className = "card";
+
+          const img = document.createElement("img");
+          img.src = f.download_url;        // preview (same as full-res)
+          img.alt = f.name;
+          img.loading = "lazy";
+
+          const cap = document.createElement("div");
+          cap.className = "cap";
+          cap.textContent = f.name;
+
+          card.appendChild(img);
+          card.appendChild(cap);
+          a.appendChild(card);
+          grid.appendChild(a);
+        }
+      } catch (e) {
+        hint.textContent = "Failed to load images. " + e.message;
+      }
+    }
+
+    main();
+  </script>
 </body>
 </html>
