@@ -29,6 +29,7 @@
       --primary2: #0a3552;
       --link: #1c4d78;
       --link-muted: #bcd3e6;
+      --danger: #b91c1c;
     }
 
     *{ box-sizing: border-box; }
@@ -76,7 +77,7 @@
       pointer-events:none;
     }
 
-    /* NEW: top-right account actions */
+    /* Top-right account actions */
     .top-actions{
       position: absolute;
       top: 18px;
@@ -85,6 +86,9 @@
       gap: 10px;
       align-items: center;
       z-index: 2;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      max-width: 520px;
     }
 
     .cta-ghost{
@@ -110,6 +114,16 @@
       transform: translateY(-1px);
       background: rgba(255,255,255,0.12);
       box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    }
+
+    /* NEW: Sign Out button style (different) */
+    .cta-ghost-danger{
+      border: 1px solid rgba(255,255,255,0.22);
+      background: rgba(185,28,28,0.16);
+      color: #ffffff;
+    }
+    .cta-ghost-danger:hover{
+      background: rgba(185,28,28,0.22);
     }
 
     .auth-pill{
@@ -162,7 +176,6 @@
       max-width: 820px;
     }
 
-    /* NEW: subtle notice in hero */
     .notice{
       display: none;
       margin-top: 14px;
@@ -178,7 +191,6 @@
       -webkit-backdrop-filter: blur(6px);
     }
 
-    /* Primary CTAs: super prominent */
     .cta-row{
       display: flex;
       gap: 14px;
@@ -230,7 +242,6 @@
       letter-spacing: 0;
     }
 
-    /* Secondary links: clearly de-emphasized */
     .subnav{
       margin-top: 14px;
       display: flex;
@@ -251,7 +262,6 @@
       border-bottom-color: rgba(255,255,255,0.5);
     }
 
-    /* Main sections */
     main{
       padding: 42px 0 80px;
     }
@@ -295,7 +305,6 @@
 
     li{ margin: 6px 0; }
 
-    /* Footer */
     footer{
       border-top: 1px solid var(--border);
       padding: 26px 0 40px;
@@ -305,7 +314,6 @@
 
     footer p{ margin: 6px 0; }
 
-    /* Responsive */
     @media (max-width: 560px){
       .hero{
         padding: 34px 18px;
@@ -343,9 +351,14 @@
         <a id="navSignUp" class="cta-ghost" href="login.html?signup=1">Sign Up</a>
         <a id="navSignIn" class="cta-ghost" href="login.html">Sign In</a>
 
+        <!-- NEW: always its own button; only show when authed -->
+        <button id="navSignOutBtn" class="cta-ghost cta-ghost-danger" type="button" style="display:none;">
+          Sign Out
+        </button>
+
+        <!-- Keep pill to show email (member identity) -->
         <div id="navAuthed" class="auth-pill">
           <span class="auth-email" id="navEmail">Signed in</span>
-          <button id="navSignOut" class="cta-ghost" type="button">Sign Out</button>
         </div>
       </div>
 
@@ -358,7 +371,7 @@
         designed for reproducibility, interoperability, and cross-study comparison.
       </p>
 
-      <!-- NEW: notice area -->
+      <!-- notice area -->
       <div id="notice" class="notice" role="status"></div>
 
       <!-- Super prominent entry points -->
@@ -465,17 +478,14 @@
 
   const $ = (id) => document.getElementById(id);
 
-  const navSignUp = $("navSignUp");
-  const navSignIn = $("navSignIn");
   const navAuthed = $("navAuthed");
   const navEmail = $("navEmail");
-  const navSignOut = $("navSignOut");
+  const navSignOutBtn = $("navSignOutBtn");
   const notice = $("notice");
 
   function showNotice(text) {
     notice.textContent = text;
     notice.style.display = "block";
-    // Clean the URL so refresh doesn't repeat the message
     const u = new URL(window.location.href);
     ["signed_in", "signed_out", "confirmed"].forEach(k => u.searchParams.delete(k));
     window.history.replaceState({}, "", u.toString());
@@ -498,21 +508,29 @@
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     async function refreshNav() {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) throw error;
+
       if (session) {
-        navSignUp.style.display = "none";
-        navSignIn.style.display = "none";
         navAuthed.style.display = "inline-flex";
         navEmail.textContent = session.user.email || "Signed in";
+        navSignOutBtn.style.display = "inline-flex";
       } else {
         navAuthed.style.display = "none";
-        navSignUp.style.display = "inline-flex";
-        navSignIn.style.display = "inline-flex";
+        navSignOutBtn.style.display = "none";
       }
     }
 
-    navSignOut.addEventListener("click", async () => {
-      await supabase.auth.signOut();
+    navSignOutBtn.addEventListener("click", async () => {
+      navSignOutBtn.disabled = true;
+      try {
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+      } catch (_) {
+        // even if signOut fails, we still refresh UI + redirect
+      } finally {
+        navSignOutBtn.disabled = false;
+      }
       window.location.href = "/?signed_out=1";
     });
 
@@ -520,10 +538,9 @@
     await refreshNav();
 
   } catch {
-    // If auth script fails for any reason, keep basic links visible
+    // If auth script fails, just hide sign-out and keep public links
     navAuthed.style.display = "none";
-    navSignUp.style.display = "inline-flex";
-    navSignIn.style.display = "inline-flex";
+    navSignOutBtn.style.display = "none";
   }
 </script>
 
