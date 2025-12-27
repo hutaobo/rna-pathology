@@ -1,3 +1,9 @@
+---
+layout: page
+title: RNA-Pathology Roadmap
+permalink: /roadmap/
+---
+
 # RNA-Pathology Roadmap
 
 This roadmap outlines the planned evolution of RNA-Pathology as a
