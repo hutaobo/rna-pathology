@@ -5,6 +5,72 @@
   <title>Cell Type Challenge | RNA Pathology</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <!-- ✅ Member-only Guard (Supabase session) -->
+  <script type="module">
+    const SUPABASE_URL = "https://xxlkxorwprtynemmbeya.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_ZzCo8J6b6y0xVkExiOtHyg_gOpGEJFv";
+
+    const next = encodeURIComponent(window.location.pathname || "/challenge.html");
+
+    function showBlocker(msg) {
+      const el = document.createElement("div");
+      el.style.cssText = `
+        position: fixed; inset: 0; z-index: 9999;
+        display: grid; place-items: center;
+        background: rgba(248,250,252,0.92);
+        color: #111827; padding: 24px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      `;
+      el.innerHTML = `
+        <div style="
+          max-width: 680px; width: 100%;
+          background: #ffffff;
+          border: 1px solid #e5e7eb;
+          border-radius: 12px;
+          padding: 18px 18px;
+          box-shadow: 0 10px 26px rgba(2,6,23,0.12);
+        ">
+          <div style="font-weight: 800; margin-bottom: 8px;">Member access required</div>
+          <div style="color:#374151; white-space: pre-wrap; font-size: 14px;">${msg}</div>
+          <div style="margin-top: 14px;">
+            <a href="/login.html?next=${next}" style="
+              display:inline-block;
+              background:#0b3c5d; color:#fff;
+              text-decoration:none;
+              font-weight:800;
+              padding:10px 12px;
+              border-radius:8px;
+            ">Go to Sign In</a>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(el);
+    }
+
+    try {
+      const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) throw error;
+
+      if (!session) {
+        window.location.href = "/login.html?next=" + next;
+      } else {
+        // Expose session email for header badge (optional UI)
+        window.__memberEmail = session.user?.email || "";
+        window.__supabaseClient = supabase;
+      }
+    } catch (e) {
+      // If auth check itself fails, block page and provide action
+      showBlocker(
+        "We couldn’t verify your member session.\n\n" +
+        "Reason: " + (e?.message || String(e)) + "\n\n" +
+        "Please sign in again."
+      );
+    }
+  </script>
+
   <style>
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
@@ -17,11 +83,20 @@
       background: #0b3c5d;
       color: white;
       padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
     }
 
     header h1 {
       margin: 0;
       font-size: 20px;
+    }
+
+    .header-left{
+      display:flex;
+      flex-direction: column;
     }
 
     .back-home {
@@ -34,6 +109,47 @@
 
     .back-home:hover {
       text-decoration: underline;
+    }
+
+    /* ✅ Member badge */
+    .member-box{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size: 13px;
+      color: #e6f4ff;
+      white-space: nowrap;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+
+    .dot{
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #34d399;
+      box-shadow: 0 0 0 3px rgba(52,211,153,0.18);
+    }
+
+    .signout-btn{
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+      color: #ffffff;
+      padding: 7px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .signout-btn:hover{
+      background: rgba(255,255,255,0.16);
     }
 
     main {
@@ -86,14 +202,14 @@
       font-size: 14px;
     }
 
-    select, button {
+    select, button.action-btn {
       width: 100%;
       padding: 8px;
       margin-top: 6px;
       font-size: 14px;
     }
 
-    button {
+    button.action-btn {
       margin-top: 16px;
       background: #0b3c5d;
       color: white;
@@ -102,7 +218,7 @@
       cursor: pointer;
     }
 
-    button:hover {
+    button.action-btn:hover {
       background: #094062;
     }
 
@@ -129,14 +245,29 @@
       color: #666;
       text-align: center;
     }
+
+    @media (max-width: 900px){
+      .challenge-container{ grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 
 <body>
 
 <header>
-  <a href="index.html" class="back-home">← Home</a>
-  <h1>🧬 Cell Type Challenge</h1>
+  <div class="header-left">
+    <a href="index.html" class="back-home">← Home</a>
+    <h1>🧬 Cell Type Challenge</h1>
+  </div>
+
+  <!-- ✅ Member UI (populated after auth guard) -->
+  <div class="member-box" id="memberBox" style="display:none;">
+    <span class="pill" title="Signed-in member">
+      <span class="dot"></span>
+      <span id="memberEmail">Member</span>
+    </span>
+    <button class="signout-btn" id="signOutBtn" type="button">Sign out</button>
+  </div>
 </header>
 
 <main>
@@ -183,7 +314,7 @@
         <option value="Myeloid">Myeloid</option>
       </select>
 
-      <button onclick="submitAnswer()">Submit Answer</button>
+      <button class="action-btn" onclick="submitAnswer()">Submit Answer</button>
 
       <div id="feedback" class="feedback"></div>
     </div>
@@ -228,6 +359,35 @@
                             Correct answer: <strong>${correct}</strong>.`;
     }
   }
+</script>
+
+<!-- ✅ Member UI wiring + sign-out -->
+<script type="module">
+  // If the auth guard succeeded, it set these globals.
+  const email = window.__memberEmail || "";
+  const supabase = window.__supabaseClient;
+
+  const box = document.getElementById("memberBox");
+  const emailEl = document.getElementById("memberEmail");
+  const signOutBtn = document.getElementById("signOutBtn");
+
+  if (email || supabase) {
+    box.style.display = "flex";
+    emailEl.textContent = email ? email : "Member";
+  }
+
+  signOutBtn?.addEventListener("click", async () => {
+    if (!supabase) {
+      window.location.href = "/login.html?next=" + encodeURIComponent(window.location.pathname || "/challenge.html");
+      return;
+    }
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {
+      // even if signOut fails, we force user to re-auth
+    }
+    window.location.href = "/login.html?signed_out=1";
+  });
 </script>
 
 </body>
