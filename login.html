@@ -27,59 +27,86 @@
 
   <div id="msg"></div>
 
-  <!-- Supabase JS (UMD) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    // Project settings
+  <!-- Use ESM to avoid "window.supabase is undefined" + show startup errors in UI -->
+  <script type="module">
     const SUPABASE_URL = "https://xxlkxorwprtynemmbeya.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_ZzCo8J6b6y0xVkExiOtHyg_gOpGEJFv";
 
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
     const $ = (id) => document.getElementById(id);
-    const msg = (t) => { $("msg").textContent = t; };
+    const setMsg = (t) => { $("msg").textContent = t; };
 
-    async function refreshUI() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        msg("Signed in as: " + session.user.email + "\nuser_id: " + session.user.id);
-        $("signout").style.display = "block";
-      } else {
-        msg("Signed out");
-        $("signout").style.display = "none";
+    // Prove JS is running immediately (so “no reaction” becomes impossible)
+    setMsg("JavaScript loaded. Initializing Supabase…");
+
+    try {
+      const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      async function refreshUI() {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          setMsg("Session check failed:\n" + error.message);
+          $("signout").style.display = "none";
+          return;
+        }
+
+        if (session) {
+          setMsg("Signed in as: " + session.user.email + "\nuser_id: " + session.user.id);
+          $("signout").style.display = "block";
+        } else {
+          setMsg("Signed out");
+          $("signout").style.display = "none";
+        }
       }
+
+      $("signup").addEventListener("click", async () => {
+        const email = $("email").value.trim();
+        const password = $("password").value;
+
+        if (!email) return setMsg("Please enter an email.");
+        if (!password || password.length < 6) return setMsg("Password must be at least 6 characters.");
+
+        setMsg("Signing up…");
+        const { data, error } = await supabase.auth.signUp({ email, password });
+
+        if (error) return setMsg("Sign up failed:\n" + error.message);
+
+        setMsg(
+          "Sign up successful! If email confirmation is enabled, please check your inbox and confirm.\n" +
+          (data.user?.email ?? "")
+        );
+        refreshUI();
+      });
+
+      $("signin").addEventListener("click", async () => {
+        const email = $("email").value.trim();
+        const password = $("password").value;
+
+        if (!email) return setMsg("Please enter an email.");
+        if (!password) return setMsg("Please enter a password.");
+
+        setMsg("Signing in…");
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+        if (error) return setMsg("Sign in failed:\n" + error.message);
+
+        setMsg("Sign in successful: " + data.user.email);
+        refreshUI();
+      });
+
+      $("signout").addEventListener("click", async () => {
+        setMsg("Signing out…");
+        const { error } = await supabase.auth.signOut();
+        if (error) return setMsg("Sign out failed:\n" + error.message);
+        setMsg("Signed out");
+        refreshUI();
+      });
+
+      supabase.auth.onAuthStateChange(() => refreshUI());
+      refreshUI();
+    } catch (e) {
+      setMsg("Startup error (JS ran, but initialization failed):\n" + (e?.stack || e?.message || String(e)));
     }
-
-    $("signup").onclick = async () => {
-      const email = $("email").value.trim();
-      const password = $("password").value;
-      msg("Signing up…");
-      const { data, error } = await supabase.auth.signUp({ email, password });
-      if (error) return msg("Sign up failed:\n" + error.message);
-      msg("Sign up successful! If email confirmation is enabled, please check your inbox and confirm.\n" + (data.user?.email ?? ""));
-      refreshUI();
-    };
-
-    $("signin").onclick = async () => {
-      const email = $("email").value.trim();
-      const password = $("password").value;
-      msg("Signing in…");
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) return msg("Sign in failed:\n" + error.message);
-      msg("Sign in successful: " + data.user.email);
-      refreshUI();
-    };
-
-    $("signout").onclick = async () => {
-      await supabase.auth.signOut();
-      msg("Signed out");
-      refreshUI();
-    };
-
-    // Listen for auth state changes
-    supabase.auth.onAuthStateChange((_event, _session) => refreshUI());
-
-    refreshUI();
   </script>
 </body>
 </html>
