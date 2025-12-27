@@ -174,7 +174,7 @@
 
     .he-image {
       max-width: 100%;
-      max-height: 66vh; /* slightly smaller than before for balance */
+      max-height: 66vh;
       width: auto;
       height: auto;
       object-fit: contain;
@@ -217,7 +217,7 @@
       font-weight: 700;
     }
 
-    /* ---- Lightbox ---- */
+    /* ---- Lightbox (with prev/next arrows) ---- */
     .lightbox {
       display: none;
       position: fixed;
@@ -234,8 +234,8 @@
     }
 
     .lightbox img {
-      max-width: 95vw;
-      max-height: 92vh;
+      max-width: 92vw;
+      max-height: 90vh;
       border-radius: 12px;
       background: #fff;
     }
@@ -250,6 +250,49 @@
       cursor: pointer;
       user-select: none;
       line-height: 1;
+    }
+
+    .lightbox-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.28);
+      background: rgba(0,0,0,0.25);
+      color: #fff;
+      font-size: 26px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      backdrop-filter: blur(2px);
+    }
+
+    .lightbox-arrow:hover {
+      background: rgba(0,0,0,0.35);
+    }
+
+    .lightbox-arrow.left { left: 18px; }
+    .lightbox-arrow.right { right: 18px; }
+
+    .lightbox-caption {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 92vw;
+      color: rgba(255,255,255,0.92);
+      font-size: 0.95em;
+      font-weight: 700;
+      text-align: center;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.15);
     }
   </style>
 </head>
@@ -347,6 +390,8 @@
   <div class="he-wrap">
     <img
       class="he-image zoomable"
+      data-gallery="hb_s1_top"
+      data-caption="Histology (H&amp;E)"
       src="/images/gallery/Human_Breast_Biomarkers_S1_Top_he_image_preview_L-2.jpg"
       alt="Human Breast Biomarkers S1 Top — H&amp;E histology"
     >
@@ -355,18 +400,23 @@
   <h3>Cell-type spatial maps (colored by subtype)</h3>
 
   <div class="image-grid">
+    <!-- Order requested: Epithelial → Stromal → Immune -->
     <figure>
       <img
         class="map-image zoomable"
-        src="/images/gallery/Human_Breast_Biomarkers_S1_Top_Immune_coloredBySubtype.png"
-        alt="S1 Top immune cells colored by subtype"
+        data-gallery="hb_s1_top"
+        data-caption="Epithelial cells"
+        src="/images/gallery/Human_Breast_Biomarkers_S1_Top_Epithelial_coloredBySubtype.png"
+        alt="S1 Top epithelial cells colored by subtype"
       >
-      <figcaption>Immune cells</figcaption>
+      <figcaption>Epithelial cells</figcaption>
     </figure>
 
     <figure>
       <img
         class="map-image zoomable"
+        data-gallery="hb_s1_top"
+        data-caption="Stromal cells"
         src="/images/gallery/Human_Breast_Biomarkers_S1_Top_Stromal_coloredBySubtype.png"
         alt="S1 Top stromal cells colored by subtype"
       >
@@ -376,10 +426,12 @@
     <figure>
       <img
         class="map-image zoomable"
-        src="/images/gallery/Human_Breast_Biomarkers_S1_Top_Epithelial_coloredBySubtype.png"
-        alt="S1 Top epithelial cells colored by subtype"
+        data-gallery="hb_s1_top"
+        data-caption="Immune cells"
+        src="/images/gallery/Human_Breast_Biomarkers_S1_Top_Immune_coloredBySubtype.png"
+        alt="S1 Top immune cells colored by subtype"
       >
-      <figcaption>Epithelial cells</figcaption>
+      <figcaption>Immune cells</figcaption>
     </figure>
   </div>
 </section>
@@ -403,14 +455,16 @@
 <!-- Lightbox -->
 <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
   <div class="lightbox-close" id="lbClose" aria-label="Close">×</div>
+  <div class="lightbox-arrow left" id="lbPrev" aria-label="Previous image">‹</div>
   <img id="lbImg" src="" alt="">
+  <div class="lightbox-arrow right" id="lbNext" aria-label="Next image">›</div>
+  <div class="lightbox-caption" id="lbCaption"></div>
 </div>
 
 <script>
   // Auto-highlight current dataset in the 12-nav
   (function markActiveNav(){
     const path = (window.location.pathname || "").toLowerCase();
-    // Expect: /datasets/human_breast_biomarkers_s{n}_{top|mid|bot}.html
     const m = path.match(/human_breast_biomarkers_s(\d)_(top|mid|bot)\.html$/);
     if (!m) return;
 
@@ -420,34 +474,68 @@
     if (active) active.classList.add('active');
   })();
 
-  // Lightbox
+  // Lightbox slideshow (4 images: H&E + 3 maps)
   const lightbox = document.getElementById('lightbox');
   const lbImg = document.getElementById('lbImg');
   const lbClose = document.getElementById('lbClose');
+  const lbPrev = document.getElementById('lbPrev');
+  const lbNext = document.getElementById('lbNext');
+  const lbCaption = document.getElementById('lbCaption');
 
-  function openLightbox(src, alt) {
-    lbImg.src = src;
-    lbImg.alt = alt || '';
+  // Collect gallery items in DOM order:
+  // H&E first, then Epithelial, Stromal, Immune (as displayed on page).
+  const galleryKey = "hb_s1_top";
+  const items = Array.from(document.querySelectorAll(`.zoomable[data-gallery="${galleryKey}"]`)).map(el => ({
+    src: el.getAttribute('src'),
+    alt: el.getAttribute('alt') || '',
+    caption: el.getAttribute('data-caption') || ''
+  }));
+
+  let currentIndex = 0;
+
+  function openAt(index) {
+    if (!items.length) return;
+    currentIndex = (index + items.length) % items.length;
+    lbImg.src = items[currentIndex].src;
+    lbImg.alt = items[currentIndex].alt;
+    lbCaption.textContent = items[currentIndex].caption;
     lightbox.classList.add('is-open');
   }
 
   function closeLightbox() {
     lightbox.classList.remove('is-open');
     lbImg.src = '';
+    lbCaption.textContent = '';
   }
 
-  document.querySelectorAll('.zoomable').forEach(img => {
-    img.addEventListener('click', () => openLightbox(img.src, img.alt));
+  function prevImage() {
+    openAt(currentIndex - 1);
+  }
+
+  function nextImage() {
+    openAt(currentIndex + 1);
+  }
+
+  // Bind click on each image to open the correct index
+  document.querySelectorAll(`.zoomable[data-gallery="${galleryKey}"]`).forEach((el, idx) => {
+    el.addEventListener('click', () => openAt(idx));
   });
 
   lbClose.addEventListener('click', closeLightbox);
+  lbPrev.addEventListener('click', (e) => { e.stopPropagation(); prevImage(); });
+  lbNext.addEventListener('click', (e) => { e.stopPropagation(); nextImage(); });
 
+  // Click outside image closes
   lightbox.addEventListener('click', (e) => {
     if (e.target === lightbox) closeLightbox();
   });
 
+  // Keyboard controls
   document.addEventListener('keydown', (e) => {
+    if (!lightbox.classList.contains('is-open')) return;
     if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') prevImage();
+    if (e.key === 'ArrowRight') nextImage();
   });
 </script>
 
