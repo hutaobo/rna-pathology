@@ -132,15 +132,16 @@
       font-weight: bold;
     }
   </style>
-</head>
 
+</head>
 <body>
 
 <div class="container">
   <div class="nav-back">
     <a href="../../database.html">← Database Overview</a>
     &nbsp;|&nbsp;
-    <a href="../../datasets/human_breast_biomarkers_s1_top.html">← Dataset Card (S1 Top)</a>
+    <!-- ✅ FIX #1: this should go to the gallery overview page -->
+    <a href="../../gallery/index.html">← Gallery Overview</a>
   </div>
 
   <h1>Gallery — Human Breast Biomarkers</h1>
@@ -169,6 +170,8 @@
   /**
    * Build dataset-card URL from captions like:
    * "S1 Top", "S2 Mid", "S3 Bottom", "S4 Bot"
+   *
+   * ✅ FIX #2: always map S1 Top -> ..._s1_top.html (etc.)
    */
   function datasetUrlFromCaption(captionRaw) {
     const caption = String(captionRaw || "").trim();
@@ -183,7 +186,8 @@
   }
 
   /**
-   * Convert figcaptions into dataset links (run-once safe).
+   * After gallery-utils renders cards, convert each figcaption into a dataset link.
+   * Keep image click for lightbox (no navigation on image click).
    */
   function postProcessGalleryCards() {
     const grid = document.getElementById("galleryGrid");
@@ -194,6 +198,7 @@
       const cap = card.querySelector("figcaption");
       if (!img || !cap) return;
 
+      // run-once safety
       if (cap.dataset.linked === "1") return;
 
       const captionText = (cap.textContent || "").trim();
@@ -203,6 +208,7 @@
       cap.innerHTML = `<a class="gallery-link" href="${datasetUrl}">${captionText}</a>`;
       cap.dataset.linked = "1";
 
+      // Prevent any accidental navigation if the image is ever wrapped or overlaid
       img.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -211,11 +217,13 @@
   }
 
   function installPostProcessHooks() {
+    // Try multiple times to cover async fetch + rerenders
     postProcessGalleryCards();
     setTimeout(postProcessGalleryCards, 200);
     setTimeout(postProcessGalleryCards, 600);
     setTimeout(postProcessGalleryCards, 1200);
 
+    // Re-run on filter/pagination events
     const filter = document.getElementById("filterSection");
     const prev = document.getElementById("prevPage");
     const next = document.getElementById("nextPage");
