@@ -35,10 +35,7 @@
       padding: 56px 18px;
     }
 
-    .wrap{
-      max-width: 720px;
-      margin: 0 auto;
-    }
+    .wrap{ max-width: 720px; margin: 0 auto; }
 
     .hero{
       background: linear-gradient(180deg, rgba(11,60,93,1) 0%, rgba(10,53,82,1) 100%);
@@ -71,13 +68,6 @@
       z-index: 2;
     }
 
-    .brand{
-      display:flex;
-      align-items: baseline;
-      gap: 10px;
-      margin: 0;
-    }
-
     .brand h1{
       margin: 0;
       font-size: 22px;
@@ -85,11 +75,7 @@
       line-height: 1.1;
     }
 
-    .tm{
-      font-size: 0.7em;
-      vertical-align: super;
-      opacity: 0.9;
-    }
+    .tm{ font-size: 0.7em; vertical-align: super; opacity: 0.9; }
 
     .home-link{
       color: var(--link-muted);
@@ -130,21 +116,11 @@
       margin: 0 0 14px;
     }
 
-    .title h2{
-      margin: 0;
-      font-size: 20px;
-      letter-spacing: -0.2px;
-    }
+    .title h2{ margin: 0; font-size: 20px; letter-spacing: -0.2px; }
 
-    .hint{
-      color: var(--muted);
-      font-size: 13px;
-      margin: 0;
-    }
+    .hint{ color: var(--muted); font-size: 13px; margin: 0; }
 
-    .field{
-      margin-top: 12px;
-    }
+    .field{ margin-top: 12px; }
 
     label{
       display:block;
@@ -207,9 +183,7 @@
       border-color: rgba(11,60,93,0.12);
     }
 
-    .btn.secondary:hover{
-      background: rgba(11,60,93,0.09);
-    }
+    .btn.secondary:hover{ background: rgba(11,60,93,0.09); }
 
     .btn.danger{
       background: rgba(185,28,28,0.06);
@@ -217,9 +191,7 @@
       border-color: rgba(185,28,28,0.12);
     }
 
-    .btn.danger:hover{
-      background: rgba(185,28,28,0.09);
-    }
+    .btn.danger:hover{ background: rgba(185,28,28,0.09); }
 
     .btn.is-active{
       border-color: rgba(255,255,255,0.0);
@@ -246,20 +218,9 @@
       font-size: 14px;
     }
 
-    .status.ok{
-      border-color: rgba(4,120,87,0.25);
-      background: rgba(4,120,87,0.06);
-    }
-
-    .status.warn{
-      border-color: rgba(180,83,9,0.25);
-      background: rgba(180,83,9,0.06);
-    }
-
-    .status.err{
-      border-color: rgba(185,28,28,0.25);
-      background: rgba(185,28,28,0.06);
-    }
+    .status.ok{ border-color: rgba(4,120,87,0.25); background: rgba(4,120,87,0.06); }
+    .status.warn{ border-color: rgba(180,83,9,0.25); background: rgba(180,83,9,0.06); }
+    .status.err{ border-color: rgba(185,28,28,0.25); background: rgba(185,28,28,0.06); }
 
     .fineprint{
       margin-top: 12px;
@@ -275,9 +236,7 @@
       padding-bottom: 1px;
     }
 
-    .fineprint a:hover{
-      border-bottom-color: rgba(11,60,93,0.5);
-    }
+    .fineprint a:hover{ border-bottom-color: rgba(11,60,93,0.5); }
 
     @media (max-width: 560px){
       body{ padding: 40px 16px; }
@@ -334,7 +293,6 @@
     </div>
   </div>
 
-  <!-- Supabase (ESM) + robust UI feedback -->
   <script type="module">
     const SUPABASE_URL = "https://xxlkxorwprtynemmbeya.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_ZzCo8J6b6y0xVkExiOtHyg_gOpGEJFv";
@@ -356,10 +314,8 @@
     }
 
     function setMode(mode) {
-      // purely visual cue; user still chooses via buttons
       btnSignUp.classList.toggle("is-active", mode === "signup");
       btnSignIn.classList.toggle("is-active", mode === "signin");
-
       if (mode === "signup") modeHintEl.textContent = "Tip: Click “Sign Up” to create a new account.";
       if (mode === "signin") modeHintEl.textContent = "Tip: Click “Sign In” to use an existing account.";
     }
@@ -375,17 +331,11 @@
       btnSignOut.disabled = disabled;
     }
 
-    function prettyError(e) {
-      const msg = e?.message || String(e);
-      return msg;
-    }
-
     // Read query flags (e.g., login.html?signup=1)
     const signupFlag = getQueryFlag("signup");
     if (signupFlag === "1" || signupFlag === "true") {
       setMode("signup");
       setStatus("Ready to sign up. Enter your email + password, then click “Sign Up”.", "warn");
-      // Focus password to encourage creating one quickly
       setTimeout(() => $("password").focus(), 50);
     } else {
       setMode("signin");
@@ -409,14 +359,11 @@
           setStatus("Signed in as: " + session.user.email + "\nuser_id: " + session.user.id, "ok");
         } else {
           btnSignOut.style.display = "none";
-          // keep whatever hint message currently shown unless it's a loading message
-          // (do not overwrite user's last action feedback)
         }
       }
 
       btnSignUp.addEventListener("click", async () => {
         setMode("signup");
-
         const email = $("email").value.trim();
         const password = $("password").value;
 
@@ -429,7 +376,8 @@
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: "https://rna-pathology.com/" }
+          // IMPORTANT: after confirmation, jump to homepage with a friendly message
+          options: { emailRedirectTo: "https://rna-pathology.com/?confirmed=1" }
         });
 
         disableAuthButtons(false);
@@ -441,12 +389,12 @@
           (data.user?.email ?? ""),
           "ok"
         );
+
         await refreshUI();
       });
 
       btnSignIn.addEventListener("click", async () => {
         setMode("signin");
-
         const email = $("email").value.trim();
         const password = $("password").value;
 
@@ -462,8 +410,8 @@
 
         if (error) return setStatus("Sign in failed:\n" + error.message, "err");
 
-        setStatus("Sign in successful: " + data.user.email, "ok");
-        await refreshUI();
+        // Redirect to homepage with a welcome flag
+        window.location.href = "/?signed_in=1";
       });
 
       btnSignOut.addEventListener("click", async () => {
@@ -476,18 +424,14 @@
 
         if (error) return setStatus("Sign out failed:\n" + error.message, "err");
 
-        setStatus("Signed out.", "ok");
-        await refreshUI();
+        window.location.href = "/?signed_out=1";
       });
 
       supabase.auth.onAuthStateChange(() => refreshUI());
       await refreshUI();
 
-      // If we got here and there's no session, keep the current "Ready..." status.
-      // If there IS a session, refreshUI already shows the signed-in message.
-
     } catch (e) {
-      setStatus("Startup error:\n" + prettyError(e), "err");
+      setStatus("Startup error:\n" + (e?.stack || e?.message || String(e)), "err");
     }
   </script>
 </body>
