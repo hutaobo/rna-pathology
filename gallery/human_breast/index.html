@@ -5,6 +5,15 @@
   <title>Gallery — Human Breast Biomarkers</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <!-- Google Analytics (GA4) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-B2L5CDD57"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-B2L5CDD57');
+  </script>
+
   <style>
     body {
       margin: 0;
@@ -54,6 +63,7 @@
       overflow: hidden;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
     }
+
     .gallery-item figcaption {
       text-align: center;
       font-size: 0.95rem;
@@ -62,6 +72,7 @@
       border-bottom: 1px solid #e8ebf0;
       background: #fff;
     }
+
     .gallery-link {
       color: #1d4ed8;
       text-decoration: none;
@@ -69,6 +80,7 @@
     .gallery-link:hover {
       text-decoration: underline;
     }
+
     .gallery-item img {
       width: 100%;
       display: block;
@@ -128,7 +140,7 @@
   <div class="nav-back">
     <a href="../../database.html">← Database Overview</a>
     &nbsp;|&nbsp;
-    <a href="../../datasets/human_breast_biomarkers_s1.html">← Dataset Card</a>
+    <a href="../../datasets/human_breast_biomarkers_s1_top.html">← Dataset Card (S1 Top)</a>
   </div>
 
   <h1>Gallery — Human Breast Biomarkers</h1>
@@ -153,7 +165,75 @@
 
 <script>
   const metadataJson = "metadata.json";
+
+  /**
+   * Build dataset-card URL from a caption like:
+   * "S1 Top", "S2 Mid", "S3 Bottom" or "S4 Bot"
+   *
+   * Works for S1–S4 (and future S5...) automatically.
+   */
+  function datasetUrlFromCaption(captionRaw) {
+    const caption = String(captionRaw || "").trim();
+
+    const m = caption.match(/^S(\d+)\s+(Top|Mid|Bottom|Bot)$/i);
+    if (!m) return "../../datasets/human_breast_biomarkers_s1_top.html"; // safe fallback
+
+    const sNum = m[1];
+    let pos = m[2].toLowerCase();
+    if (pos === "bottom") pos = "bot";
+
+    return `../../datasets/human_breast_biomarkers_s${sNum}_${pos}.html`;
+  }
+
+  /**
+   * After gallery-utils renders cards, convert each figcaption into a dataset link.
+   * Keep image click for lightbox (no navigation on image click).
+   */
+  function postProcessGalleryCards() {
+    const grid = document.getElementById("galleryGrid");
+    if (!grid) return;
+
+    grid.querySelectorAll(".gallery-item").forEach(card => {
+      const img = card.querySelector("img");
+      const cap = card.querySelector("figcaption");
+      if (!img || !cap) return;
+
+      const captionText = (cap.textContent || "").trim();
+      const datasetUrl = datasetUrlFromCaption(captionText);
+
+      // Turn caption into a link (idempotent)
+      if (!cap.querySelector("a")) {
+        cap.innerHTML = `<a class="gallery-link" href="${datasetUrl}">${captionText}</a>`;
+      }
+
+      // Prevent any accidental navigation if the image is ever wrapped or overlaid
+      img.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }, { capture: true });
+    });
+  }
+
+  function installPostProcessHooks() {
+    // Try multiple times to cover async fetch + rerenders
+    postProcessGalleryCards();
+    setTimeout(postProcessGalleryCards, 200);
+    setTimeout(postProcessGalleryCards, 600);
+    setTimeout(postProcessGalleryCards, 1200);
+
+    // Re-run on filter/pagination events
+    const filter = document.getElementById("filterSection");
+    const prev = document.getElementById("prevPage");
+    const next = document.getElementById("nextPage");
+
+    if (filter) filter.addEventListener("change", () => setTimeout(postProcessGalleryCards, 50));
+    if (prev) prev.addEventListener("click", () => setTimeout(postProcessGalleryCards, 50));
+    if (next) next.addEventListener("click", () => setTimeout(postProcessGalleryCards, 50));
+  }
+
+  document.addEventListener("DOMContentLoaded", installPostProcessHooks);
 </script>
+
 <script src="gallery-utils.js"></script>
 
 </body>
