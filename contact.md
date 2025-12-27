@@ -10,4 +10,4 @@ Please contact:
 
 **Taobo Hu**
 SciLifeLab, Sweden
-Email: [hutaobo7@gmail.com](mailto:hutaobo7@gmail.com)
+Email: [taobo@rna-pathology.com](mailto:taobo@rna-pathology.com)
