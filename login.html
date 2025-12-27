@@ -207,6 +207,24 @@
       box-shadow: none;
     }
 
+    /* new: subtle link-style button */
+    .linkbtn{
+      border: 0;
+      background: transparent;
+      padding: 0;
+      margin-top: 10px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      color: #0b3c5d;
+      cursor: pointer;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(11,60,93,0.25);
+      padding-bottom: 1px;
+      display: inline-block;
+    }
+    .linkbtn:hover{ border-bottom-color: rgba(11,60,93,0.5); }
+
     .status{
       margin-top: 14px;
       padding: 12px 12px;
@@ -281,6 +299,11 @@
         <button class="btn" id="signin" type="button">Sign In</button>
       </div>
 
+      <!-- new: forgot password link -->
+      <div style="margin-top:8px;">
+        <button class="linkbtn" id="forgot" type="button">Forgot password?</button>
+      </div>
+
       <div class="row" style="margin-top:10px;">
         <button class="btn danger" id="signout" type="button" style="display:none;">Sign Out</button>
       </div>
@@ -304,6 +327,7 @@
     const btnSignUp = $("signup");
     const btnSignIn = $("signin");
     const btnSignOut = $("signout");
+    const btnForgot = $("forgot");
 
     function setStatus(text, level = "info") {
       statusEl.className = "status";
@@ -325,10 +349,17 @@
       return u.searchParams.get(name);
     }
 
+    // for membership redirect
+    function getNextPath() {
+      const u = new URL(window.location.href);
+      return u.searchParams.get("next") || "/?signed_in=1";
+    }
+
     function disableAuthButtons(disabled) {
       btnSignUp.disabled = disabled;
       btnSignIn.disabled = disabled;
       btnSignOut.disabled = disabled;
+      btnForgot.disabled = disabled;
     }
 
     // Read query flags (e.g., login.html?signup=1)
@@ -347,20 +378,32 @@
       const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
       async function refreshUI() {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) {
-          btnSignOut.style.display = "none";
-          setStatus("Session check failed:\n" + error.message, "err");
-          return;
-        }
+        try {
+          const { data: { session }, error } = await supabase.auth.getSession();
+          if (error) throw error;
 
-        if (session) {
-          btnSignOut.style.display = "inline-flex";
-          setStatus("Signed in as: " + session.user.email + "\nuser_id: " + session.user.id, "ok");
-        } else {
+          if (session) {
+            btnSignOut.style.display = "inline-flex";
+            setStatus(
+              "Signed in as: " + session.user.email + "\nuser_id: " + session.user.id,
+              "ok"
+            );
+          } else {
+            btnSignOut.style.display = "none";
+          }
+        } catch (e) {
           btnSignOut.style.display = "none";
+          setStatus("Session check failed:\n" + (e?.message || String(e)), "err");
         }
       }
+
+      // If already signed in, go to next directly
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          window.location.href = getNextPath();
+        }
+      } catch (_) {}
 
       btnSignUp.addEventListener("click", async () => {
         setMode("signup");
@@ -373,24 +416,26 @@
         disableAuthButtons(true);
         setStatus("Signing up…", "warn");
 
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          // IMPORTANT: after confirmation, jump to homepage with a friendly message
-          options: { emailRedirectTo: "https://rna-pathology.com/?confirmed=1" }
-        });
+        try {
+          const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+            // IMPORTANT: after confirmation, jump to your site
+            options: { emailRedirectTo: "https://rna-pathology.com/login.html" }
+          });
+          if (error) throw error;
 
-        disableAuthButtons(false);
-
-        if (error) return setStatus("Sign up failed:\n" + error.message, "err");
-
-        setStatus(
-          "Sign up request sent.\n\nIf email confirmation is enabled, please check your inbox and click the confirmation link.\n" +
-          (data.user?.email ?? ""),
-          "ok"
-        );
-
-        await refreshUI();
+          setStatus(
+            "Sign up request sent.\n\nIf email confirmation is enabled, please check your inbox and click the confirmation link.\n" +
+            (data.user?.email ?? ""),
+            "ok"
+          );
+          await refreshUI();
+        } catch (e) {
+          setStatus("Sign up failed:\n" + (e?.message || String(e)), "err");
+        } finally {
+          disableAuthButtons(false);
+        }
       });
 
       btnSignIn.addEventListener("click", async () => {
@@ -404,27 +449,60 @@
         disableAuthButtons(true);
         setStatus("Signing in…", "warn");
 
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        try {
+          const { error } = await supabase.auth.signInWithPassword({ email, password });
+          if (error) throw error;
 
-        disableAuthButtons(false);
+          // Redirect to requested page (member-only flow)
+          window.location.href = getNextPath();
+        } catch (e) {
+          setStatus("Sign in failed:\n" + (e?.message || String(e)), "err");
+        } finally {
+          disableAuthButtons(false);
+        }
+      });
 
-        if (error) return setStatus("Sign in failed:\n" + error.message, "err");
+      // Forgot password
+      btnForgot.addEventListener("click", async () => {
+        const email = $("email").value.trim();
+        if (!email) return setStatus("Please enter your email first, then click “Forgot password?”.", "warn");
 
-        // Redirect to homepage with a welcome flag
-        window.location.href = "/?signed_in=1";
+        disableAuthButtons(true);
+        setStatus("Sending reset email…", "warn");
+
+        try {
+          const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: "https://rna-pathology.com/login.html"
+          });
+          if (error) throw error;
+
+          setStatus(
+            "Reset email sent.\n\nPlease check your inbox and follow the link to set a new password.",
+            "ok"
+          );
+        } catch (e) {
+          setStatus("Reset failed:\n" + (e?.message || String(e)), "err");
+        } finally {
+          disableAuthButtons(false);
+        }
       });
 
       btnSignOut.addEventListener("click", async () => {
         disableAuthButtons(true);
         setStatus("Signing out…", "warn");
 
-        const { error } = await supabase.auth.signOut();
+        try {
+          const { error } = await supabase.auth.signOut();
+          if (error) throw error;
 
-        disableAuthButtons(false);
-
-        if (error) return setStatus("Sign out failed:\n" + error.message, "err");
-
-        window.location.href = "/?signed_out=1";
+          setStatus("Signed out.", "ok");
+          // stay on login page; optionally send back home
+          window.location.href = "/login.html?signed_out=1";
+        } catch (e) {
+          setStatus("Sign out failed:\n" + (e?.message || String(e)), "err");
+        } finally {
+          disableAuthButtons(false);
+        }
       });
 
       supabase.auth.onAuthStateChange(() => refreshUI());
