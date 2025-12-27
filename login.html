@@ -49,7 +49,6 @@
           $("signout").style.display = "none";
           return;
         }
-
         if (session) {
           setMsg("Signed in as: " + session.user.email + "\nuser_id: " + session.user.id);
           $("signout").style.display = "block";
@@ -67,29 +66,24 @@
         if (!password || password.length < 6) return setMsg("Password must be at least 6 characters.");
 
         setMsg("Signing up…");
-        const { data, error } = await supabase.auth.signUp({ email, password });
-
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { emailRedirectTo: 'https://rna-pathology.com/' }
+        });
         if (error) return setMsg("Sign up failed:\n" + error.message);
-
-        setMsg(
-          "Sign up successful! If email confirmation is enabled, please check your inbox and confirm.\n" +
-          (data.user?.email ?? "")
-        );
+        setMsg("Sign up successful! If email confirmation is enabled, please check your inbox and confirm.\n" + (data.user?.email ?? ""));
         refreshUI();
       });
 
       $("signin").addEventListener("click", async () => {
         const email = $("email").value.trim();
         const password = $("password").value;
-
         if (!email) return setMsg("Please enter an email.");
         if (!password) return setMsg("Please enter a password.");
-
         setMsg("Signing in…");
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
         if (error) return setMsg("Sign in failed:\n" + error.message);
-
         setMsg("Sign in successful: " + data.user.email);
         refreshUI();
       });
