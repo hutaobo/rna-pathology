@@ -1,3 +1,9 @@
+---
+layout: page
+title: RNA-Pathology Schema v0.2
+permalink: /schema/
+---
+
 # RNA-Pathology Schema v0.2 (Conceptual)
 
 This document describes the **conceptual schema** of RNA-Pathology.
