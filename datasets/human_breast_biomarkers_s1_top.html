@@ -9,6 +9,15 @@
   <meta name="description"
         content="Dataset card for Human Breast Biomarkers S1 (Top section). RNA-Pathology database.">
 
+  <!-- Google Analytics (GA4) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-B2L5CDD57"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-B2L5CDD57');
+  </script>
+
   <style>
     body {
       font-family: Arial, Helvetica, sans-serif;
@@ -20,7 +29,7 @@
     }
 
     nav {
-      margin-bottom: 28px;
+      margin-bottom: 18px;
     }
 
     nav a {
@@ -30,6 +39,21 @@
     }
 
     nav a:hover {
+      text-decoration: underline;
+    }
+
+    .section-nav {
+      font-size: 0.95em;
+      color: #444;
+      margin: 8px 0 22px 0;
+    }
+
+    .section-nav a {
+      color: #0066cc;
+      text-decoration: none;
+    }
+
+    .section-nav a:hover {
       text-decoration: underline;
     }
 
@@ -95,6 +119,13 @@
   <a href="/database.html">← Database Overview</a>
   <a href="/gallery/human_breast/">← Gallery</a>
 </nav>
+
+<div class="section-nav">
+  Sections:
+  <strong>Top</strong> ·
+  <a href="/datasets/human_breast_biomarkers_s1_mid.html">Mid</a> ·
+  <a href="/datasets/human_breast_biomarkers_s1_bot.html">Bottom</a>
+</div>
 
 <h1>Human Breast Biomarkers — S1 (Top)</h1>
 
@@ -166,7 +197,7 @@
 
   <img
     src="/images/gallery/Human_Breast_Biomarkers_S1_Top_he_image_preview_L-2.jpg"
-    alt="Human Breast Biomarkers S1 Top — H&E histology"
+    alt="Human Breast Biomarkers S1 Top — H&amp;E histology"
     style="max-width:100%; margin-top:12px;"
   >
 
