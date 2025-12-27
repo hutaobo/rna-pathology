@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dataset: Human Breast Biomarkers S2 — Top</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+        content="Dataset card for Human Breast Biomarkers S2 (Top section). RNA-Pathology database.">
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-B2L5CDD57"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-B2L5CDD57');
+  </script>
+
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; max-width: 960px; margin: 40px auto;
+           padding: 0 20px; line-height: 1.65; color: #222; }
+    nav { margin-bottom: 28px; }
+    nav a { margin-right: 16px; text-decoration: none; color: #0066cc; }
+    nav a:hover { text-decoration: underline; }
+    h1 { margin-bottom: 8px; }
+    h2 { margin-top: 48px; border-bottom: 1px solid #ddd; padding-bottom: 6px; }
+    h3 { margin-top: 28px; }
+    section { margin-bottom: 48px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 12px; }
+    table th, table td {
+      border: 1px solid #ddd;
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    table th { background-color: #f6f6f6; width: 220px; }
+    figure { margin: 0; }
+    figcaption { font-size: 0.9em; color: #555; margin-top: 6px; }
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+
+<body>
+
+<nav>
+  <a href="/database.html">← Database Overview</a>
+  <a href="/gallery/human_breast/">← Gallery</a>
+</nav>
+
+<h1>Human Breast Biomarkers — S2 (Top)</h1>
+
+<p>
+  This dataset represents the <strong>Top section</strong> of sample <strong>S2</strong>
+  from the Human Breast Biomarkers collection.
+  It is provided as a representative spatial pathology reference
+  for visualization and method benchmarking within the RNA-Pathology framework.
+</p>
+
+<section>
+  <h2>Core Metadata</h2>
+  <table>
+    <tr><th>Dataset ID</th><td>human_breast_biomarkers_s2_top</td></tr>
+    <tr><th>Parent sample</th><td>S2</td></tr>
+    <tr><th>Section</th><td>Top</td></tr>
+    <tr><th>Species</th><td>Human</td></tr>
+    <tr><th>Tissue</th><td>Breast</td></tr>
+    <tr><th>Pathology</th><td>Biomarker reference tissue</td></tr>
+    <tr><th>Technology</th><td>H&amp;E histology, spatial biomarker mapping</td></tr>
+    <tr><th>Schema version</th><td>v0.2</td></tr>
+    <tr><th>Status</th><td>Preview available</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>Available Data Layers</h2>
+  <ul>
+    <li>Sample metadata</li>
+    <li>Tissue section geometry (preview)</li>
+    <li>Histology image (H&amp;E)</li>
+    <li>Cell-type spatial maps (colored by subtype)</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Associated Images</h2>
+
+  <h3>Histology (H&amp;E)</h3>
+  <img
+    src="/images/gallery/Human_Breast_Biomarkers_S2_Top_he_image_preview_L-2.jpg"
+    alt="Human Breast Biomarkers S2 Top — H&amp;E histology"
+    style="max-width:100%; margin-top:12px;"
+  >
+
+  <h3>Cell-type spatial maps (colored by subtype)</h3>
+  <div class="image-grid">
+    <figure>
+      <img src="/images/gallery/Human_Breast_Biomarkers_S2_Top_Immune_coloredBySubtype.png"
+           alt="S2 Top immune cells colored by subtype" style="width:100%;">
+      <figcaption>Immune cells</figcaption>
+    </figure>
+    <figure>
+      <img src="/images/gallery/Human_Breast_Biomarkers_S2_Top_Stromal_coloredBySubtype.png"
+           alt="S2 Top stromal cells colored by subtype" style="width:100%;">
+      <figcaption>Stromal cells</figcaption>
+    </figure>
+    <figure>
+      <img src="/images/gallery/Human_Breast_Biomarkers_S2_Top_Epithelial_coloredBySubtype.png"
+           alt="S2 Top epithelial cells colored by subtype" style="width:100%;">
+      <figcaption>Epithelial cells</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section>
+  <h2>Usage Notes</h2>
+  <p>
+    Images provided on this page are intended for visualization and reference only.
+    Full-resolution images and raw spatial omics matrices may be subject to
+    controlled access in future releases.
+  </p>
+</section>
+
+<hr>
+<p style="font-size:0.9em; color:#666;">
+  RNA-Pathology Dataset Card · Human Breast Biomarkers · S2 Top · Version 0.1
+</p>
+
+</body>
+</html>
