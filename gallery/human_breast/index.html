@@ -132,8 +132,8 @@
       font-weight: bold;
     }
   </style>
-
 </head>
+
 <body>
 
 <div class="container">
@@ -167,16 +167,13 @@
   const metadataJson = "metadata.json";
 
   /**
-   * Build dataset-card URL from a caption like:
-   * "S1 Top", "S2 Mid", "S3 Bottom" or "S4 Bot"
-   *
-   * Works for S1–S4 (and future S5...) automatically.
+   * Build dataset-card URL from captions like:
+   * "S1 Top", "S2 Mid", "S3 Bottom", "S4 Bot"
    */
   function datasetUrlFromCaption(captionRaw) {
     const caption = String(captionRaw || "").trim();
-
     const m = caption.match(/^S(\d+)\s+(Top|Mid|Bottom|Bot)$/i);
-    if (!m) return "../../datasets/human_breast_biomarkers_s1_top.html"; // safe fallback
+    if (!m) return null;
 
     const sNum = m[1];
     let pos = m[2].toLowerCase();
@@ -186,8 +183,7 @@
   }
 
   /**
-   * After gallery-utils renders cards, convert each figcaption into a dataset link.
-   * Keep image click for lightbox (no navigation on image click).
+   * Convert figcaptions into dataset links (run-once safe).
    */
   function postProcessGalleryCards() {
     const grid = document.getElementById("galleryGrid");
@@ -198,15 +194,15 @@
       const cap = card.querySelector("figcaption");
       if (!img || !cap) return;
 
+      if (cap.dataset.linked === "1") return;
+
       const captionText = (cap.textContent || "").trim();
       const datasetUrl = datasetUrlFromCaption(captionText);
+      if (!datasetUrl) return;
 
-      // Turn caption into a link (idempotent)
-      if (!cap.querySelector("a")) {
-        cap.innerHTML = `<a class="gallery-link" href="${datasetUrl}">${captionText}</a>`;
-      }
+      cap.innerHTML = `<a class="gallery-link" href="${datasetUrl}">${captionText}</a>`;
+      cap.dataset.linked = "1";
 
-      // Prevent any accidental navigation if the image is ever wrapped or overlaid
       img.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -215,13 +211,11 @@
   }
 
   function installPostProcessHooks() {
-    // Try multiple times to cover async fetch + rerenders
     postProcessGalleryCards();
     setTimeout(postProcessGalleryCards, 200);
     setTimeout(postProcessGalleryCards, 600);
     setTimeout(postProcessGalleryCards, 1200);
 
-    // Re-run on filter/pagination events
     const filter = document.getElementById("filterSection");
     const prev = document.getElementById("prevPage");
     const next = document.getElementById("nextPage");
