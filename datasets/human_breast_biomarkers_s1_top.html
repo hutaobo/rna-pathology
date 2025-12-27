@@ -21,7 +21,7 @@
   <style>
     body {
       font-family: Arial, Helvetica, sans-serif;
-      max-width: 1120px; /* wider to balance HE vs maps */
+      max-width: 1120px;
       margin: 40px auto;
       padding: 0 20px;
       line-height: 1.65;
@@ -29,7 +29,7 @@
     }
 
     nav {
-      margin-bottom: 18px;
+      margin-bottom: 14px;
     }
 
     nav a {
@@ -39,21 +39,6 @@
     }
 
     nav a:hover {
-      text-decoration: underline;
-    }
-
-    .section-nav {
-      font-size: 0.95em;
-      color: #444;
-      margin: 8px 0 22px 0;
-    }
-
-    .section-nav a {
-      color: #0066cc;
-      text-decoration: none;
-    }
-
-    .section-nav a:hover {
       text-decoration: underline;
     }
 
@@ -94,9 +79,81 @@
       width: 220px;
     }
 
+    /* ---- Dataset navigation (S1–S4 × Top/Middle/Bottom) ---- */
+    .dataset-nav {
+      margin: 10px 0 26px 0;
+      padding: 14px 14px;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 10px;
+      background: #fafbfe;
+    }
+
+    .dataset-nav .title {
+      font-size: 0.95em;
+      color: #444;
+      margin: 0 0 10px 0;
+      font-weight: 600;
+    }
+
+    .dataset-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .dataset-col {
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .dataset-col .col-title {
+      font-weight: 700;
+      font-size: 0.95em;
+      margin: 0 0 8px 0;
+      color: #111;
+    }
+
+    .dataset-links {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .dataset-links a {
+      display: inline-block;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(0,0,0,0.08);
+      background: #fff;
+      color: #0066cc;
+      text-decoration: none;
+      font-size: 0.92em;
+      text-align: center;
+    }
+
+    .dataset-links a:hover {
+      text-decoration: underline;
+    }
+
+    .dataset-links a.active {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    @media (max-width: 900px) {
+      .dataset-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 520px) {
+      .dataset-grid { grid-template-columns: 1fr; }
+    }
+
     /* ---- Image sizing fixes ---- */
 
-    /* H&E: keep it big but not overwhelming */
     .he-wrap {
       margin-top: 12px;
       display: flex;
@@ -105,7 +162,7 @@
 
     .he-image {
       max-width: 100%;
-      max-height: 70vh;      /* key: stop it from taking the whole page */
+      max-height: 70vh;
       width: auto;
       height: auto;
       object-fit: contain;
@@ -114,7 +171,6 @@
       cursor: zoom-in;
     }
 
-    /* 3 maps: make them larger and more readable */
     .image-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
@@ -189,11 +245,49 @@
   <a href="/gallery/human_breast/">← Gallery</a>
 </nav>
 
-<div class="section-nav">
-  Sections:
-  <strong>Top</strong> ·
-  <a href="/datasets/human_breast_biomarkers_s1_mid.html">Mid</a> ·
-  <a href="/datasets/human_breast_biomarkers_s1_bot.html">Bottom</a>
+<!-- 12-dataset navigation -->
+<div class="dataset-nav">
+  <div class="title">Navigate datasets (S1–S4 × Top/Middle/Bottom)</div>
+
+  <div class="dataset-grid">
+
+    <div class="dataset-col">
+      <div class="col-title">S1</div>
+      <div class="dataset-links">
+        <a class="active" href="/datasets/human_breast_biomarkers_s1_top.html">Top</a>
+        <a href="/datasets/human_breast_biomarkers_s1_mid.html">Middle</a>
+        <a href="/datasets/human_breast_biomarkers_s1_bot.html">Bottom</a>
+      </div>
+    </div>
+
+    <div class="dataset-col">
+      <div class="col-title">S2</div>
+      <div class="dataset-links">
+        <a href="/datasets/human_breast_biomarkers_s2_top.html">Top</a>
+        <a href="/datasets/human_breast_biomarkers_s2_mid.html">Middle</a>
+        <a href="/datasets/human_breast_biomarkers_s2_bot.html">Bottom</a>
+      </div>
+    </div>
+
+    <div class="dataset-col">
+      <div class="col-title">S3</div>
+      <div class="dataset-links">
+        <a href="/datasets/human_breast_biomarkers_s3_top.html">Top</a>
+        <a href="/datasets/human_breast_biomarkers_s3_mid.html">Middle</a>
+        <a href="/datasets/human_breast_biomarkers_s3_bot.html">Bottom</a>
+      </div>
+    </div>
+
+    <div class="dataset-col">
+      <div class="col-title">S4</div>
+      <div class="dataset-links">
+        <a href="/datasets/human_breast_biomarkers_s4_top.html">Top</a>
+        <a href="/datasets/human_breast_biomarkers_s4_mid.html">Middle</a>
+        <a href="/datasets/human_breast_biomarkers_s4_bot.html">Bottom</a>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <h1>Human Breast Biomarkers — S1 (Top)</h1>
