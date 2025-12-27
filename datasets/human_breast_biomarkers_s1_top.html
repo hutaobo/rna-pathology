@@ -19,6 +19,14 @@
   </script>
 
   <style>
+    :root{
+      --link: #0066cc;
+      --border: rgba(0,0,0,0.08);
+      --muted: #444;
+      --bg-soft: #fafbfe;
+      --active: #1d4ed8;
+    }
+
     body {
       font-family: Arial, Helvetica, sans-serif;
       max-width: 1120px;
@@ -35,7 +43,7 @@
     nav a {
       margin-right: 16px;
       text-decoration: none;
-      color: #0066cc;
+      color: var(--link);
     }
 
     nav a:hover {
@@ -43,21 +51,21 @@
     }
 
     h1 {
-      margin-bottom: 8px;
+      margin: 12px 0 8px 0;
     }
 
     h2 {
-      margin-top: 48px;
+      margin-top: 46px;
       border-bottom: 1px solid #ddd;
       padding-bottom: 6px;
     }
 
     h3 {
-      margin-top: 28px;
+      margin-top: 26px;
     }
 
     section {
-      margin-bottom: 48px;
+      margin-bottom: 46px;
     }
 
     table {
@@ -81,18 +89,18 @@
 
     /* ---- Dataset navigation (S1–S4 × Top/Middle/Bottom) ---- */
     .dataset-nav {
-      margin: 10px 0 26px 0;
+      margin: 10px 0 18px 0;
       padding: 14px 14px;
-      border: 1px solid rgba(0,0,0,0.08);
+      border: 1px solid var(--border);
       border-radius: 10px;
-      background: #fafbfe;
+      background: var(--bg-soft);
     }
 
     .dataset-nav .title {
       font-size: 0.95em;
-      color: #444;
+      color: var(--muted);
       margin: 0 0 10px 0;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .dataset-grid {
@@ -109,7 +117,7 @@
     }
 
     .dataset-col .col-title {
-      font-weight: 700;
+      font-weight: 800;
       font-size: 0.95em;
       margin: 0 0 8px 0;
       color: #111;
@@ -125,24 +133,29 @@
       display: inline-block;
       padding: 8px 10px;
       border-radius: 8px;
-      border: 1px solid rgba(0,0,0,0.08);
+      border: 1px solid var(--border);
       background: #fff;
-      color: #0066cc;
+      color: var(--link);
       text-decoration: none;
       font-size: 0.92em;
       text-align: center;
+      transition: transform 0.05s ease;
     }
 
     .dataset-links a:hover {
       text-decoration: underline;
     }
 
+    .dataset-links a:active {
+      transform: translateY(1px);
+    }
+
     .dataset-links a.active {
-      background: #1d4ed8;
-      border-color: #1d4ed8;
+      background: var(--active);
+      border-color: var(--active);
       color: #fff;
       text-decoration: none;
-      font-weight: 700;
+      font-weight: 800;
     }
 
     @media (max-width: 900px) {
@@ -153,7 +166,6 @@
     }
 
     /* ---- Image sizing fixes ---- */
-
     .he-wrap {
       margin-top: 12px;
       display: flex;
@@ -162,13 +174,14 @@
 
     .he-image {
       max-width: 100%;
-      max-height: 70vh;
+      max-height: 66vh; /* slightly smaller than before for balance */
       width: auto;
       height: auto;
       object-fit: contain;
-      border: 1px solid rgba(0,0,0,0.08);
-      border-radius: 8px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
       cursor: zoom-in;
+      background: #fff;
     }
 
     .image-grid {
@@ -182,8 +195,8 @@
     figure {
       margin: 0;
       padding: 12px;
-      border: 1px solid rgba(0,0,0,0.08);
-      border-radius: 10px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
       background: #fff;
     }
 
@@ -192,14 +205,16 @@
       height: auto;
       object-fit: contain;
       cursor: zoom-in;
+      background: #fff;
+      border-radius: 8px;
     }
 
     figcaption {
       font-size: 0.92em;
-      color: #444;
+      color: var(--muted);
       margin-top: 10px;
       text-align: center;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     /* ---- Lightbox ---- */
@@ -221,7 +236,7 @@
     .lightbox img {
       max-width: 95vw;
       max-height: 92vh;
-      border-radius: 10px;
+      border-radius: 12px;
       background: #fff;
     }
 
@@ -231,9 +246,10 @@
       right: 18px;
       font-size: 26px;
       color: #fff;
-      font-weight: 700;
+      font-weight: 800;
       cursor: pointer;
       user-select: none;
+      line-height: 1;
     }
   </style>
 </head>
@@ -245,48 +261,46 @@
   <a href="/gallery/human_breast/">← Gallery</a>
 </nav>
 
-<!-- 12-dataset navigation -->
-<div class="dataset-nav">
+<!-- 12-dataset navigation (auto-active by JS) -->
+<div class="dataset-nav" aria-label="Dataset navigation">
   <div class="title">Navigate datasets (S1–S4 × Top/Middle/Bottom)</div>
 
   <div class="dataset-grid">
-
     <div class="dataset-col">
       <div class="col-title">S1</div>
       <div class="dataset-links">
-        <a class="active" href="/datasets/human_breast_biomarkers_s1_top.html">Top</a>
-        <a href="/datasets/human_breast_biomarkers_s1_mid.html">Middle</a>
-        <a href="/datasets/human_breast_biomarkers_s1_bot.html">Bottom</a>
+        <a data-dataset="s1_top" href="/datasets/human_breast_biomarkers_s1_top.html">Top</a>
+        <a data-dataset="s1_mid" href="/datasets/human_breast_biomarkers_s1_mid.html">Middle</a>
+        <a data-dataset="s1_bot" href="/datasets/human_breast_biomarkers_s1_bot.html">Bottom</a>
       </div>
     </div>
 
     <div class="dataset-col">
       <div class="col-title">S2</div>
       <div class="dataset-links">
-        <a href="/datasets/human_breast_biomarkers_s2_top.html">Top</a>
-        <a href="/datasets/human_breast_biomarkers_s2_mid.html">Middle</a>
-        <a href="/datasets/human_breast_biomarkers_s2_bot.html">Bottom</a>
+        <a data-dataset="s2_top" href="/datasets/human_breast_biomarkers_s2_top.html">Top</a>
+        <a data-dataset="s2_mid" href="/datasets/human_breast_biomarkers_s2_mid.html">Middle</a>
+        <a data-dataset="s2_bot" href="/datasets/human_breast_biomarkers_s2_bot.html">Bottom</a>
       </div>
     </div>
 
     <div class="dataset-col">
       <div class="col-title">S3</div>
       <div class="dataset-links">
-        <a href="/datasets/human_breast_biomarkers_s3_top.html">Top</a>
-        <a href="/datasets/human_breast_biomarkers_s3_mid.html">Middle</a>
-        <a href="/datasets/human_breast_biomarkers_s3_bot.html">Bottom</a>
+        <a data-dataset="s3_top" href="/datasets/human_breast_biomarkers_s3_top.html">Top</a>
+        <a data-dataset="s3_mid" href="/datasets/human_breast_biomarkers_s3_mid.html">Middle</a>
+        <a data-dataset="s3_bot" href="/datasets/human_breast_biomarkers_s3_bot.html">Bottom</a>
       </div>
     </div>
 
     <div class="dataset-col">
       <div class="col-title">S4</div>
       <div class="dataset-links">
-        <a href="/datasets/human_breast_biomarkers_s4_top.html">Top</a>
-        <a href="/datasets/human_breast_biomarkers_s4_mid.html">Middle</a>
-        <a href="/datasets/human_breast_biomarkers_s4_bot.html">Bottom</a>
+        <a data-dataset="s4_top" href="/datasets/human_breast_biomarkers_s4_top.html">Top</a>
+        <a data-dataset="s4_mid" href="/datasets/human_breast_biomarkers_s4_mid.html">Middle</a>
+        <a data-dataset="s4_bot" href="/datasets/human_breast_biomarkers_s4_bot.html">Bottom</a>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -341,7 +355,6 @@
   <h3>Cell-type spatial maps (colored by subtype)</h3>
 
   <div class="image-grid">
-
     <figure>
       <img
         class="map-image zoomable"
@@ -368,7 +381,6 @@
       >
       <figcaption>Epithelial cells</figcaption>
     </figure>
-
   </div>
 </section>
 
@@ -389,33 +401,51 @@
 </p>
 
 <!-- Lightbox -->
-<div class="lightbox" id="lightbox">
-  <div class="lightbox-close" id="lbClose">×</div>
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
+  <div class="lightbox-close" id="lbClose" aria-label="Close">×</div>
   <img id="lbImg" src="" alt="">
 </div>
 
 <script>
+  // Auto-highlight current dataset in the 12-nav
+  (function markActiveNav(){
+    const path = (window.location.pathname || "").toLowerCase();
+    // Expect: /datasets/human_breast_biomarkers_s{n}_{top|mid|bot}.html
+    const m = path.match(/human_breast_biomarkers_s(\d)_(top|mid|bot)\.html$/);
+    if (!m) return;
+
+    const key = `s${m[1]}_${m[2]}`;
+    document.querySelectorAll('.dataset-links a').forEach(a => a.classList.remove('active'));
+    const active = document.querySelector(`.dataset-links a[data-dataset="${key}"]`);
+    if (active) active.classList.add('active');
+  })();
+
+  // Lightbox
   const lightbox = document.getElementById('lightbox');
   const lbImg = document.getElementById('lbImg');
   const lbClose = document.getElementById('lbClose');
 
-  document.querySelectorAll('.zoomable').forEach(img => {
-    img.addEventListener('click', () => {
-      lbImg.src = img.src;
-      lbImg.alt = img.alt || '';
-      lightbox.classList.add('is-open');
-    });
-  });
+  function openLightbox(src, alt) {
+    lbImg.src = src;
+    lbImg.alt = alt || '';
+    lightbox.classList.add('is-open');
+  }
 
   function closeLightbox() {
     lightbox.classList.remove('is-open');
     lbImg.src = '';
   }
 
+  document.querySelectorAll('.zoomable').forEach(img => {
+    img.addEventListener('click', () => openLightbox(img.src, img.alt));
+  });
+
   lbClose.addEventListener('click', closeLightbox);
+
   lightbox.addEventListener('click', (e) => {
     if (e.target === lightbox) closeLightbox();
   });
+
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeLightbox();
   });
