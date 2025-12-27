@@ -4,39 +4,393 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>RNA-pathology — Sign In / Sign Up</title>
+
   <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto;max-width:560px;margin:40px auto;padding:0 16px}
-    input,button{width:100%;padding:12px;margin:8px 0;font-size:16px}
-    .row{display:flex;gap:10px}
-    .row button{width:50%}
-    #msg{white-space:pre-wrap;color:#333;margin-top:12px}
+    :root{
+      --ink: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --primary: #0b3c5d;
+      --primary2: #0a3552;
+      --link-muted: #bcd3e6;
+      --danger: #b91c1c;
+      --success: #047857;
+      --warn: #b45309;
+    }
+
+    *{ box-sizing: border-box; }
+
+    body{
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont,
+                   "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 600px at 20% -10%, #e8f1f8 0%, rgba(232,241,248,0) 60%),
+        radial-gradient(1000px 500px at 90% 10%, #eef2ff 0%, rgba(238,242,255,0) 55%),
+        var(--bg);
+      line-height: 1.6;
+      padding: 56px 18px;
+    }
+
+    .wrap{
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .hero{
+      background: linear-gradient(180deg, rgba(11,60,93,1) 0%, rgba(10,53,82,1) 100%);
+      color: #fff;
+      border-radius: 18px;
+      padding: 26px 26px 22px;
+      box-shadow: 0 12px 30px rgba(2, 6, 23, 0.18);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:-80px -120px auto auto;
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.18), rgba(255,255,255,0));
+      transform: rotate(15deg);
+      pointer-events:none;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 12px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .brand{
+      display:flex;
+      align-items: baseline;
+      gap: 10px;
+      margin: 0;
+    }
+
+    .brand h1{
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: -0.2px;
+      line-height: 1.1;
+    }
+
+    .tm{
+      font-size: 0.7em;
+      vertical-align: super;
+      opacity: 0.9;
+    }
+
+    .home-link{
+      color: var(--link-muted);
+      text-decoration: none;
+      font-weight: 600;
+      border-bottom: 1px solid rgba(188,211,230,0.25);
+      padding-bottom: 1px;
+      white-space: nowrap;
+    }
+
+    .home-link:hover{
+      color: #ffffff;
+      border-bottom-color: rgba(255,255,255,0.5);
+    }
+
+    .tagline{
+      margin: 12px 0 0;
+      color: #dbe7f0;
+      font-size: 14px;
+      max-width: 620px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+
+    .title{
+      display:flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 0 0 14px;
+    }
+
+    .title h2{
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: -0.2px;
+    }
+
+    .hint{
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .field{
+      margin-top: 12px;
+    }
+
+    label{
+      display:block;
+      font-size: 13px;
+      font-weight: 700;
+      color: #1f2933;
+      margin-bottom: 6px;
+    }
+
+    input{
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 16px;
+      outline: none;
+      transition: box-shadow 0.12s ease, border-color 0.12s ease;
+    }
+
+    input:focus{
+      border-color: rgba(11,60,93,0.55);
+      box-shadow: 0 0 0 4px rgba(11,60,93,0.10);
+    }
+
+    .row{
+      display:flex;
+      gap: 12px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: #0b3c5d;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+      flex: 1 1 220px;
+      min-height: 46px;
+    }
+
+    .btn:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(2, 6, 23, 0.10);
+    }
+
+    .btn.secondary{
+      background: rgba(11,60,93,0.06);
+      color: #0b3c5d;
+      border-color: rgba(11,60,93,0.12);
+    }
+
+    .btn.secondary:hover{
+      background: rgba(11,60,93,0.09);
+    }
+
+    .btn.danger{
+      background: rgba(185,28,28,0.06);
+      color: #7f1d1d;
+      border-color: rgba(185,28,28,0.12);
+    }
+
+    .btn.danger:hover{
+      background: rgba(185,28,28,0.09);
+    }
+
+    .btn.is-active{
+      border-color: rgba(255,255,255,0.0);
+      background: linear-gradient(180deg, rgba(11,60,93,1) 0%, rgba(10,53,82,1) 100%);
+      color: #ffffff;
+      box-shadow: 0 12px 26px rgba(2, 6, 23, 0.18);
+    }
+
+    .btn:disabled{
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .status{
+      margin-top: 14px;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fafafa;
+      color: #111827;
+      white-space: pre-wrap;
+      font-size: 14px;
+    }
+
+    .status.ok{
+      border-color: rgba(4,120,87,0.25);
+      background: rgba(4,120,87,0.06);
+    }
+
+    .status.warn{
+      border-color: rgba(180,83,9,0.25);
+      background: rgba(180,83,9,0.06);
+    }
+
+    .status.err{
+      border-color: rgba(185,28,28,0.25);
+      background: rgba(185,28,28,0.06);
+    }
+
+    .fineprint{
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .fineprint a{
+      color: #0b3c5d;
+      font-weight: 700;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(11,60,93,0.25);
+      padding-bottom: 1px;
+    }
+
+    .fineprint a:hover{
+      border-bottom-color: rgba(11,60,93,0.5);
+    }
+
+    @media (max-width: 560px){
+      body{ padding: 40px 16px; }
+      .hero{ padding: 22px 18px; }
+      .btn{ flex: 1 1 100%; }
+    }
   </style>
 </head>
+
 <body>
-  <h1>Sign In / Sign Up</h1>
+  <div class="wrap">
+    <div class="hero">
+      <div class="topbar">
+        <div class="brand">
+          <h1>RNA-Pathology<span class="tm">™</span></h1>
+        </div>
+        <a class="home-link" href="/">Back to Home</a>
+      </div>
+      <p class="tagline">
+        Sign in to access member features. New here? Create an account in under a minute.
+      </p>
+    </div>
 
-  <input id="email" type="email" placeholder="Email" autocomplete="email" />
-  <input id="password" type="password" placeholder="Password (>= 6 characters)" autocomplete="current-password" />
+    <div class="card">
+      <div class="title">
+        <h2>Sign In / Sign Up</h2>
+        <p class="hint" id="modeHint">Ready.</p>
+      </div>
 
-  <div class="row">
-    <button id="signup">Sign Up</button>
-    <button id="signin">Sign In</button>
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" placeholder="name@domain.com" autocomplete="email" />
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="At least 6 characters" autocomplete="current-password" />
+      </div>
+
+      <div class="row">
+        <button class="btn secondary" id="signup" type="button">Sign Up</button>
+        <button class="btn" id="signin" type="button">Sign In</button>
+      </div>
+
+      <div class="row" style="margin-top:10px;">
+        <button class="btn danger" id="signout" type="button" style="display:none;">Sign Out</button>
+      </div>
+
+      <div id="msg" class="status">Loading…</div>
+
+      <div class="fineprint">
+        By signing in, you agree to the project’s <a href="/access/">Legal / Usage</a> terms.
+      </div>
+    </div>
   </div>
 
-  <button id="signout" style="display:none;">Sign Out</button>
-
-  <div id="msg"></div>
-
-  <!-- Use ESM to avoid "window.supabase is undefined" + show startup errors in UI -->
+  <!-- Supabase (ESM) + robust UI feedback -->
   <script type="module">
     const SUPABASE_URL = "https://xxlkxorwprtynemmbeya.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_ZzCo8J6b6y0xVkExiOtHyg_gOpGEJFv";
 
     const $ = (id) => document.getElementById(id);
-    const setMsg = (t) => { $("msg").textContent = t; };
 
-    // Prove JS is running immediately (so “no reaction” becomes impossible)
-    setMsg("JavaScript loaded. Initializing Supabase…");
+    const statusEl = $("msg");
+    const modeHintEl = $("modeHint");
+    const btnSignUp = $("signup");
+    const btnSignIn = $("signin");
+    const btnSignOut = $("signout");
+
+    function setStatus(text, level = "info") {
+      statusEl.className = "status";
+      if (level === "ok") statusEl.classList.add("ok");
+      if (level === "warn") statusEl.classList.add("warn");
+      if (level === "err") statusEl.classList.add("err");
+      statusEl.textContent = text;
+    }
+
+    function setMode(mode) {
+      // purely visual cue; user still chooses via buttons
+      btnSignUp.classList.toggle("is-active", mode === "signup");
+      btnSignIn.classList.toggle("is-active", mode === "signin");
+
+      if (mode === "signup") modeHintEl.textContent = "Tip: Click “Sign Up” to create a new account.";
+      if (mode === "signin") modeHintEl.textContent = "Tip: Click “Sign In” to use an existing account.";
+    }
+
+    function getQueryFlag(name) {
+      const u = new URL(window.location.href);
+      return u.searchParams.get(name);
+    }
+
+    function disableAuthButtons(disabled) {
+      btnSignUp.disabled = disabled;
+      btnSignIn.disabled = disabled;
+      btnSignOut.disabled = disabled;
+    }
+
+    function prettyError(e) {
+      const msg = e?.message || String(e);
+      return msg;
+    }
+
+    // Read query flags (e.g., login.html?signup=1)
+    const signupFlag = getQueryFlag("signup");
+    if (signupFlag === "1" || signupFlag === "true") {
+      setMode("signup");
+      setStatus("Ready to sign up. Enter your email + password, then click “Sign Up”.", "warn");
+      // Focus password to encourage creating one quickly
+      setTimeout(() => $("password").focus(), 50);
+    } else {
+      setMode("signin");
+      setStatus("Ready to sign in. Enter your email + password, then click “Sign In”.");
+    }
 
     try {
       const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
@@ -45,61 +399,95 @@
       async function refreshUI() {
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) {
-          setMsg("Session check failed:\n" + error.message);
-          $("signout").style.display = "none";
+          btnSignOut.style.display = "none";
+          setStatus("Session check failed:\n" + error.message, "err");
           return;
         }
+
         if (session) {
-          setMsg("Signed in as: " + session.user.email + "\nuser_id: " + session.user.id);
-          $("signout").style.display = "block";
+          btnSignOut.style.display = "inline-flex";
+          setStatus("Signed in as: " + session.user.email + "\nuser_id: " + session.user.id, "ok");
         } else {
-          setMsg("Signed out");
-          $("signout").style.display = "none";
+          btnSignOut.style.display = "none";
+          // keep whatever hint message currently shown unless it's a loading message
+          // (do not overwrite user's last action feedback)
         }
       }
 
-      $("signup").addEventListener("click", async () => {
+      btnSignUp.addEventListener("click", async () => {
+        setMode("signup");
+
         const email = $("email").value.trim();
         const password = $("password").value;
 
-        if (!email) return setMsg("Please enter an email.");
-        if (!password || password.length < 6) return setMsg("Password must be at least 6 characters.");
+        if (!email) return setStatus("Please enter an email.", "warn");
+        if (!password || password.length < 6) return setStatus("Password must be at least 6 characters.", "warn");
 
-        setMsg("Signing up…");
+        disableAuthButtons(true);
+        setStatus("Signing up…", "warn");
+
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: 'https://rna-pathology.com/' }
+          options: { emailRedirectTo: "https://rna-pathology.com/" }
         });
-        if (error) return setMsg("Sign up failed:\n" + error.message);
-        setMsg("Sign up successful! If email confirmation is enabled, please check your inbox and confirm.\n" + (data.user?.email ?? ""));
-        refreshUI();
+
+        disableAuthButtons(false);
+
+        if (error) return setStatus("Sign up failed:\n" + error.message, "err");
+
+        setStatus(
+          "Sign up request sent.\n\nIf email confirmation is enabled, please check your inbox and click the confirmation link.\n" +
+          (data.user?.email ?? ""),
+          "ok"
+        );
+        await refreshUI();
       });
 
-      $("signin").addEventListener("click", async () => {
+      btnSignIn.addEventListener("click", async () => {
+        setMode("signin");
+
         const email = $("email").value.trim();
         const password = $("password").value;
-        if (!email) return setMsg("Please enter an email.");
-        if (!password) return setMsg("Please enter a password.");
-        setMsg("Signing in…");
+
+        if (!email) return setStatus("Please enter an email.", "warn");
+        if (!password) return setStatus("Please enter a password.", "warn");
+
+        disableAuthButtons(true);
+        setStatus("Signing in…", "warn");
+
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) return setMsg("Sign in failed:\n" + error.message);
-        setMsg("Sign in successful: " + data.user.email);
-        refreshUI();
+
+        disableAuthButtons(false);
+
+        if (error) return setStatus("Sign in failed:\n" + error.message, "err");
+
+        setStatus("Sign in successful: " + data.user.email, "ok");
+        await refreshUI();
       });
 
-      $("signout").addEventListener("click", async () => {
-        setMsg("Signing out…");
+      btnSignOut.addEventListener("click", async () => {
+        disableAuthButtons(true);
+        setStatus("Signing out…", "warn");
+
         const { error } = await supabase.auth.signOut();
-        if (error) return setMsg("Sign out failed:\n" + error.message);
-        setMsg("Signed out");
-        refreshUI();
+
+        disableAuthButtons(false);
+
+        if (error) return setStatus("Sign out failed:\n" + error.message, "err");
+
+        setStatus("Signed out.", "ok");
+        await refreshUI();
       });
 
       supabase.auth.onAuthStateChange(() => refreshUI());
-      refreshUI();
+      await refreshUI();
+
+      // If we got here and there's no session, keep the current "Ready..." status.
+      // If there IS a session, refreshUI already shows the signed-in message.
+
     } catch (e) {
-      setMsg("Startup error (JS ran, but initialization failed):\n" + (e?.stack || e?.message || String(e)));
+      setStatus("Startup error:\n" + prettyError(e), "err");
     }
   </script>
 </body>
