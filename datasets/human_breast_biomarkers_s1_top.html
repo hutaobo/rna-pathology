@@ -36,56 +36,23 @@
       color: #222;
     }
 
-    nav {
-      margin-bottom: 14px;
-    }
+    nav { margin-bottom: 14px; }
+    nav a { margin-right: 16px; text-decoration: none; color: var(--link); }
+    nav a:hover { text-decoration: underline; }
 
-    nav a {
-      margin-right: 16px;
-      text-decoration: none;
-      color: var(--link);
-    }
+    h1 { margin: 12px 0 8px 0; }
+    h2 { margin-top: 46px; border-bottom: 1px solid #ddd; padding-bottom: 6px; }
+    h3 { margin-top: 26px; }
+    section { margin-bottom: 46px; }
 
-    nav a:hover {
-      text-decoration: underline;
-    }
-
-    h1 {
-      margin: 12px 0 8px 0;
-    }
-
-    h2 {
-      margin-top: 46px;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 6px;
-    }
-
-    h3 {
-      margin-top: 26px;
-    }
-
-    section {
-      margin-bottom: 46px;
-    }
-
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 12px;
-    }
-
-    table th,
-    table td {
+    table { border-collapse: collapse; width: 100%; margin-top: 12px; }
+    table th, table td {
       border: 1px solid #ddd;
       padding: 8px 10px;
       text-align: left;
       vertical-align: top;
     }
-
-    table th {
-      background-color: #f6f6f6;
-      width: 220px;
-    }
+    table th { background-color: #f6f6f6; width: 220px; }
 
     /* ---- Dataset navigation (S1–S4 × Top/Middle/Bottom) ---- */
     .dataset-nav {
@@ -95,7 +62,6 @@
       border-radius: 10px;
       background: var(--bg-soft);
     }
-
     .dataset-nav .title {
       font-size: 0.95em;
       color: var(--muted);
@@ -131,25 +97,18 @@
 
     .dataset-links a {
       display: inline-block;
-      padding: 8px 10px;
-      border-radius: 8px;
+      padding: 10px 10px;
+      border-radius: 10px;
       border: 1px solid var(--border);
       background: #fff;
       color: var(--link);
       text-decoration: none;
-      font-size: 0.92em;
+      font-size: 0.94em;
       text-align: center;
       transition: transform 0.05s ease;
     }
-
-    .dataset-links a:hover {
-      text-decoration: underline;
-    }
-
-    .dataset-links a:active {
-      transform: translateY(1px);
-    }
-
+    .dataset-links a:hover { text-decoration: underline; }
+    .dataset-links a:active { transform: translateY(1px); }
     .dataset-links a.active {
       background: var(--active);
       border-color: var(--active);
@@ -162,16 +121,18 @@
       .dataset-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media (max-width: 520px) {
+      body { margin: 22px auto; padding: 0 14px; }
       .dataset-grid { grid-template-columns: 1fr; }
+      .dataset-links a { padding: 12px 10px; font-size: 1em; }
+      h1 { font-size: 1.35rem; }
     }
 
-    /* ---- Image sizing fixes ---- */
+    /* ---- Image sizing (mobile-friendly) ---- */
     .he-wrap {
       margin-top: 12px;
       display: flex;
       justify-content: center;
     }
-
     .he-image {
       max-width: 100%;
       max-height: 66vh;
@@ -186,10 +147,10 @@
 
     .image-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
       gap: 18px;
       margin-top: 16px;
       align-items: start;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     figure {
@@ -217,7 +178,16 @@
       font-weight: 700;
     }
 
-    /* ---- Lightbox (with prev/next arrows) ---- */
+    @media (max-width: 980px) {
+      .image-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 600px) {
+      .image-grid { grid-template-columns: 1fr; gap: 14px; }
+      figure { padding: 10px; }
+      figcaption { font-size: 1em; }
+    }
+
+    /* ---- Lightbox (mobile-friendly + pinch zoom) ---- */
     .lightbox {
       display: none;
       position: fixed;
@@ -225,33 +195,50 @@
       background: rgba(0,0,0,0.86);
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 12px;
       z-index: 9999;
+      /* allow pinch-zoom on iOS */
+      touch-action: pan-x pan-y;
     }
+    .lightbox.is-open { display: flex; }
 
-    .lightbox.is-open {
-      display: flex;
+    /* wrapper enables scroll/zoom feel on mobile */
+    .lightbox-stage {
+      position: relative;
+      max-width: 96vw;
+      max-height: 84vh;
+      overflow: auto;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.02);
+      -webkit-overflow-scrolling: touch;
     }
 
     .lightbox img {
-      max-width: 92vw;
-      max-height: 90vh;
+      display: block;
+      max-width: 96vw;
+      max-height: 84vh;
       border-radius: 12px;
       background: #fff;
     }
 
     .lightbox-close {
       position: absolute;
-      top: 14px;
-      right: 18px;
-      font-size: 26px;
+      top: 10px;
+      right: 10px;
+      font-size: 28px;
       color: #fff;
       font-weight: 800;
       cursor: pointer;
       user-select: none;
       line-height: 1;
+      padding: 6px 10px;
+      border-radius: 10px;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.18);
+      z-index: 2;
     }
 
+    /* Desktop arrows */
     .lightbox-arrow {
       position: absolute;
       top: 50%;
@@ -270,29 +257,62 @@
       cursor: pointer;
       user-select: none;
       backdrop-filter: blur(2px);
+      z-index: 2;
     }
-
-    .lightbox-arrow:hover {
-      background: rgba(0,0,0,0.35);
-    }
-
-    .lightbox-arrow.left { left: 18px; }
-    .lightbox-arrow.right { right: 18px; }
+    .lightbox-arrow:hover { background: rgba(0,0,0,0.35); }
+    .lightbox-arrow.left { left: 14px; }
+    .lightbox-arrow.right { right: 14px; }
 
     .lightbox-caption {
       position: absolute;
-      bottom: 14px;
+      bottom: 12px;
       left: 50%;
       transform: translateX(-50%);
       max-width: 92vw;
       color: rgba(255,255,255,0.92);
       font-size: 0.95em;
-      font-weight: 700;
+      font-weight: 800;
       text-align: center;
       padding: 8px 12px;
       border-radius: 10px;
       background: rgba(0,0,0,0.25);
       border: 1px solid rgba(255,255,255,0.15);
+      z-index: 2;
+    }
+
+    /* Mobile: replace side arrows with bottom buttons */
+    .lightbox-controls {
+      display: none;
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 54px;
+      gap: 10px;
+      z-index: 2;
+    }
+    .lightbox-btn {
+      flex: 1;
+      padding: 12px 12px;
+      border-radius: 12px;
+      background: rgba(0,0,0,0.28);
+      border: 1px solid rgba(255,255,255,0.22);
+      color: #fff;
+      font-weight: 800;
+      font-size: 1em;
+      cursor: pointer;
+      user-select: none;
+      text-align: center;
+    }
+
+    /* prevent scroll bleed when lightbox open */
+    body.lb-open { overflow: hidden; }
+
+    @media (max-width: 600px) {
+      .lightbox-stage { max-height: 78vh; }
+      .lightbox img { max-height: 78vh; }
+      .lightbox-arrow { display: none; }
+      .lightbox-controls { display: flex; }
+      .lightbox-caption { bottom: 12px; font-size: 1em; }
     }
   </style>
 </head>
@@ -304,7 +324,6 @@
   <a href="/gallery/human_breast/">← Gallery</a>
 </nav>
 
-<!-- 12-dataset navigation (auto-active by JS) -->
 <div class="dataset-nav" aria-label="Dataset navigation">
   <div class="title">Navigate datasets (S1–S4 × Top/Middle/Bottom)</div>
 
@@ -374,7 +393,6 @@
 
 <section>
   <h2>Available Data Layers</h2>
-
   <ul>
     <li>Sample metadata</li>
     <li>Tissue section geometry (preview)</li>
@@ -398,9 +416,7 @@
   </div>
 
   <h3>Cell-type spatial maps (colored by subtype)</h3>
-
   <div class="image-grid">
-    <!-- Order requested: Epithelial → Stromal → Immune -->
     <figure>
       <img
         class="map-image zoomable"
@@ -438,7 +454,6 @@
 
 <section>
   <h2>Usage Notes</h2>
-
   <p>
     Images provided on this page are intended for visualization and reference only.
     Full-resolution images and raw spatial omics matrices may be subject to
@@ -455,9 +470,22 @@
 <!-- Lightbox -->
 <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
   <div class="lightbox-close" id="lbClose" aria-label="Close">×</div>
+
+  <!-- Desktop arrows -->
   <div class="lightbox-arrow left" id="lbPrev" aria-label="Previous image">‹</div>
-  <img id="lbImg" src="" alt="">
+
+  <div class="lightbox-stage" id="lbStage" aria-label="Image stage">
+    <img id="lbImg" src="" alt="">
+  </div>
+
   <div class="lightbox-arrow right" id="lbNext" aria-label="Next image">›</div>
+
+  <!-- Mobile bottom controls -->
+  <div class="lightbox-controls" id="lbControls">
+    <div class="lightbox-btn" id="lbPrevBtn">◀ Prev</div>
+    <div class="lightbox-btn" id="lbNextBtn">Next ▶</div>
+  </div>
+
   <div class="lightbox-caption" id="lbCaption"></div>
 </div>
 
@@ -476,16 +504,18 @@
 
   // Lightbox slideshow (4 images: H&E + 3 maps)
   const lightbox = document.getElementById('lightbox');
+  const lbStage = document.getElementById('lbStage');
   const lbImg = document.getElementById('lbImg');
   const lbClose = document.getElementById('lbClose');
   const lbPrev = document.getElementById('lbPrev');
   const lbNext = document.getElementById('lbNext');
+  const lbPrevBtn = document.getElementById('lbPrevBtn');
+  const lbNextBtn = document.getElementById('lbNextBtn');
   const lbCaption = document.getElementById('lbCaption');
 
-  // Collect gallery items in DOM order:
-  // H&E first, then Epithelial, Stromal, Immune (as displayed on page).
   const galleryKey = "hb_s1_top";
-  const items = Array.from(document.querySelectorAll(`.zoomable[data-gallery="${galleryKey}"]`)).map(el => ({
+  const zoomables = Array.from(document.querySelectorAll(`.zoomable[data-gallery="${galleryKey}"]`));
+  const items = zoomables.map(el => ({
     src: el.getAttribute('src'),
     alt: el.getAttribute('alt') || '',
     caption: el.getAttribute('data-caption') || ''
@@ -493,42 +523,58 @@
 
   let currentIndex = 0;
 
-  function openAt(index) {
+  function render() {
     if (!items.length) return;
-    currentIndex = (index + items.length) % items.length;
     lbImg.src = items[currentIndex].src;
     lbImg.alt = items[currentIndex].alt;
     lbCaption.textContent = items[currentIndex].caption;
+
+    // reset stage scroll position (so new image starts centered)
+    lbStage.scrollTop = 0;
+    lbStage.scrollLeft = 0;
+  }
+
+  function openAt(index) {
+    if (!items.length) return;
+    currentIndex = (index + items.length) % items.length;
+    render();
     lightbox.classList.add('is-open');
+    document.body.classList.add('lb-open'); // lock background scroll
   }
 
   function closeLightbox() {
     lightbox.classList.remove('is-open');
+    document.body.classList.remove('lb-open');
     lbImg.src = '';
     lbCaption.textContent = '';
   }
 
   function prevImage() {
-    openAt(currentIndex - 1);
+    currentIndex = (currentIndex - 1 + items.length) % items.length;
+    render();
   }
 
   function nextImage() {
-    openAt(currentIndex + 1);
+    currentIndex = (currentIndex + 1) % items.length;
+    render();
   }
 
   // Bind click on each image to open the correct index
-  document.querySelectorAll(`.zoomable[data-gallery="${galleryKey}"]`).forEach((el, idx) => {
-    el.addEventListener('click', () => openAt(idx));
-  });
+  zoomables.forEach((el, idx) => el.addEventListener('click', () => openAt(idx)));
 
+  // Close
   lbClose.addEventListener('click', closeLightbox);
-  lbPrev.addEventListener('click', (e) => { e.stopPropagation(); prevImage(); });
-  lbNext.addEventListener('click', (e) => { e.stopPropagation(); nextImage(); });
 
-  // Click outside image closes
+  // Click outside stage closes (but not when clicking stage/img)
   lightbox.addEventListener('click', (e) => {
     if (e.target === lightbox) closeLightbox();
   });
+
+  // Prev/Next controls
+  lbPrev.addEventListener('click', (e) => { e.stopPropagation(); prevImage(); });
+  lbNext.addEventListener('click', (e) => { e.stopPropagation(); nextImage(); });
+  lbPrevBtn.addEventListener('click', (e) => { e.stopPropagation(); prevImage(); });
+  lbNextBtn.addEventListener('click', (e) => { e.stopPropagation(); nextImage(); });
 
   // Keyboard controls
   document.addEventListener('keydown', (e) => {
@@ -537,6 +583,44 @@
     if (e.key === 'ArrowLeft') prevImage();
     if (e.key === 'ArrowRight') nextImage();
   });
+
+  // Swipe controls (more robust, avoid accidental trigger while scrolling)
+  let startX = null, startY = null, startT = null;
+
+  lightbox.addEventListener('touchstart', (e) => {
+    if (!lightbox.classList.contains('is-open')) return;
+    const t = e.changedTouches[0];
+    startX = t.clientX;
+    startY = t.clientY;
+    startT = Date.now();
+  }, { passive: true });
+
+  lightbox.addEventListener('touchend', (e) => {
+    if (!lightbox.classList.contains('is-open')) return;
+    if (startX === null || startY === null || startT === null) return;
+
+    const t = e.changedTouches[0];
+    const dx = t.clientX - startX;
+    const dy = t.clientY - startY;
+    const dt = Date.now() - startT;
+
+    // Swipe requirements:
+    // - fast enough OR long enough distance
+    // - primarily horizontal
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
+
+    const primaryHorizontal = absX > absY * 1.2;
+    const farEnough = absX > 55;
+    const notTooSlow = dt < 700;
+
+    if (primaryHorizontal && farEnough && notTooSlow) {
+      if (dx < 0) nextImage();
+      else prevImage();
+    }
+
+    startX = startY = startT = null;
+  }, { passive: true });
 </script>
 
 </body>
