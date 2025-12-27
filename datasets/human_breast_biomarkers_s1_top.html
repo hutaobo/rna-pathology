@@ -21,7 +21,7 @@
   <style>
     body {
       font-family: Arial, Helvetica, sans-serif;
-      max-width: 960px;
+      max-width: 1120px; /* wider to balance HE vs maps */
       margin: 40px auto;
       padding: 0 20px;
       line-height: 1.65;
@@ -94,21 +94,90 @@
       width: 220px;
     }
 
+    /* ---- Image sizing fixes ---- */
+
+    /* H&E: keep it big but not overwhelming */
+    .he-wrap {
+      margin-top: 12px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .he-image {
+      max-width: 100%;
+      max-height: 70vh;      /* key: stop it from taking the whole page */
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 8px;
+      cursor: zoom-in;
+    }
+
+    /* 3 maps: make them larger and more readable */
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 18px;
+      margin-top: 16px;
+      align-items: start;
+    }
+
     figure {
       margin: 0;
+      padding: 12px;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .map-image {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      cursor: zoom-in;
     }
 
     figcaption {
-      font-size: 0.9em;
-      color: #555;
-      margin-top: 6px;
+      font-size: 0.92em;
+      color: #444;
+      margin-top: 10px;
+      text-align: center;
+      font-weight: 600;
     }
 
-    .image-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 16px;
-      margin-top: 16px;
+    /* ---- Lightbox ---- */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.86);
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 9999;
+    }
+
+    .lightbox.is-open {
+      display: flex;
+    }
+
+    .lightbox img {
+      max-width: 95vw;
+      max-height: 92vh;
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      font-size: 26px;
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
     }
   </style>
 </head>
@@ -140,42 +209,15 @@
   <h2>Core Metadata</h2>
 
   <table>
-    <tr>
-      <th>Dataset ID</th>
-      <td>human_breast_biomarkers_s1_top</td>
-    </tr>
-    <tr>
-      <th>Parent sample</th>
-      <td>S1</td>
-    </tr>
-    <tr>
-      <th>Section</th>
-      <td>Top</td>
-    </tr>
-    <tr>
-      <th>Species</th>
-      <td>Human</td>
-    </tr>
-    <tr>
-      <th>Tissue</th>
-      <td>Breast</td>
-    </tr>
-    <tr>
-      <th>Pathology</th>
-      <td>Biomarker reference tissue</td>
-    </tr>
-    <tr>
-      <th>Technology</th>
-      <td>H&amp;E histology, spatial biomarker mapping</td>
-    </tr>
-    <tr>
-      <th>Schema version</th>
-      <td>v0.2</td>
-    </tr>
-    <tr>
-      <th>Status</th>
-      <td>Preview available</td>
-    </tr>
+    <tr><th>Dataset ID</th><td>human_breast_biomarkers_s1_top</td></tr>
+    <tr><th>Parent sample</th><td>S1</td></tr>
+    <tr><th>Section</th><td>Top</td></tr>
+    <tr><th>Species</th><td>Human</td></tr>
+    <tr><th>Tissue</th><td>Breast</td></tr>
+    <tr><th>Pathology</th><td>Biomarker reference tissue</td></tr>
+    <tr><th>Technology</th><td>H&amp;E histology, spatial biomarker mapping</td></tr>
+    <tr><th>Schema version</th><td>v0.2</td></tr>
+    <tr><th>Status</th><td>Preview available</td></tr>
   </table>
 </section>
 
@@ -194,12 +236,13 @@
   <h2>Associated Images</h2>
 
   <h3>Histology (H&amp;E)</h3>
-
-  <img
-    src="/images/gallery/Human_Breast_Biomarkers_S1_Top_he_image_preview_L-2.jpg"
-    alt="Human Breast Biomarkers S1 Top — H&amp;E histology"
-    style="max-width:100%; margin-top:12px;"
-  >
+  <div class="he-wrap">
+    <img
+      class="he-image zoomable"
+      src="/images/gallery/Human_Breast_Biomarkers_S1_Top_he_image_preview_L-2.jpg"
+      alt="Human Breast Biomarkers S1 Top — H&amp;E histology"
+    >
+  </div>
 
   <h3>Cell-type spatial maps (colored by subtype)</h3>
 
@@ -207,27 +250,27 @@
 
     <figure>
       <img
+        class="map-image zoomable"
         src="/images/gallery/Human_Breast_Biomarkers_S1_Top_Immune_coloredBySubtype.png"
         alt="S1 Top immune cells colored by subtype"
-        style="width:100%;"
       >
       <figcaption>Immune cells</figcaption>
     </figure>
 
     <figure>
       <img
+        class="map-image zoomable"
         src="/images/gallery/Human_Breast_Biomarkers_S1_Top_Stromal_coloredBySubtype.png"
         alt="S1 Top stromal cells colored by subtype"
-        style="width:100%;"
       >
       <figcaption>Stromal cells</figcaption>
     </figure>
 
     <figure>
       <img
+        class="map-image zoomable"
         src="/images/gallery/Human_Breast_Biomarkers_S1_Top_Epithelial_coloredBySubtype.png"
         alt="S1 Top epithelial cells colored by subtype"
-        style="width:100%;"
       >
       <figcaption>Epithelial cells</figcaption>
     </figure>
@@ -250,6 +293,39 @@
 <p style="font-size:0.9em; color:#666;">
   RNA-Pathology Dataset Card · Human Breast Biomarkers · S1 Top · Version 0.1
 </p>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-close" id="lbClose">×</div>
+  <img id="lbImg" src="" alt="">
+</div>
+
+<script>
+  const lightbox = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  const lbClose = document.getElementById('lbClose');
+
+  document.querySelectorAll('.zoomable').forEach(img => {
+    img.addEventListener('click', () => {
+      lbImg.src = img.src;
+      lbImg.alt = img.alt || '';
+      lightbox.classList.add('is-open');
+    });
+  });
+
+  function closeLightbox() {
+    lightbox.classList.remove('is-open');
+    lbImg.src = '';
+  }
+
+  lbClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeLightbox();
+  });
+</script>
 
 </body>
 </html>
