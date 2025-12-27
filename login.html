@@ -42,7 +42,7 @@
     async function refreshUI() {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        msg(`Signed in as: ${session.user.email}\nuser_id: ${session.user.id}`);
+        msg("Signed in as: " + session.user.email + "\nuser_id: " + session.user.id);
         $("signout").style.display = "block";
       } else {
         msg("Signed out");
