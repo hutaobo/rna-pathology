@@ -76,6 +76,38 @@
       pointer-events:none;
     }
 
+    /* NEW: top-right auth buttons */
+    .top-actions{
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      display: flex;
+      gap: 10px;
+      z-index: 2;
+    }
+
+    /* Reuse .cta look, but lighter so it doesn't compete with main CTAs */
+    .cta-ghost{
+      padding: 10px 14px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      border: 1px solid rgba(255,255,255,0.22);
+      background: rgba(255,255,255,0.08);
+      color: #ffffff;
+      transition: transform 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
+      user-select: none;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    .cta-ghost:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.12);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    }
+
     .brand{
       display:flex;
       align-items: baseline;
@@ -241,6 +273,13 @@
       .cta-primary, .cta-secondary{
         min-width: 100%;
       }
+
+      /* NEW: top-right auth buttons stack nicely on small screens */
+      .top-actions{
+        position: static;
+        margin-bottom: 14px;
+        justify-content: flex-end;
+      }
     }
   </style>
 </head>
@@ -250,6 +289,13 @@
 <header>
   <div class="container">
     <div class="hero">
+
+      <!-- NEW: Sign Up / Sign In on top-right -->
+      <div class="top-actions" aria-label="Account">
+        <a class="cta-ghost" href="login.html?signup=1">Sign Up</a>
+        <a class="cta-ghost" href="login.html">Sign In</a>
+      </div>
+
       <div class="brand">
         <h1>RNA-Pathology<span class="tm">™</span></h1>
       </div>
