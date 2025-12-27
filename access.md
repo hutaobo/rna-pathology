@@ -1,3 +1,8 @@
+---
+layout: default
+title: Access
+---
+
 # Access
 
 RNA Pathology supports tiered data access to ensure ethical use,
