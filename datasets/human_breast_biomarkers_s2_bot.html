@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <title>Dataset: Human Breast Biomarkers S2 — Bot</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+        content="Dataset card for Human Breast Biomarkers S2 (Bot section). RNA-Pathology database.">
+
+  <!-- Google Analytics (GA4) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-B2L5CDD57"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-B2L5CDD57');
+  </script>
+
+  <style>
+    :root{
+      --link: #0066cc;
+      --border: rgba(0,0,0,0.08);
+      --muted: #444;
+      --bg-soft: #fafbfe;
+      --active: #1d4ed8;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      max-width: 1120px;
+      margin: 40px auto;
+      padding: 0 20px;
+      line-height: 1.65;
+      color: #222;
+    }
+
+    nav { margin-bottom: 14px; }
+    nav a { margin-right: 16px; text-decoration: none; color: var(--link); }
+    nav a:hover { text-decoration: underline; }
+
+    h1 { margin: 12px 0 8px 0; }
+    h2 { margin-top: 46px; border-bottom: 1px solid #ddd; padding-bottom: 6px; }
+    h3 { margin-top: 26px; }
+    section { margin-bottom: 46px; }
+
+    table { border-collapse: collapse; width: 100%; margin-top: 12px; }
+    table th, table td {
+      border: 1px solid #ddd;
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    table th { background-color: #f6f6f6; width: 220px; }
+
+    /* ---- Dataset navigation (S1–S4 × Top/Middle/Bottom) ---- */
+    .dataset-nav {
+      margin: 10px 0 18px 0;
+      padding: 14px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg-soft);
+    }
+    .dataset-nav .title {
+      font-size: 0.95em;
+      color: var(--muted);
+      margin: 0 0 10px 0;
+      font-weight: 700;
+    }
+
+    .dataset-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .dataset-col {
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .dataset-col .col-title {
+      font-weight: 800;
+      font-size: 0.95em;
+      margin: 0 0 8px 0;
+      color: #111;
+    }
+
+    .dataset-links {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .dataset-links a {
+      display: inline-block;
+      padding: 10px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--link);
+      text-decoration: none;
+      font-size: 0.94em;
+      text-align: center;
+      transition: transform 0.05s ease;
+    }
+    .dataset-links a:hover { text-decoration: underline; }
+    .dataset-links a:active { transform: translateY(1px); }
+    .dataset-links a.active {
+      background: var(--active);
+      border-color: var(--active);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 800;
+    }
+
+    /* Tablet */
+    @media (max-width: 900px) {
+      .dataset-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    /* Mobile */
+    @media (max-width: 520px) {
+      body { margin: 22px auto; padding: 0 14px; }
+      .dataset-grid { grid-template-columns: 1fr; }
+      .dataset-links a { padding: 12px 10px; font-size: 1em; }
+      h1 { font-size: 1.35rem; }
+    }
+
+    /* ---- Image sizing (mobile-friendly) ---- */
+    .he-wrap {
+      margin-top: 12px;
+      display: flex;
+      justify-content: center;
+    }
+    .he-image {
+      max-width: 100%;
+      max-height: 66vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: zoom-in;
+      background: #fff;
+    }
+
+    .image-grid {
+      display: grid;
+      gap: 18px;
+      margin-top: 16px;
+      align-items: start;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    figure {
+      margin: 0;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    .map-image {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      cursor: zoom-in;
+      background: #fff;
+      border-radius: 8px;
+    }
+
+    figcaption {
+      font-size: 0.92em;
+      color: var(--muted);
+      margin-top: 10px;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    @media (max-width: 980px) {
+      .image-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 600px) {
+      .image-grid { grid-template-columns: 1fr; gap: 14px; }
+      figure { padding: 10px; }
+      figcaption { font-size: 1em; }
+    }
+
+    /* ---- Lightbox (mobile-friendly + pinch zoom) ---- */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.86);
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      z-index: 9999;
+      touch-action: pan-x pan-y;
+    }
+    .lightbox.is-open { display: flex; }
+
+    .lightbox-stage {
+      position: relative;
+      max-width: 96vw;
+      max-height: 84vh;
+      overflow: auto;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.02);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .lightbox img {
+      display: block;
+      max-width: 96vw;
+      max-height: 84vh;
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 28px;
+      color: #fff;
+      font-weight: 800;
+      cursor: pointer;
+      user-select: none;
+      line-height: 1;
+      padding: 6px 10px;
+      border-radius: 10px;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.18);
+      z-index: 2;
+    }
+
+    .lightbox-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.28);
+      background: rgba(0,0,0,0.25);
+      color: #fff;
+      font-size: 26px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      backdrop-filter: blur(2px);
+      z-index: 2;
+    }
+    .lightbox-arrow:hover { background: rgba(0,0,0,0.35); }
+    .lightbox-arrow.left { left: 14px; }
+    .lightbox-arrow.right { right: 14px; }
+
+    .lightbox-caption {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 92vw;
+      color: rgba(255,255,255,0.92);
+      font-size: 0.95em;
+      font-weight: 800;
+      text-align: center;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.15);
+      z-index: 2;
+    }
+
+    .lightbox-controls {
+      display: none;
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 54px;
+      gap: 10px;
+      z-index: 2;
+    }
+    .lightbox-btn {
+      flex: 1;
+      padding: 12px 12px;
+      border-radius: 12px;
+      background: rgba(0,0,0,0.28);
+      border: 1px solid rgba(255,255,255,0.22);
+      color: #fff;
+      font-weight: 800;
+      font-size: 1em;
+      cursor: pointer;
+      user-select: none;
+      text-align: center;
+    }
+
+    body.lb-open { overflow: hidden; }
+
+    @media (max-width: 600px) {
+      .lightbox-stage { max-height: 78vh; }
+      .lightbox img { max-height: 78vh; }
+      .lightbox-arrow { display: none; }
+      .lightbox-controls { display: flex; }
+      .lightbox-caption { bottom: 12px; font-size: 1em; }
+    }
+  </style>
+</head>
+
+<body>
+
+<nav>
+  <a href="/database.html">← Database Overview</a>
+  <a href="/gallery/human_breast/">← Gallery</a>
+</nav>
+
+<div class="dataset-nav" aria-label="Dataset navigation">
+  <div class="title">Navigate datasets (S1–S4 × Top/Middle/Bottom)</div>
+
+  <div class="dataset-grid">
+    <div class="dataset-col">
+      <div class="col-title">S1</div>
+      <div class="dataset-links">
+        <a data-dataset="s1_top" href="/datasets/human_breast_biomarkers_s1_top.html">Top</a>
+        <a data-dataset="s1_mid" href="/datasets/human_breast_biomarkers_s1_mid.html">Middle</a>
+        <a data-dataset="s1_bot" href="/datasets/human_breast_biomarkers_s1_bot.html">Bottom</a>
+      </div>
+    </div>
+
+    <div class="dataset-col">
+      <div class="col-title">S2</div>
+      <div class="dataset-links">
+        <a data-dataset="s2_top" href="/datasets/human_breast_biomarkers_s2_top.html">Top</a>
+        <a data-dataset="s2_mid" href="/datasets/human_breast_biomarkers_s2_mid.html">Middle</a>
+        <a data-dataset="s2_bot" href="/datasets/human_breast_biomarkers_s2_bot.html">Bottom</a>
+      </div>
+    </div>
+
+    <div class="dataset-col">
+      <div class="col-title">S3</div>
+      <div class="dataset-links">
+        <a data-dataset="s3_top" href="/datasets/human_breast_biomarkers_s3_top.html">Top</a>
+        <a data-dataset="s3_mid" href="/datasets/human_breast_biomarkers_s3_mid.html">Middle</a>
+        <a data-dataset="s3_bot" href="/datasets/human_breast_biomarkers_s3_bot.html">Bottom</a>
+      </div>
+    </div>
+
+    <div class="dataset-col">
+      <div class="col-title">S4</div>
+      <div class="dataset-links">
+        <a data-dataset="s4_top" href="/datasets/human_breast_biomarkers_s4_top.html">Top</a>
+        <a data-dataset="s4_mid" href="/datasets/human_breast_biomarkers_s4_mid.html">Middle</a>
+        <a data-dataset="s4_bot" href="/datasets/human_breast_biomarkers_s4_bot.html">Bottom</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h1>Human Breast Biomarkers — S2 (Bottom)</h1>
+
+<p>
+  This dataset represents the <strong>Bot section</strong> of sample <strong>S2</strong>
+  from the Human Breast Biomarkers collection.
+  It is provided as a representative spatial pathology reference
+  for visualization and method benchmarking within the RNA-Pathology framework.
+</p>
+
+<section>
+  <h2>Core Metadata</h2>
+
+  <table>
+    <tr><th>Dataset ID</th><td>human_breast_biomarkers_s2_bot</td></tr>
+    <tr><th>Sample</th><td>S2-Bot</td></tr>
+    <tr><th>Species</th><td>Human</td></tr>
+    <tr><th>Tissue</th><td>Breast</td></tr>
+    <tr><th>Pathology</th><td>Biomarker reference tissue</td></tr>
+    <tr><th>Technology</th><td>H&amp;E histology, spatial biomarker mapping</td></tr>
+    <tr><th>Schema version</th><td>v0.2</td></tr>
+    <tr><th>Status</th><td>Preview available</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>Available Data Layers</h2>
+  <ul>
+    <li>Sample metadata</li>
+    <li>Tissue section geometry (preview)</li>
+    <li>Histology image (H&amp;E)</li>
+    <li>Cell-type spatial maps (colored by subtype)</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Associated Images</h2>
+
+  <h3>Histology (H&amp;E)</h3>
+  <div class="he-wrap">
+    <img
+      class="he-image zoomable"
+      data-gallery="hb_s2_bot"
+      data-caption="Histology (H&amp;E)"
+      src="/images/gallery/Human_Breast_Biomarkers_S2_Bot_he_image_preview_L-2.jpg"
+      alt="Human Breast Biomarkers S2 Bot — H&amp;E histology"
+    >
+  </div>
+
+  <h3>Cell-type spatial maps (colored by subtype)</h3>
+  <div class="image-grid">
+    <!-- Order: Epithelial → Stromal → Immune -->
+    <figure>
+      <img
+        class="map-image zoomable"
+        data-gallery="hb_s2_bot"
+        data-caption="Epithelial cells"
+        src="/images/gallery/Human_Breast_Biomarkers_S2_Bot_Epithelial_coloredBySubtype.png"
+        alt="S2 Bot epithelial cells colored by subtype"
+      >
+      <figcaption>Epithelial cells</figcaption>
+    </figure>
+
+    <figure>
+      <img
+        class="map-image zoomable"
+        data-gallery="hb_s2_bot"
+        data-caption="Stromal cells"
+        src="/images/gallery/Human_Breast_Biomarkers_S2_Bot_Stromal_coloredBySubtype.png"
+        alt="S2 Bot stromal cells colored by subtype"
+      >
+      <figcaption>Stromal cells</figcaption>
+    </figure>
+
+    <figure>
+      <img
+        class="map-image zoomable"
+        data-gallery="hb_s2_bot"
+        data-caption="Immune cells"
+        src="/images/gallery/Human_Breast_Biomarkers_S2_Bot_Immune_coloredBySubtype.png"
+        alt="S2 Bot immune cells colored by subtype"
+      >
+      <figcaption>Immune cells</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section>
+  <h2>Usage Notes</h2>
+  <p>
+    Images provided on this page are intended for visualization and reference only.
+    Full-resolution images and raw spatial omics matrices may be subject to
+    controlled access in future releases.
+  </p>
+</section>
+
+<hr>
+
+<p style="font-size:0.9em; color:#666;">
+  RNA-Pathology Dataset Card · Human Breast Biomarkers · S2 Bot · Version 0.1
+</p>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
+  <div class="lightbox-close" id="lbClose" aria-label="Close">×</div>
+
+  <div class="lightbox-arrow left" id="lbPrev" aria-label="Previous image">‹</div>
+
+  <div class="lightbox-stage" id="lbStage" aria-label="Image stage">
+    <img id="lbImg" src="" alt="">
+  </div>
+
+  <div class="lightbox-arrow right" id="lbNext" aria-label="Next image">›</div>
+
+  <div class="lightbox-controls" id="lbControls">
+    <div class="lightbox-btn" id="lbPrevBtn">◀ Prev</div>
+    <div class="lightbox-btn" id="lbNextBtn">Next ▶</div>
+  </div>
+
+  <div class="lightbox-caption" id="lbCaption"></div>
+</div>
+
+<script>
+  // Auto-highlight current dataset in the 12-nav
+  (function markActiveNav(){
+    const path = (window.location.pathname || "").toLowerCase();
+    const m = path.match(/human_breast_biomarkers_s(\d)_(top|mid|bot)\.html$/);
+    if (!m) return;
+
+    const key = `s${m[1]}_${m[2]}`;
+    document.querySelectorAll('.dataset-links a').forEach(a => a.classList.remove('active'));
+    const active = document.querySelector(`.dataset-links a[data-dataset="${key}"]`);
+    if (active) active.classList.add('active');
+  })();
+
+  // Lightbox slideshow (4 images: H&E + 3 maps)
+  const lightbox = document.getElementById('lightbox');
+  const lbStage = document.getElementById('lbStage');
+  const lbImg = document.getElementById('lbImg');
+  const lbClose = document.getElementById('lbClose');
+  const lbPrev = document.getElementById('lbPrev');
+  const lbNext = document.getElementById('lbNext');
+  const lbPrevBtn = document.getElementById('lbPrevBtn');
+  const lbNextBtn = document.getElementById('lbNextBtn');
+  const lbCaption = document.getElementById('lbCaption');
+
+  const galleryKey = "hb_s2_bot";
+  const zoomables = Array.from(document.querySelectorAll(`.zoomable[data-gallery="${galleryKey}"]`));
+  const items = zoomables.map(el => ({
+    src: el.getAttribute('src'),
+    alt: el.getAttribute('alt') || '',
+    caption: el.getAttribute('data-caption') || ''
+  }));
+
+  let currentIndex = 0;
+
+  function render() {
+    if (!items.length) return;
+    lbImg.src = items[currentIndex].src;
+    lbImg.alt = items[currentIndex].alt;
+    lbCaption.textContent = items[currentIndex].caption;
+    lbStage.scrollTop = 0;
+    lbStage.scrollLeft = 0;
+  }
+
+  function openAt(index) {
+    if (!items.length) return;
+    currentIndex = (index + items.length) % items.length;
+    render();
+    lightbox.classList.add('is-open');
+    document.body.classList.add('lb-open');
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('is-open');
+    document.body.classList.remove('lb-open');
+    lbImg.src = '';
+    lbCaption.textContent = '';
+  }
+
+  function prevImage() {
+    currentIndex = (currentIndex - 1 + items.length) % items.length;
+    render();
+  }
+
+  function nextImage() {
+    currentIndex = (currentIndex + 1) % items.length;
+    render();
+  }
+
+  zoomables.forEach((el, idx) => el.addEventListener('click', () => openAt(idx)));
+
+  lbClose.addEventListener('click', closeLightbox);
+
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  lbPrev.addEventListener('click', (e) => { e.stopPropagation(); prevImage(); });
+  lbNext.addEventListener('click', (e) => { e.stopPropagation(); nextImage(); });
+  lbPrevBtn.addEventListener('click', (e) => { e.stopPropagation(); prevImage(); });
+  lbNextBtn.addEventListener('click', (e) => { e.stopPropagation(); nextImage(); });
+
+  document.addEventListener('keydown', (e) => {
+    if (!lightbox.classList.contains('is-open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') prevImage();
+    if (e.key === 'ArrowRight') nextImage();
+  });
+
+  // Swipe controls
+  let startX = null, startY = null, startT = null;
+
+  lightbox.addEventListener('touchstart', (e) => {
+    if (!lightbox.classList.contains('is-open')) return;
+    const t = e.changedTouches[0];
+    startX = t.clientX;
+    startY = t.clientY;
+    startT = Date.now();
+  }, { passive: true });
+
+  lightbox.addEventListener('touchend', (e) => {
+    if (!lightbox.classList.contains('is-open')) return;
+    if (startX === null || startY === null || startT === null) return;
+
+    const t = e.changedTouches[0];
+    const dx = t.clientX - startX;
+    const dy = t.clientY - startY;
+    const dt = Date.now() - startT;
+
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
+
+    const primaryHorizontal = absX > absY * 1.2;
+    const farEnough = absX > 55;
+    const notTooSlow = dt < 700;
+
+    if (primaryHorizontal && farEnough && notTooSlow) {
+      if (dx < 0) nextImage();
+      else prevImage();
+    }
+
+    startX = startY = startT = null;
+  }, { passive: true });
+</script>
+
+</body>
+</html>
