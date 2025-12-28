@@ -128,8 +128,6 @@
     }
 
     /* ---- Image sizing (mobile-friendly) ---- */
-    /* NOTE: removed .he-wrap flex layout to avoid legend being pushed to the right */
-
     .he-image {
       max-width: 100%;
       max-height: 66vh;
@@ -161,7 +159,7 @@
       color: #444;
       font-size: 0.94em;
       line-height: 1.5;
-      text-align: left; /* legends read better left-aligned */
+      text-align: left;
     }
 
     figure {
@@ -212,6 +210,7 @@
     }
     .lightbox.is-open { display: flex; }
 
+    /* Stage becomes a vertical column: image on top, legend below */
     .lightbox-stage {
       position: relative;
       max-width: 96vw;
@@ -220,14 +219,34 @@
       border-radius: 12px;
       background: rgba(255,255,255,0.02);
       -webkit-overflow-scrolling: touch;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 10px;
     }
 
     .lightbox img {
       display: block;
       max-width: 96vw;
-      max-height: 84vh;
+      max-height: 70vh; /* leave room for legend below */
       border-radius: 12px;
       background: #fff;
+      margin: 0 auto;
+    }
+
+    /* Legend area inside lightbox */
+    .lightbox-legend {
+      max-width: 92vw;
+      margin: 0 auto;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.18);
+      color: rgba(255,255,255,0.92);
+      font-size: 0.95em;
+      line-height: 1.45;
+      white-space: pre-wrap;
     }
 
     .lightbox-close {
@@ -244,9 +263,11 @@
       border-radius: 10px;
       background: rgba(0,0,0,0.25);
       border: 1px solid rgba(255,255,255,0.18);
-      z-index: 2;
+      z-index: 10;
+      pointer-events: auto;
     }
 
+    /* Desktop arrows */
     .lightbox-arrow {
       position: absolute;
       top: 50%;
@@ -265,37 +286,23 @@
       cursor: pointer;
       user-select: none;
       backdrop-filter: blur(2px);
-      z-index: 2;
+      z-index: 10;          /* IMPORTANT: above stage */
+      pointer-events: auto; /* IMPORTANT: clickable */
     }
     .lightbox-arrow:hover { background: rgba(0,0,0,0.35); }
     .lightbox-arrow.left { left: 14px; }
     .lightbox-arrow.right { right: 14px; }
 
-    .lightbox-caption {
-      position: absolute;
-      bottom: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      max-width: 92vw;
-      color: rgba(255,255,255,0.92);
-      font-size: 0.95em;
-      font-weight: 800;
-      text-align: center;
-      padding: 8px 12px;
-      border-radius: 10px;
-      background: rgba(0,0,0,0.25);
-      border: 1px solid rgba(255,255,255,0.15);
-      z-index: 2;
-    }
-
+    /* Mobile: replace side arrows with bottom buttons */
     .lightbox-controls {
       display: none;
       position: absolute;
       left: 12px;
       right: 12px;
-      bottom: 54px;
+      bottom: 18px;
       gap: 10px;
-      z-index: 2;
+      z-index: 10;
+      pointer-events: auto;
     }
     .lightbox-btn {
       flex: 1;
@@ -311,14 +318,14 @@
       text-align: center;
     }
 
+    /* prevent scroll bleed when lightbox open */
     body.lb-open { overflow: hidden; }
 
     @media (max-width: 600px) {
       .lightbox-stage { max-height: 78vh; }
-      .lightbox img { max-height: 78vh; }
+      .lightbox img { max-height: 58vh; }
       .lightbox-arrow { display: none; }
       .lightbox-controls { display: flex; }
-      .lightbox-caption { bottom: 12px; font-size: 1em; }
     }
   </style>
 </head>
@@ -410,8 +417,6 @@
   <h2>Associated Images</h2>
 
   <h3>Histology (H&amp;E)</h3>
-
-  <!-- FIX: use figure so legend sits below, not to the right -->
   <figure>
     <img
       class="he-image zoomable"
@@ -420,7 +425,6 @@
       src="/images/gallery/Human_Breast_Biomarkers_S1_Top_he_image_preview_L-2.jpg"
       alt="Human Breast Biomarkers S1 Top — H&amp;E histology"
     >
-    <!-- legend.js will insert .img-legend after the image; keeping figure avoids flex-side layout -->
   </figure>
 
   <h3>Cell-type spatial maps (colored by subtype)</h3>
@@ -484,6 +488,7 @@
 
   <div class="lightbox-stage" id="lbStage" aria-label="Image stage">
     <img id="lbImg" src="" alt="">
+    <div class="lightbox-legend" id="lbLegend"></div>
   </div>
 
   <div class="lightbox-arrow right" id="lbNext" aria-label="Next image">›</div>
@@ -493,8 +498,6 @@
     <div class="lightbox-btn" id="lbPrevBtn">◀ Prev</div>
     <div class="lightbox-btn" id="lbNextBtn">Next ▶</div>
   </div>
-
-  <div class="lightbox-caption" id="lbCaption"></div>
 </div>
 
 <script>
@@ -514,12 +517,12 @@
   const lightbox = document.getElementById('lightbox');
   const lbStage = document.getElementById('lbStage');
   const lbImg = document.getElementById('lbImg');
+  const lbLegend = document.getElementById('lbLegend');
   const lbClose = document.getElementById('lbClose');
   const lbPrev = document.getElementById('lbPrev');
   const lbNext = document.getElementById('lbNext');
   const lbPrevBtn = document.getElementById('lbPrevBtn');
   const lbNextBtn = document.getElementById('lbNextBtn');
-  const lbCaption = document.getElementById('lbCaption');
 
   const galleryKey = "hb_s1_top";
   const zoomables = Array.from(document.querySelectorAll(`.zoomable[data-gallery="${galleryKey}"]`));
@@ -531,54 +534,96 @@
 
   let currentIndex = 0;
 
-  function render() {
-    if (!items.length) return;
-    lbImg.src = items[currentIndex].src;
-    lbImg.alt = items[currentIndex].alt;
-    lbCaption.textContent = items[currentIndex].caption;
+  function parseLegend(text) {
+    // supports:
+    // LEGEND: ...
+    // or plain text as fallback
+    const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+    const legendLine = lines.find(l => l.toUpperCase().startsWith("LEGEND:"));
+    if (legendLine) return legendLine.replace(/^LEGEND:\s*/i, "").trim();
+    return lines.join("\n").trim();
+  }
 
+  async function loadLegendFor(src) {
+    const legendUrl = src + ".legend.txt";
+    try {
+      const res = await fetch(legendUrl, { cache: "no-cache" });
+      if (!res.ok) throw new Error("missing");
+      const text = await res.text();
+      const legend = parseLegend(text);
+      if (!legend) {
+        lbLegend.textContent = "";
+        lbLegend.style.display = "none";
+        return;
+      }
+      lbLegend.textContent = legend;
+      lbLegend.style.display = "block";
+    } catch (e) {
+      // No legend file => hide legend area (clean)
+      lbLegend.textContent = "";
+      lbLegend.style.display = "none";
+    }
+  }
+
+  async function render() {
+    if (!items.length) return;
+    const item = items[currentIndex];
+
+    lbImg.src = item.src;
+    lbImg.alt = item.alt || "";
+
+    // Legend under the zoomed image
+    await loadLegendFor(item.src);
+
+    // reset stage scroll position (so new image starts at top)
     lbStage.scrollTop = 0;
     lbStage.scrollLeft = 0;
   }
 
-  function openAt(index) {
+  async function openAt(index) {
     if (!items.length) return;
     currentIndex = (index + items.length) % items.length;
-    render();
+    await render();
     lightbox.classList.add('is-open');
-    document.body.classList.add('lb-open');
+    document.body.classList.add('lb-open'); // lock background scroll
   }
 
   function closeLightbox() {
     lightbox.classList.remove('is-open');
     document.body.classList.remove('lb-open');
     lbImg.src = '';
-    lbCaption.textContent = '';
+    lbLegend.textContent = '';
+    lbLegend.style.display = "none";
   }
 
-  function prevImage() {
+  async function prevImage() {
     currentIndex = (currentIndex - 1 + items.length) % items.length;
-    render();
+    await render();
   }
 
-  function nextImage() {
+  async function nextImage() {
     currentIndex = (currentIndex + items.length) % items.length;
-    render();
+    await render();
   }
 
+  // Bind click on each image to open the correct index
   zoomables.forEach((el, idx) => el.addEventListener('click', () => openAt(idx)));
 
+  // Close
   lbClose.addEventListener('click', closeLightbox);
 
+  // Click outside stage closes (but not when clicking stage/img)
   lightbox.addEventListener('click', (e) => {
     if (e.target === lightbox) closeLightbox();
   });
 
+  // Prev/Next controls
   lbPrev.addEventListener('click', (e) => { e.stopPropagation(); prevImage(); });
   lbNext.addEventListener('click', (e) => { e.stopPropagation(); nextImage(); });
   lbPrevBtn.addEventListener('click', (e) => { e.stopPropagation(); prevImage(); });
   lbNextBtn.addEventListener('click', (e) => { e.stopPropagation(); nextImage(); });
 
+  // Keyboard controls
   document.addEventListener('keydown', (e) => {
     if (!lightbox.classList.contains('is-open')) return;
     if (e.key === 'Escape') closeLightbox();
@@ -586,6 +631,7 @@
     if (e.key === 'ArrowRight') nextImage();
   });
 
+  // Swipe controls (avoid accidental trigger while scrolling)
   let startX = null, startY = null, startT = null;
 
   lightbox.addEventListener('touchstart', (e) => {
@@ -621,6 +667,7 @@
   }, { passive: true });
 </script>
 
+<!-- Page legends (under thumbnails) -->
 <script src="/scripts/legend.js"></script>
 
 </body>
