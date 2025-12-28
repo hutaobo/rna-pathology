@@ -128,11 +128,8 @@
     }
 
     /* ---- Image sizing (mobile-friendly) ---- */
-    .he-wrap {
-      margin-top: 12px;
-      display: flex;
-      justify-content: center;
-    }
+    /* NOTE: removed .he-wrap flex layout to avoid legend being pushed to the right */
+
     .he-image {
       max-width: 100%;
       max-height: 66vh;
@@ -143,6 +140,8 @@
       border-radius: 10px;
       cursor: zoom-in;
       background: #fff;
+      display: block;
+      margin: 0 auto;
     }
 
     .image-grid {
@@ -162,6 +161,7 @@
       color: #444;
       font-size: 0.94em;
       line-height: 1.5;
+      text-align: left; /* legends read better left-aligned */
     }
 
     figure {
@@ -208,12 +208,10 @@
       justify-content: center;
       padding: 12px;
       z-index: 9999;
-      /* allow pinch-zoom on iOS */
       touch-action: pan-x pan-y;
     }
     .lightbox.is-open { display: flex; }
 
-    /* wrapper enables scroll/zoom feel on mobile */
     .lightbox-stage {
       position: relative;
       max-width: 96vw;
@@ -249,7 +247,6 @@
       z-index: 2;
     }
 
-    /* Desktop arrows */
     .lightbox-arrow {
       position: absolute;
       top: 50%;
@@ -291,7 +288,6 @@
       z-index: 2;
     }
 
-    /* Mobile: replace side arrows with bottom buttons */
     .lightbox-controls {
       display: none;
       position: absolute;
@@ -315,7 +311,6 @@
       text-align: center;
     }
 
-    /* prevent scroll bleed when lightbox open */
     body.lb-open { overflow: hidden; }
 
     @media (max-width: 600px) {
@@ -415,7 +410,9 @@
   <h2>Associated Images</h2>
 
   <h3>Histology (H&amp;E)</h3>
-  <div class="he-wrap">
+
+  <!-- FIX: use figure so legend sits below, not to the right -->
+  <figure>
     <img
       class="he-image zoomable"
       data-gallery="hb_s1_top"
@@ -423,7 +420,8 @@
       src="/images/gallery/Human_Breast_Biomarkers_S1_Top_he_image_preview_L-2.jpg"
       alt="Human Breast Biomarkers S1 Top — H&amp;E histology"
     >
-  </div>
+    <!-- legend.js will insert .img-legend after the image; keeping figure avoids flex-side layout -->
+  </figure>
 
   <h3>Cell-type spatial maps (colored by subtype)</h3>
   <div class="image-grid">
@@ -539,7 +537,6 @@
     lbImg.alt = items[currentIndex].alt;
     lbCaption.textContent = items[currentIndex].caption;
 
-    // reset stage scroll position (so new image starts centered)
     lbStage.scrollTop = 0;
     lbStage.scrollLeft = 0;
   }
@@ -549,7 +546,7 @@
     currentIndex = (index + items.length) % items.length;
     render();
     lightbox.classList.add('is-open');
-    document.body.classList.add('lb-open'); // lock background scroll
+    document.body.classList.add('lb-open');
   }
 
   function closeLightbox() {
@@ -565,28 +562,23 @@
   }
 
   function nextImage() {
-    currentIndex = (currentIndex + 1) % items.length;
+    currentIndex = (currentIndex + items.length) % items.length;
     render();
   }
 
-  // Bind click on each image to open the correct index
   zoomables.forEach((el, idx) => el.addEventListener('click', () => openAt(idx)));
 
-  // Close
   lbClose.addEventListener('click', closeLightbox);
 
-  // Click outside stage closes (but not when clicking stage/img)
   lightbox.addEventListener('click', (e) => {
     if (e.target === lightbox) closeLightbox();
   });
 
-  // Prev/Next controls
   lbPrev.addEventListener('click', (e) => { e.stopPropagation(); prevImage(); });
   lbNext.addEventListener('click', (e) => { e.stopPropagation(); nextImage(); });
   lbPrevBtn.addEventListener('click', (e) => { e.stopPropagation(); prevImage(); });
   lbNextBtn.addEventListener('click', (e) => { e.stopPropagation(); nextImage(); });
 
-  // Keyboard controls
   document.addEventListener('keydown', (e) => {
     if (!lightbox.classList.contains('is-open')) return;
     if (e.key === 'Escape') closeLightbox();
@@ -594,7 +586,6 @@
     if (e.key === 'ArrowRight') nextImage();
   });
 
-  // Swipe controls (more robust, avoid accidental trigger while scrolling)
   let startX = null, startY = null, startT = null;
 
   lightbox.addEventListener('touchstart', (e) => {
@@ -614,9 +605,6 @@
     const dy = t.clientY - startY;
     const dt = Date.now() - startT;
 
-    // Swipe requirements:
-    // - fast enough OR long enough distance
-    // - primarily horizontal
     const absX = Math.abs(dx);
     const absY = Math.abs(dy);
 
