@@ -207,7 +207,6 @@
       box-shadow: none;
     }
 
-    /* new: subtle link-style button */
     .linkbtn{
       border: 0;
       background: transparent;
@@ -289,18 +288,17 @@
         <input id="email" type="email" placeholder="name@domain.com" autocomplete="email" />
       </div>
 
-      <div class="field">
+      <div class="field" id="passwordField">
         <label for="password">Password</label>
         <input id="password" type="password" placeholder="At least 6 characters" autocomplete="current-password" />
       </div>
 
-      <div class="row">
+      <div class="row" id="authButtonsRow">
         <button class="btn secondary" id="signup" type="button">Sign Up</button>
         <button class="btn" id="signin" type="button">Sign In</button>
       </div>
 
-      <!-- new: forgot password link -->
-      <div style="margin-top:8px;">
+      <div style="margin-top:8px;" id="forgotRow">
         <button class="linkbtn" id="forgot" type="button">Forgot password?</button>
       </div>
 
@@ -329,6 +327,23 @@
     const btnSignOut = $("signout");
     const btnForgot = $("forgot");
 
+    const authButtonsRow = $("authButtonsRow");
+    const forgotRow = $("forgotRow");
+    const passwordField = $("passwordField");
+
+    let btnUpdatePassword = null;
+    let inRecovery = false;
+
+    // ---- URL helpers (avoid hard-coded domains; optionally force www) ----
+    const CANONICAL_ORIGIN =
+      (location.hostname === "rna-pathology.com")
+        ? "https://www.rna-pathology.com"
+        : location.origin;
+
+    function appUrl(path = "/login.html") {
+      return `${CANONICAL_ORIGIN}${path}`;
+    }
+
     function setStatus(text, level = "info") {
       statusEl.className = "status";
       if (level === "ok") statusEl.classList.add("ok");
@@ -349,7 +364,6 @@
       return u.searchParams.get(name);
     }
 
-    // for membership redirect
     function getNextPath() {
       const u = new URL(window.location.href);
       return u.searchParams.get("next") || "/?signed_in=1";
@@ -360,6 +374,19 @@
       btnSignIn.disabled = disabled;
       btnSignOut.disabled = disabled;
       btnForgot.disabled = disabled;
+      if (btnUpdatePassword) btnUpdatePassword.disabled = disabled;
+    }
+
+    function parseParamsFromHash() {
+      const h = window.location.hash?.startsWith("#") ? window.location.hash.slice(1) : "";
+      return new URLSearchParams(h);
+    }
+
+    function isRecoveryIntentFromUrl() {
+      const u = new URL(window.location.href);
+      const qType = u.searchParams.get("type");
+      const hType = parseParamsFromHash().get("type");
+      return (qType === "recovery" || hType === "recovery");
     }
 
     // Read query flags (e.g., login.html?signup=1)
@@ -397,15 +424,126 @@
         }
       }
 
-      // If already signed in, go to next directly
+      // ---- PKCE support: if we land here with ?code=..., exchange it for a session ----
+      // (This happens in PKCE flow, including some email link redirects.)
       try {
+        const u = new URL(window.location.href);
+        const code = u.searchParams.get("code");
+        if (code) {
+          const { error } = await supabase.auth.exchangeCodeForSession(code);
+          // Clean URL (remove ?code=...) regardless of exchange result
+          u.searchParams.delete("code");
+          window.history.replaceState({}, document.title, u.toString());
+          if (error) {
+            // Not fatal; continue (could be non-PKCE, already-exchanged, etc.)
+            setStatus("Auth code exchange warning:\n" + (error?.message || String(error)), "warn");
+          }
+        }
+      } catch (_) {}
+
+      // ---- Recovery UI (Step 2 of password reset) ----
+      function ensureRecoveryUI() {
+        if (inRecovery) return;
+        inRecovery = true;
+
+        setMode("signin");
+        modeHintEl.textContent = "Password recovery mode.";
+        setStatus("Password recovery detected. Please set a new password below.", "warn");
+
+        // Hide normal auth buttons / forgot link while resetting
+        authButtonsRow.style.display = "none";
+        forgotRow.style.display = "none";
+        btnSignOut.style.display = "none";
+
+        // Re-purpose the existing password field as "new password"
+        const pw = $("password");
+        pw.value = "";
+        pw.placeholder = "New password (at least 6 characters)";
+        pw.autocomplete = "new-password";
+
+        // Add confirm + update button if not present
+        if (!$("password2")) {
+          const lab2 = document.createElement("label");
+          lab2.setAttribute("for", "password2");
+          lab2.textContent = "Confirm new password";
+
+          const pw2 = document.createElement("input");
+          pw2.id = "password2";
+          pw2.type = "password";
+          pw2.placeholder = "Repeat new password";
+          pw2.autocomplete = "new-password";
+          pw2.style.marginTop = "10px";
+
+          passwordField.appendChild(lab2);
+          passwordField.appendChild(pw2);
+
+          const row = document.createElement("div");
+          row.className = "row";
+          row.style.marginTop = "12px";
+
+          const btn = document.createElement("button");
+          btn.className = "btn is-active";
+          btn.type = "button";
+          btn.id = "updatePassword";
+          btn.textContent = "Update Password";
+
+          row.appendChild(btn);
+          statusEl.parentElement.insertBefore(row, statusEl);
+
+          btnUpdatePassword = btn;
+
+          btn.addEventListener("click", async () => {
+            const newPass = pw.value;
+            const newPass2 = pw2.value;
+
+            if (!newPass || newPass.length < 6) return setStatus("New password must be at least 6 characters.", "warn");
+            if (newPass !== newPass2) return setStatus("Passwords do not match.", "warn");
+
+            disableAuthButtons(true);
+            setStatus("Updating password…", "warn");
+
+            try {
+              // This is the actual "reset" step after user returns via the email link
+              const { error } = await supabase.auth.updateUser({ password: newPass });
+              if (error) throw error;
+
+              setStatus("Password updated successfully. Please sign in with your new password.", "ok");
+              window.location.href = appUrl("/login.html?password_reset=1");
+            } catch (e) {
+              setStatus("Password update failed:\n" + (e?.message || String(e)), "err");
+            } finally {
+              disableAuthButtons(false);
+            }
+          });
+        }
+      }
+
+      // Trigger recovery mode if URL explicitly indicates it
+      if (isRecoveryIntentFromUrl()) {
+        ensureRecoveryUI();
+      }
+
+      // Listen for auth state changes (Supabase emits PASSWORD_RECOVERY on recovery links) :contentReference[oaicite:3]{index=3}
+      supabase.auth.onAuthStateChange((event) => {
+        if (event === "PASSWORD_RECOVERY") {
+          ensureRecoveryUI();
+          return;
+        }
+        refreshUI();
+      });
+
+      // If already signed in, go to next directly — but NOT if we are in recovery flow
+      try {
+        const recoveryIntent = isRecoveryIntentFromUrl();
         const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
+        if (session && !recoveryIntent && !inRecovery) {
           window.location.href = getNextPath();
         }
       } catch (_) {}
 
       btnSignUp.addEventListener("click", async () => {
+        if (inRecovery) return;
+
         setMode("signup");
         const email = $("email").value.trim();
         const password = $("password").value;
@@ -420,8 +558,10 @@
           const { data, error } = await supabase.auth.signUp({
             email,
             password,
-            // IMPORTANT: after confirmation, jump to your site
-            options: { emailRedirectTo: "https://rna-pathology.com/login.html" }
+            options: {
+              // Send user back to this page after confirming email
+              emailRedirectTo: appUrl("/login.html")
+            }
           });
           if (error) throw error;
 
@@ -439,6 +579,8 @@
       });
 
       btnSignIn.addEventListener("click", async () => {
+        if (inRecovery) return;
+
         setMode("signin");
         const email = $("email").value.trim();
         const password = $("password").value;
@@ -453,7 +595,6 @@
           const { error } = await supabase.auth.signInWithPassword({ email, password });
           if (error) throw error;
 
-          // Redirect to requested page (member-only flow)
           window.location.href = getNextPath();
         } catch (e) {
           setStatus("Sign in failed:\n" + (e?.message || String(e)), "err");
@@ -462,8 +603,10 @@
         }
       });
 
-      // Forgot password
+      // Forgot password (sends email; actual reset happens after user returns and we call updateUser) :contentReference[oaicite:4]{index=4}
       btnForgot.addEventListener("click", async () => {
+        if (inRecovery) return;
+
         const email = $("email").value.trim();
         if (!email) return setStatus("Please enter your email first, then click “Forgot password?”.", "warn");
 
@@ -472,7 +615,7 @@
 
         try {
           const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: "https://rna-pathology.com/login.html"
+            redirectTo: appUrl("/login.html")
           });
           if (error) throw error;
 
@@ -496,8 +639,7 @@
           if (error) throw error;
 
           setStatus("Signed out.", "ok");
-          // stay on login page; optionally send back home
-          window.location.href = "/login.html?signed_out=1";
+          window.location.href = appUrl("/login.html?signed_out=1");
         } catch (e) {
           setStatus("Sign out failed:\n" + (e?.message || String(e)), "err");
         } finally {
@@ -505,7 +647,6 @@
         }
       });
 
-      supabase.auth.onAuthStateChange(() => refreshUI());
       await refreshUI();
 
     } catch (e) {
