@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <link rel="stylesheet" href="/assets/site.css" />
   <script defer src="/assets/site.js"></script>
+
   <title>Cell Type Challenge | RNA Pathology</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- ✅ Member-only Guard (Supabase session) -->
   <script type="module">
@@ -59,12 +60,10 @@
       if (!session) {
         window.location.href = "/login.html?next=" + next;
       } else {
-        // Expose session email for header badge (optional UI)
         window.__memberEmail = session.user?.email || "";
         window.__supabaseClient = supabase;
       }
     } catch (e) {
-      // If auth check itself fails, block page and provide action
       showBlocker(
         "We couldn’t verify your member session.\n\n" +
         "Reason: " + (e?.message || String(e)) + "\n\n" +
@@ -74,44 +73,33 @@
   </script>
 
   <style>
-    body {
+    body{
       font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       margin: 0;
       background: #fafafa;
       color: #222;
     }
 
-    header {
+    header{
       background: #0b3c5d;
-      color: white;
+      color: #fff;
       padding: 16px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 20px;
-    }
-
-    .header-left{
       display:flex;
-      flex-direction: column;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
     }
 
-    .back-home {
-      display: inline-block;
-      margin-bottom: 6px;
-      font-size: 14px;
-      color: #cce4f6;
-      text-decoration: none;
+    header h1{ margin:0; font-size:20px; }
+    .header-left{ display:flex; flex-direction:column; }
+    .back-home{
+      display:inline-block;
+      margin-bottom:6px;
+      font-size:14px;
+      color:#cce4f6;
+      text-decoration:none;
     }
-
-    .back-home:hover {
-      text-decoration: underline;
-    }
+    .back-home:hover{ text-decoration: underline; }
 
     /* ✅ Member badge */
     .member-box{
@@ -119,150 +107,239 @@
       align-items:center;
       gap:10px;
       font-size: 13px;
-      color: #e6f4ff;
-      white-space: nowrap;
+      color:#e6f4ff;
+      white-space:nowrap;
     }
-
     .pill{
       display:inline-flex;
       align-items:center;
       gap:8px;
       padding: 6px 10px;
-      border-radius: 999px;
+      border-radius:999px;
       background: rgba(255,255,255,0.10);
       border: 1px solid rgba(255,255,255,0.18);
     }
-
     .dot{
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #34d399;
+      width:8px; height:8px; border-radius:50%;
+      background:#34d399;
       box-shadow: 0 0 0 3px rgba(52,211,153,0.18);
     }
-
     .signout-btn{
       background: rgba(255,255,255,0.12);
       border: 1px solid rgba(255,255,255,0.18);
-      color: #ffffff;
-      padding: 7px 10px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 700;
+      color:#fff;
+      padding:7px 10px;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:700;
     }
-    .signout-btn:hover{
-      background: rgba(255,255,255,0.16);
-    }
+    .signout-btn:hover{ background: rgba(255,255,255,0.16); }
 
-    main {
-      max-width: 1100px;
+    main{
+      max-width: 1200px;
       margin: 0 auto;
       padding: 24px;
     }
 
-    .question-meta {
-      background: #eef3f7;
-      padding: 12px 16px;
-      border-radius: 6px;
-      margin-bottom: 20px;
-      font-size: 14px;
+    .question-meta{
+      background:#eef3f7;
+      padding:12px 16px;
+      border-radius:10px;
+      margin-bottom:16px;
+      font-size:14px;
+      border:1px solid #dde6ee;
     }
 
-    .challenge-container {
-      display: grid;
+    .challenge-container{
+      display:grid;
       grid-template-columns: 2fr 1fr;
-      gap: 24px;
+      gap:18px;
+      align-items:start;
     }
 
-    .image-panel {
-      background: white;
-      padding: 12px;
-      border-radius: 6px;
-      border: 1px solid #ddd;
-      text-align: center;
+    .panel{
+      background:#fff;
+      border:1px solid #e5e7eb;
+      border-radius:12px;
+      box-shadow: 0 10px 24px rgba(2,6,23,0.06);
     }
 
-    .image-panel img {
-      max-width: 100%;
-      border: 1px solid #ccc;
+    .image-panel{ padding: 12px; }
+    .image-topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding: 10px 10px 0 10px;
+    }
+    .image-title{
+      font-weight:800;
+      font-size:14px;
+      color:#0f172a;
+    }
+    .nav-btns{
+      display:flex;
+      gap:8px;
+    }
+    .btn{
+      border:1px solid #d1d5db;
+      background:#fff;
+      color:#0f172a;
+      padding:8px 10px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:700;
+      font-size:13px;
+    }
+    .btn:hover{ background:#f3f4f6; }
+    .btn.primary{
+      background:#0b3c5d;
+      color:#fff;
+      border-color:#0b3c5d;
+    }
+    .btn.primary:hover{ background:#094062; }
+    .btn:disabled{
+      opacity:.45;
+      cursor:not-allowed;
     }
 
-    .control-panel {
-      background: white;
-      padding: 16px;
-      border-radius: 6px;
-      border: 1px solid #ddd;
+    .img-wrap{
+      padding:10px;
+      text-align:center;
+    }
+    .img-wrap img{
+      max-width:100%;
+      border:1px solid #e5e7eb;
+      border-radius:10px;
+    }
+    .hint{
+      font-size:12px;
+      color:#6b7280;
+      padding: 0 12px 12px 12px;
     }
 
-    .control-panel h3 {
-      margin-top: 0;
+    .control-panel{ padding:16px; }
+    .control-panel h3{
+      margin: 0 0 10px 0;
+      font-size:16px;
     }
 
-    label {
-      display: block;
-      margin-top: 12px;
-      font-size: 14px;
+    label{ display:block; margin-top: 10px; font-size: 13px; color:#111827; }
+    select{
+      width:100%;
+      padding:10px;
+      margin-top:6px;
+      font-size:14px;
+      border:1px solid #d1d5db;
+      border-radius:10px;
+      background:#fff;
     }
 
-    select, button.action-btn {
-      width: 100%;
-      padding: 8px;
-      margin-top: 6px;
-      font-size: 14px;
+    .progress{
+      margin-top:12px;
+      font-size:13px;
+      color:#374151;
+      background:#f8fafc;
+      border:1px solid #e5e7eb;
+      border-radius:10px;
+      padding:10px;
     }
 
-    button.action-btn {
-      margin-top: 16px;
-      background: #0b3c5d;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
+    .list{
+      margin-top:10px;
+      max-height: 360px;
+      overflow:auto;
+      border:1px solid #e5e7eb;
+      border-radius:10px;
+    }
+    .row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px 12px;
+      border-bottom:1px solid #eef2f7;
+      cursor:pointer;
+      font-size:13px;
+    }
+    .row:last-child{ border-bottom:none; }
+    .row:hover{ background:#f8fafc; }
+    .row.active{ background:#eef3f7; }
+    .tag{
+      font-size:12px;
+      padding:3px 8px;
+      border-radius:999px;
+      border:1px solid #e5e7eb;
+      color:#334155;
+      background:#fff;
+      white-space:nowrap;
+    }
+    .tag.done{
+      border-color:#bbf7d0;
+      background:#ecfdf5;
+      color:#166534;
+      font-weight:700;
+    }
+    .tag.todo{
+      border-color:#fed7aa;
+      background:#fff7ed;
+      color:#9a3412;
+      font-weight:700;
     }
 
-    button.action-btn:hover {
-      background: #094062;
+    .results{
+      margin-top:14px;
+      display:none;
+      background:#ffffff;
+      border:1px solid #e5e7eb;
+      border-radius:12px;
+      padding:12px;
     }
-
-    .feedback {
-      margin-top: 20px;
-      padding: 12px;
-      border-radius: 6px;
-      display: none;
+    .results h4{
+      margin:0 0 10px 0;
+      font-size:14px;
     }
-
-    .feedback.correct {
-      background: #e6f4ea;
-      color: #1e7f3d;
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:13px;
     }
-
-    .feedback.wrong {
-      background: #fdecea;
-      color: #b42318;
+    th, td{
+      text-align:left;
+      padding:8px 10px;
+      border-bottom:1px solid #eef2f7;
+      vertical-align:top;
     }
+    th{
+      color:#334155;
+      font-weight:800;
+      background:#f8fafc;
+    }
+    .ok{ color:#166534; font-weight:800; }
+    .bad{ color:#b42318; font-weight:800; }
+    .small{ color:#64748b; font-size:12px; }
 
-    footer {
-      margin-top: 40px;
-      font-size: 12px;
-      color: #666;
-      text-align: center;
+    footer{
+      margin-top: 26px;
+      font-size:12px;
+      color:#666;
+      text-align:center;
     }
 
     @media (max-width: 900px){
       .challenge-container{ grid-template-columns: 1fr; }
+      .list{ max-height: 220px; }
     }
   </style>
 </head>
 
 <body>
-
 <header>
   <div class="header-left">
     <a href="index.html" class="back-home">← Home</a>
-    <h1>🧬 Cell Type Challenge</h1>
+    <h1>🫁 Lung FFPE Cell Type Challenge</h1>
   </div>
 
-  <!-- ✅ Member UI (populated after auth guard) -->
   <div class="member-box" id="memberBox" style="display:none;">
     <span class="pill" title="Signed-in member">
       <span class="dot"></span>
@@ -274,51 +351,74 @@
 
 <main>
 
-  <!-- 题目信息 -->
   <div class="question-meta">
-    <strong>Tissue:</strong> TNBC &nbsp;|&nbsp;
-    <strong>Technology:</strong> Xenium &nbsp;|&nbsp;
-    <strong>Difficulty:</strong> Medium
+    <strong>Dataset:</strong> Human Lung Cancer FFPE &nbsp;|&nbsp;
+    <strong>Task:</strong> Assign a cell type to each image &nbsp;|&nbsp;
+    <strong>Difficulty:</strong> Easy–Medium
+    <div class="small" style="margin-top:6px;">
+      Tip: make your best guess for each image, then click <b>Submit Answers</b> to reveal the ground truth.
+    </div>
   </div>
 
   <div class="challenge-container">
 
-    <!-- 图像区 -->
-    <div class="image-panel">
-      <p><strong>Xenium Cell Segmentation</strong></p>
-      <img src="questions/xenium_demo_001.png" alt="Xenium segmentation">
-      <p style="font-size:12px;color:#666;">
-        Cells are pre-numbered. Select a cell ID to answer.
-      </p>
+    <!-- Left: Image viewer -->
+    <div class="panel image-panel">
+      <div class="image-topbar">
+        <div class="image-title" id="imgTitle">Image</div>
+        <div class="nav-btns">
+          <button class="btn" id="prevBtn" type="button">← Prev</button>
+          <button class="btn" id="nextBtn" type="button">Next →</button>
+        </div>
+      </div>
+
+      <div class="img-wrap">
+        <img id="mainImg" src="" alt="Challenge image" loading="lazy" />
+      </div>
+
+      <div class="hint">
+        All images come from the same slide. File name encodes the ground truth (hidden until you submit).
+      </div>
     </div>
 
-    <!-- 操作区 -->
-    <div class="control-panel">
+    <!-- Right: Controls + list -->
+    <div class="panel control-panel">
       <h3>Answer Panel</h3>
-
-      <label for="cell-id">Cell ID</label>
-      <select id="cell-id">
-        <option value="">Select a cell</option>
-        <option value="1">Cell 1</option>
-        <option value="2">Cell 2</option>
-        <option value="3">Cell 3</option>
-        <option value="4">Cell 4</option>
-      </select>
 
       <label for="cell-type">Predicted Cell Type</label>
       <select id="cell-type">
         <option value="">Select cell type</option>
-        <option value="Tumor">Tumor</option>
-        <option value="CAF">CAF</option>
-        <option value="T cell">T cell</option>
-        <option value="B cell">B cell</option>
-        <option value="Endothelial">Endothelial</option>
-        <option value="Myeloid">Myeloid</option>
       </select>
 
-      <button class="action-btn" onclick="submitAnswer()">Submit Answer</button>
+      <div style="display:flex; gap:10px; margin-top:12px;">
+        <button class="btn" id="saveBtn" type="button" style="flex:1;">Save for this image</button>
+        <button class="btn primary" id="submitBtn" type="button" style="flex:1;">Submit Answers</button>
+      </div>
 
-      <div id="feedback" class="feedback"></div>
+      <div class="progress" id="progressBox">
+        Progress: <b id="doneCount">0</b>/<b id="totalCount">0</b> answered
+      </div>
+
+      <div class="list" id="imageList"></div>
+
+      <div class="results" id="resultsBox">
+        <h4 id="scoreTitle">Results</h4>
+        <div style="overflow:auto;">
+          <table id="resultsTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Image</th>
+                <th>Your answer</th>
+                <th>Correct answer</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
 
   </div>
@@ -330,42 +430,226 @@
 </main>
 
 <script>
-  // 临时答案（之后一定放到后端）
-  const groundTruth = {
-    "1": "Tumor",
-    "2": "CAF",
-    "3": "T cell",
-    "4": "Endothelial"
-  };
+/**
+ * =========================
+ * 1) Put your images here
+ * =========================
+ * Recommended repo path:
+ *   /images/challenge/human_lung_cancer_ffpe/set01/
+ *
+ * These filenames MUST match exactly (including spaces/case).
+ */
+const IMAGE_BASE_PATH = "/images/challenge/human_lung_cancer_ffpe/set01";
 
-  function submitAnswer() {
-    const cellId = document.getElementById("cell-id").value;
-    const predicted = document.getElementById("cell-type").value;
-    const feedback = document.getElementById("feedback");
+// From your screenshot (examples):
+const FILES = [
+  "Human_Lung_Cancer_FFPE Alveolar Macrophage.png",
+  "Human_Lung_Cancer_FFPE B cell.png",
+  "Human_Lung_Cancer_FFPE Endothelial cell in Normal Lung.png",
+  "Human_Lung_Cancer_FFPE Endothelial in tumor.png",
+  "Human_Lung_Cancer_FFPE Fibroblast.png",
+  "Human_Lung_Cancer_FFPE Mast cell.png",
+  "Human_Lung_Cancer_FFPE Monocyte.png",
+  "Human_Lung_Cancer_FFPE Normal bronchiolar epithelial.png",
+  "Human_Lung_Cancer_FFPE Normal lung epithelial.png",
+  "Human_Lung_Cancer_FFPE Pericyte.png",
+  "Human_Lung_Cancer_FFPE Plasma.png",
+  "Human_Lung_Cancer_FFPE Smooth muscle cell.png",
+  "Human_Lung_Cancer_FFPE T cell.png",
+  "Human_Lung_Cancer_FFPE Tumor cell.png"
+];
 
-    if (!cellId || !predicted) {
-      alert("Please select both Cell ID and Cell Type.");
-      return;
-    }
+// ---- Utilities ----
+function buildUrl(filename){
+  // keep spaces; browser will request encoded URL automatically, but we ensure it:
+  return `${IMAGE_BASE_PATH}/${encodeURIComponent(filename)}`;
+}
 
-    const correct = groundTruth[cellId];
+function parseTruthFromFilename(filename){
+  // "Human_Lung_Cancer_FFPE " prefix → remove, strip extension
+  let s = filename.replace(/\.[^/.]+$/, ""); // drop extension
+  s = s.replace(/^Human_Lung_Cancer_FFPE\s*/i, "");
+  s = s.replace(/_/g, " ").trim();
+  // normalize multiple spaces
+  s = s.replace(/\s+/g, " ");
+  return s;
+}
 
-    feedback.style.display = "block";
+function niceShortName(filename){
+  // for list display
+  const truth = parseTruthFromFilename(filename);
+  return truth.length > 34 ? truth.slice(0, 34) + "…" : truth;
+}
 
-    if (predicted === correct) {
-      feedback.className = "feedback correct";
-      feedback.innerHTML = `✅ Correct!<br>Cell ${cellId} is <strong>${correct}</strong>.`;
-    } else {
-      feedback.className = "feedback wrong";
-      feedback.innerHTML = `❌ Incorrect.<br>Your answer: <strong>${predicted}</strong><br>
-                            Correct answer: <strong>${correct}</strong>.`;
-    }
+function unique(arr){
+  return Array.from(new Set(arr));
+}
+
+// ---- State ----
+const items = FILES.map((fn, idx) => ({
+  idx,
+  filename: fn,
+  url: buildUrl(fn),
+  truth: parseTruthFromFilename(fn),
+}));
+
+const ALL_CELL_TYPES = unique(items.map(x => x.truth)).sort((a,b)=>a.localeCompare(b));
+const answers = {}; // idx -> predicted cell type string
+let current = 0;
+let submitted = false;
+
+// ---- DOM ----
+const imgTitle = document.getElementById("imgTitle");
+const mainImg = document.getElementById("mainImg");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+const sel = document.getElementById("cell-type");
+const saveBtn = document.getElementById("saveBtn");
+const submitBtn = document.getElementById("submitBtn");
+const imageList = document.getElementById("imageList");
+const doneCount = document.getElementById("doneCount");
+const totalCount = document.getElementById("totalCount");
+const resultsBox = document.getElementById("resultsBox");
+const scoreTitle = document.getElementById("scoreTitle");
+const resultsTableBody = document.querySelector("#resultsTable tbody");
+
+// ---- Init dropdown ----
+(function initDropdown(){
+  for (const t of ALL_CELL_TYPES){
+    const opt = document.createElement("option");
+    opt.value = t;
+    opt.textContent = t;
+    sel.appendChild(opt);
   }
+})();
+
+// ---- Render list ----
+function renderList(){
+  imageList.innerHTML = "";
+  items.forEach(it => {
+    const row = document.createElement("div");
+    row.className = "row" + (it.idx === current ? " active" : "");
+    const left = document.createElement("div");
+    left.innerHTML = `<b>${it.idx + 1}.</b> ${niceShortName(it.filename)}`;
+    const tag = document.createElement("span");
+    const done = !!answers[it.idx];
+    tag.className = "tag " + (done ? "done" : "todo");
+    tag.textContent = done ? "Answered" : "Todo";
+
+    row.appendChild(left);
+    row.appendChild(tag);
+
+    row.addEventListener("click", () => {
+      goTo(it.idx);
+    });
+
+    imageList.appendChild(row);
+  });
+
+  const doneN = Object.keys(answers).length;
+  doneCount.textContent = String(doneN);
+  totalCount.textContent = String(items.length);
+}
+
+// ---- Render main view ----
+function render(){
+  const it = items[current];
+
+  imgTitle.textContent = `Image ${current + 1}/${items.length}`;
+  mainImg.src = it.url;
+
+  // set select based on saved answer
+  sel.value = answers[current] || "";
+
+  prevBtn.disabled = current === 0;
+  nextBtn.disabled = current === items.length - 1;
+
+  // lock edits after submit (optional; comment out if you want allow changes)
+  sel.disabled = submitted;
+  saveBtn.disabled = submitted;
+
+  // update list highlight
+  renderList();
+}
+
+// ---- Navigation ----
+function goTo(idx){
+  current = Math.max(0, Math.min(items.length - 1, idx));
+  render();
+}
+
+prevBtn.addEventListener("click", () => goTo(current - 1));
+nextBtn.addEventListener("click", () => goTo(current + 1));
+
+// ---- Save answer ----
+saveBtn.addEventListener("click", () => {
+  if (submitted) return;
+  const v = sel.value;
+  if (!v){
+    alert("Please select a cell type first.");
+    return;
+  }
+  answers[current] = v;
+  renderList();
+});
+
+// Optional: autosave when selection changes
+sel.addEventListener("change", () => {
+  if (submitted) return;
+  if (sel.value){
+    answers[current] = sel.value;
+    renderList();
+  }
+});
+
+// ---- Submit & reveal ----
+submitBtn.addEventListener("click", () => {
+  if (submitted) return;
+
+  // check all answered (you can relax this if you want partial submit)
+  const missing = items.filter(it => !answers[it.idx]);
+  if (missing.length > 0){
+    alert(`You still have ${missing.length} unanswered image(s). Please answer them before submitting.`);
+    return;
+  }
+
+  submitted = true;
+  render(); // locks UI
+
+  // build results table
+  resultsTableBody.innerHTML = "";
+  let correctN = 0;
+
+  items.forEach(it => {
+    const your = answers[it.idx] || "";
+    const ok = (your === it.truth);
+    if (ok) correctN++;
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><b>${it.idx + 1}</b></td>
+      <td>${niceShortName(it.filename)}</td>
+      <td>${your ? your : "<span class='small'>—</span>"}</td>
+      <td><b>${it.truth}</b></td>
+      <td class="${ok ? "ok" : "bad"}">${ok ? "✅ Correct" : "❌ Wrong"}</td>
+    `;
+    resultsTableBody.appendChild(tr);
+  });
+
+  const pct = Math.round((correctN / items.length) * 100);
+  scoreTitle.textContent = `Results — Score: ${correctN}/${items.length} (${pct}%)`;
+  resultsBox.style.display = "block";
+
+  // scroll into view on mobile
+  resultsBox.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+// ---- Boot ----
+render();
 </script>
 
 <!-- ✅ Member UI wiring + sign-out -->
 <script type="module">
-  // If the auth guard succeeded, it set these globals.
   const email = window.__memberEmail || "";
   const supabase = window.__supabaseClient;
 
@@ -383,11 +667,7 @@
       window.location.href = "/login.html?next=" + encodeURIComponent(window.location.pathname || "/challenge.html");
       return;
     }
-    try {
-      await supabase.auth.signOut();
-    } catch (e) {
-      // even if signOut fails, we force user to re-auth
-    }
+    try { await supabase.auth.signOut(); } catch (e) {}
     window.location.href = "/login.html?signed_out=1";
   });
 </script>
