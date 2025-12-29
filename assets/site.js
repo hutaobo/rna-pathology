@@ -1,6 +1,7 @@
 /* assets/site.js
    Shared behavior for RNA-Pathology.com:
    - Inject a consistent header/nav + footer across pages
+   - Avoid duplicate header/footer if page already contains them
    - Highlight current nav item
    - Mobile nav toggle
 */
@@ -8,52 +9,70 @@
 (function () {
   "use strict";
 
-  // Build-time or manual override (optional):
-  // <html data-base-path="/"> (default)
-  // If you ever host under a subpath, set data-base-path="/subpath"
+  // Optional override for subpath hosting:
+  // <html data-base-path="/subpath">
   const basePath =
     document.documentElement.getAttribute("data-base-path") || "/";
 
   const NAV_ITEMS = [
     { href: "/", label: "Home" },
     { href: "/database.html", label: "Database" },
-    { href: "/datasets/", label: "Datasets" },  // folder landing if you create one later
+    { href: "/datasets/", label: "Datasets" },   // folder route (optional landing)
     { href: "/challenge.html", label: "Challenge" },
     { href: "/docs/", label: "Docs" },
     { href: "/access/", label: "Account" },
   ];
 
+  // ---------- small helpers ----------
   function joinUrl(base, path) {
-    // Ensure base ends with / and path begins with /
     const b = base.endsWith("/") ? base.slice(0, -1) : base;
     const p = path.startsWith("/") ? path : "/" + path;
     return (b || "") + p;
   }
 
   function normalizePath(pathname) {
+    if (!pathname) return "/";
     // Treat /index.html as /
     if (pathname.endsWith("/index.html")) return pathname.slice(0, -10) || "/";
-    return pathname || "/";
+    return pathname;
   }
 
-  function isActive(current, itemHref) {
-    const cur = normalizePath(current);
+  function isActive(currentPath, itemHref) {
+    const cur = normalizePath(currentPath);
 
     // Exact match for file pages
-    if (itemHref.endsWith(".html")) {
-      return cur === itemHref;
-    }
+    if (itemHref.endsWith(".html")) return cur === itemHref;
 
     // Folder-like routes: /docs/, /access/, /datasets/
-    if (itemHref.endsWith("/")) {
-      return cur === itemHref || cur.startsWith(itemHref);
-    }
+    if (itemHref.endsWith("/")) return cur === itemHref || cur.startsWith(itemHref);
 
     // Root
     if (itemHref === "/") return cur === "/";
+
     return false;
   }
 
+  function elExists(selector) {
+    // Checking existence before manipulating avoids runtime errors. :contentReference[oaicite:1]{index=1}
+    return !!document.querySelector(selector);
+  }
+
+  function ensureMount(id, position /* "top" | "bottom" */) {
+    let el = document.getElementById(id);
+    if (el) return el;
+
+    el = document.createElement("div");
+    el.id = id;
+
+    if (position === "top") {
+      document.body.insertBefore(el, document.body.firstChild);
+    } else {
+      document.body.appendChild(el);
+    }
+    return el;
+  }
+
+  // ---------- UI builders ----------
   function buildHeader() {
     const linksHtml = NAV_ITEMS.map((it) => {
       const url = joinUrl(basePath, it.href);
@@ -84,6 +103,9 @@
 
   function buildFooter() {
     const year = new Date().getFullYear();
+
+    // NOTE: these two links assume you *may* later create docs/roadmap.html and docs/schema.html.
+    // If those pages don't exist yet, either create them, or remove these two footer links.
     return `
 <footer class="site-footer" role="contentinfo">
   <div class="container">
@@ -101,25 +123,11 @@
 `;
   }
 
-  function ensureMount(id, position /* "top" | "bottom" */) {
-    let el = document.getElementById(id);
-    if (el) return el;
-
-    el = document.createElement("div");
-    el.id = id;
-
-    if (position === "top") {
-      document.body.insertBefore(el, document.body.firstChild);
-    } else {
-      document.body.appendChild(el);
-    }
-    return el;
-  }
-
+  // ---------- behaviors ----------
   function highlightActiveNav() {
     const current = normalizePath(window.location.pathname);
-
     const navLinks = document.querySelectorAll(".nav-links a[data-href]");
+
     navLinks.forEach((a) => {
       const rawHref = a.getAttribute("data-href") || "";
       if (isActive(current, rawHref)) a.classList.add("active");
@@ -137,19 +145,29 @@
     });
   }
 
+  // ---------- main init ----------
   function init() {
-    // Inject header/footer
-    const headerMount = ensureMount("siteHeaderMount", "top");
-    headerMount.innerHTML = buildHeader();
+    // If the page already has a header/footer (hand-written), do NOT inject again.
+    const hasHeader = elExists("header.site-header");
+    const hasFooter = elExists("footer.site-footer");
 
-    const footerMount = ensureMount("siteFooterMount", "bottom");
-    footerMount.innerHTML = buildFooter();
+    if (!hasHeader) {
+      const headerMount = ensureMount("siteHeaderMount", "top");
+      // Only inject if mount is empty (another safety belt)
+      if (!headerMount.innerHTML.trim()) headerMount.innerHTML = buildHeader();
+    }
 
+    if (!hasFooter) {
+      const footerMount = ensureMount("siteFooterMount", "bottom");
+      if (!footerMount.innerHTML.trim()) footerMount.innerHTML = buildFooter();
+    }
+
+    // These should work whether injected or hand-written (as long as classes/ids match).
     highlightActiveNav();
     wireMobileToggle();
   }
 
-  // DOMContentLoaded is the right event for DOM manipulation without waiting on images, etc. :contentReference[oaicite:2]{index=2}
+  // DOMContentLoaded fires after HTML parsed; defer scripts execute before it. :contentReference[oaicite:2]{index=2}
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
   } else {
