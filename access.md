@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Access
+permalink: /access/
 ---
 
 # Access
