@@ -399,6 +399,7 @@
         Progress: <b id="doneCount">0</b>/<b id="totalCount">0</b> answered
       </div>
 
+      <!-- ✅ List shows ONLY numbers (no cell type names) -->
       <div class="list" id="imageList"></div>
 
       <div class="results" id="resultsBox">
@@ -431,19 +432,20 @@
 
 <script>
 /**
- * =========================
- * 1) Put your images here
- * =========================
- * Recommended repo path:
- *   /images/challenge/human_lung_cancer_ffpe/set01/
- *
- * These filenames MUST match exactly (including spaces/case).
+ * Images location (confirmed):
+ *   /images/challenge/human_lung_cancer_ffpe/set01
  */
 const IMAGE_BASE_PATH = "/images/challenge/human_lung_cancer_ffpe/set01";
 
-// From your screenshot (examples):
+/**
+ * Filenames MUST match your repo exactly.
+ * NOTE: Your repo currently has typos:
+ *   - "Alvelolar" (not "Alveolar")
+ *   - "Smmoth" (not "Smooth")
+ * We keep them here to avoid 404.
+ */
 const FILES = [
-  "Human_Lung_Cancer_FFPE Alveolar Macrophage.png",
+  "Human_Lung_Cancer_FFPE Alvelolar Macrophage.png",
   "Human_Lung_Cancer_FFPE B cell.png",
   "Human_Lung_Cancer_FFPE Endothelial cell in Normal Lung.png",
   "Human_Lung_Cancer_FFPE Endothelial in tumor.png",
@@ -454,31 +456,32 @@ const FILES = [
   "Human_Lung_Cancer_FFPE Normal lung epithelial.png",
   "Human_Lung_Cancer_FFPE Pericyte.png",
   "Human_Lung_Cancer_FFPE Plasma.png",
-  "Human_Lung_Cancer_FFPE Smooth muscle cell.png",
+  "Human_Lung_Cancer_FFPE Smmoth muscle cell.png",
   "Human_Lung_Cancer_FFPE T cell.png",
   "Human_Lung_Cancer_FFPE Tumor cell.png"
 ];
 
 // ---- Utilities ----
 function buildUrl(filename){
-  // keep spaces; browser will request encoded URL automatically, but we ensure it:
   return `${IMAGE_BASE_PATH}/${encodeURIComponent(filename)}`;
 }
 
 function parseTruthFromFilename(filename){
-  // "Human_Lung_Cancer_FFPE " prefix → remove, strip extension
-  let s = filename.replace(/\.[^/.]+$/, ""); // drop extension
+  let s = filename.replace(/\.[^/.]+$/, "");     // drop extension
   s = s.replace(/^Human_Lung_Cancer_FFPE\s*/i, "");
   s = s.replace(/_/g, " ").trim();
-  // normalize multiple spaces
   s = s.replace(/\s+/g, " ");
-  return s;
-}
 
-function niceShortName(filename){
-  // for list display
-  const truth = parseTruthFromFilename(filename);
-  return truth.length > 34 ? truth.slice(0, 34) + "…" : truth;
+  // Optional normalization so dropdown shows the correct spelling even if filename has typos
+  // (Does NOT change the correct-answer matching, because truth is derived from filename.)
+  // If you later rename the files correctly, this mapping can be removed safely.
+  const fixMap = {
+    "Alvelolar Macrophage": "Alveolar Macrophage",
+    "Smmoth muscle cell": "Smooth muscle cell"
+  };
+  if (fixMap[s]) s = fixMap[s];
+
+  return s;
 }
 
 function unique(arr){
@@ -513,7 +516,7 @@ const resultsBox = document.getElementById("resultsBox");
 const scoreTitle = document.getElementById("scoreTitle");
 const resultsTableBody = document.querySelector("#resultsTable tbody");
 
-// ---- Init dropdown ----
+// ---- Init dropdown (14 cell types) ----
 (function initDropdown(){
   for (const t of ALL_CELL_TYPES){
     const opt = document.createElement("option");
@@ -523,14 +526,16 @@ const resultsTableBody = document.querySelector("#resultsTable tbody");
   }
 })();
 
-// ---- Render list ----
+// ---- Render list (NO answer leak) ----
 function renderList(){
   imageList.innerHTML = "";
   items.forEach(it => {
     const row = document.createElement("div");
     row.className = "row" + (it.idx === current ? " active" : "");
+
     const left = document.createElement("div");
-    left.innerHTML = `<b>${it.idx + 1}.</b> ${niceShortName(it.filename)}`;
+    left.innerHTML = `<b>${it.idx + 1}.</b> Image ${it.idx + 1}`;
+
     const tag = document.createElement("span");
     const done = !!answers[it.idx];
     tag.className = "tag " + (done ? "done" : "todo");
@@ -539,10 +544,7 @@ function renderList(){
     row.appendChild(left);
     row.appendChild(tag);
 
-    row.addEventListener("click", () => {
-      goTo(it.idx);
-    });
-
+    row.addEventListener("click", () => goTo(it.idx));
     imageList.appendChild(row);
   });
 
@@ -558,17 +560,14 @@ function render(){
   imgTitle.textContent = `Image ${current + 1}/${items.length}`;
   mainImg.src = it.url;
 
-  // set select based on saved answer
   sel.value = answers[current] || "";
 
   prevBtn.disabled = current === 0;
   nextBtn.disabled = current === items.length - 1;
 
-  // lock edits after submit (optional; comment out if you want allow changes)
   sel.disabled = submitted;
   saveBtn.disabled = submitted;
 
-  // update list highlight
   renderList();
 }
 
@@ -593,7 +592,7 @@ saveBtn.addEventListener("click", () => {
   renderList();
 });
 
-// Optional: autosave when selection changes
+// Auto-save on change
 sel.addEventListener("change", () => {
   if (submitted) return;
   if (sel.value){
@@ -606,7 +605,6 @@ sel.addEventListener("change", () => {
 submitBtn.addEventListener("click", () => {
   if (submitted) return;
 
-  // check all answered (you can relax this if you want partial submit)
   const missing = items.filter(it => !answers[it.idx]);
   if (missing.length > 0){
     alert(`You still have ${missing.length} unanswered image(s). Please answer them before submitting.`);
@@ -614,9 +612,8 @@ submitBtn.addEventListener("click", () => {
   }
 
   submitted = true;
-  render(); // locks UI
+  render();
 
-  // build results table
   resultsTableBody.innerHTML = "";
   let correctN = 0;
 
@@ -628,7 +625,7 @@ submitBtn.addEventListener("click", () => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td><b>${it.idx + 1}</b></td>
-      <td>${niceShortName(it.filename)}</td>
+      <td>Image ${it.idx + 1}</td>
       <td>${your ? your : "<span class='small'>—</span>"}</td>
       <td><b>${it.truth}</b></td>
       <td class="${ok ? "ok" : "bad"}">${ok ? "✅ Correct" : "❌ Wrong"}</td>
@@ -639,8 +636,6 @@ submitBtn.addEventListener("click", () => {
   const pct = Math.round((correctN / items.length) * 100);
   scoreTitle.textContent = `Results — Score: ${correctN}/${items.length} (${pct}%)`;
   resultsBox.style.display = "block";
-
-  // scroll into view on mobile
   resultsBox.scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
