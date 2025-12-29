@@ -17,7 +17,7 @@
   const NAV_ITEMS = [
     { href: "/", label: "Home" },
     { href: "/database.html", label: "Database" },
-    { href: "/datasets/", label: "Datasets" },   // folder route (optional landing)
+    // { href: "/datasets/", label: "Datasets" }, // removed (no longer used)
     { href: "/challenge.html", label: "Challenge" },
     { href: "/docs/", label: "Docs" },
     { href: "/access/", label: "Account" },
@@ -53,7 +53,7 @@
     // Exact match for file pages
     if (itemHref.endsWith(".html")) return cur === itemHref;
 
-    // Folder-like routes: /docs/, /access/, /datasets/
+    // Folder-like routes: /docs/, /access/
     if (itemHref.endsWith("/")) return cur === itemHref || cur.startsWith(itemHref);
 
     // Root
@@ -147,6 +147,8 @@
         <a href="${joinUrl(basePath, "/docs/")}">Docs</a>
         <a href="${joinUrl(basePath, "/docs/roadmap.html")}">Roadmap</a>
         <a href="${joinUrl(basePath, "/docs/schema.html")}">Schema</a>
+        <a href="${joinUrl(basePath, "/legal/")}">Legal</a>
+        <a href="${joinUrl(basePath, "/legal/privacy.html")}">Privacy</a>
         <a href="${joinUrl(basePath, "/")}">Home</a>
       </div>
     </div>
@@ -326,7 +328,11 @@
   function init() {
     // IMPORTANT: avoid injecting a second header/footer if the page already has its own nav UI.
     // We treat the presence of the auth ids as "custom header exists" to prevent duplicate IDs.
-    const hasCustomAuthNav = elExists("#navSignIn") || elExists("#navSignUp") || elExists("#navAuthed") || elExists("#navSignOutBtn");
+    const hasCustomAuthNav =
+      elExists("#navSignIn") ||
+      elExists("#navSignUp") ||
+      elExists("#navAuthed") ||
+      elExists("#navSignOutBtn");
 
     // If the page already has a header/footer (hand-written), do NOT inject again.
     const hasHeader = elExists("header.site-header") || hasCustomAuthNav;
