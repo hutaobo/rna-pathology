@@ -121,7 +121,7 @@
       box-shadow: 0 8px 18px rgba(0,0,0,0.12);
     }
 
-    /* NEW: Sign Out button style (different) */
+    /* Sign Out button style */
     .cta-ghost-danger{
       border: 1px solid rgba(255,255,255,0.22);
       background: rgba(185,28,28,0.16);
@@ -356,12 +356,10 @@
         <a id="navSignUp" class="cta-ghost" href="login.html?signup=1">Sign Up</a>
         <a id="navSignIn" class="cta-ghost" href="login.html">Sign In</a>
 
-        <!-- NEW: always its own button; only show when authed -->
         <button id="navSignOutBtn" class="cta-ghost cta-ghost-danger" type="button" style="display:none;">
           Sign Out
         </button>
 
-        <!-- Keep pill to show email (member identity) -->
         <div id="navAuthed" class="auth-pill">
           <span class="auth-email" id="navEmail">Signed in</span>
         </div>
@@ -476,28 +474,22 @@
   </div>
 </footer>
 
-<!-- Auth-aware nav + hero notice -->
-<script type="module">
-  const SUPABASE_URL = "https://xxlkxorwprtynemmbeya.supabase.co";
-  const SUPABASE_ANON_KEY = "sb_publishable_ZzCo8J6b6y0xVkExiOtHyg_gOpGEJFv";
+<!-- Home-only: show banner messages from URL params (auth UI is handled by /assets/site.js) -->
+<script>
+  (function () {
+    const notice = document.getElementById("notice");
+    if (!notice) return;
 
-  const $ = (id) => document.getElementById(id);
+    function showNotice(text) {
+      notice.textContent = text;
+      notice.style.display = "block";
 
-  const navAuthed = $("navAuthed");
-  const navEmail = $("navEmail");
-  const navSignOutBtn = $("navSignOutBtn");
-  const notice = $("notice");
+      // Clean URL so refresh doesn't keep re-showing
+      const u = new URL(window.location.href);
+      ["signed_in", "signed_out", "confirmed"].forEach(k => u.searchParams.delete(k));
+      window.history.replaceState({}, "", u.toString());
+    }
 
-  function showNotice(text) {
-    notice.textContent = text;
-    notice.style.display = "block";
-    const u = new URL(window.location.href);
-    ["signed_in", "signed_out", "confirmed"].forEach(k => u.searchParams.delete(k));
-    window.history.replaceState({}, "", u.toString());
-  }
-
-  // Show banner messages from redirect params
-  {
     const u = new URL(window.location.href);
     if (u.searchParams.get("confirmed") === "1") {
       showNotice("Email confirmed. You can now sign in.");
@@ -506,47 +498,7 @@
     } else if (u.searchParams.get("signed_out") === "1") {
       showNotice("Signed out.");
     }
-  }
-
-  try {
-    const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    async function refreshNav() {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error) throw error;
-
-      if (session) {
-        navAuthed.style.display = "inline-flex";
-        navEmail.textContent = session.user.email || "Signed in";
-        navSignOutBtn.style.display = "inline-flex";
-      } else {
-        navAuthed.style.display = "none";
-        navSignOutBtn.style.display = "none";
-      }
-    }
-
-    navSignOutBtn.addEventListener("click", async () => {
-      navSignOutBtn.disabled = true;
-      try {
-        const { error } = await supabase.auth.signOut();
-        if (error) throw error;
-      } catch (_) {
-        // even if signOut fails, we still refresh UI + redirect
-      } finally {
-        navSignOutBtn.disabled = false;
-      }
-      window.location.href = "/?signed_out=1";
-    });
-
-    supabase.auth.onAuthStateChange(() => refreshNav());
-    await refreshNav();
-
-  } catch {
-    // If auth script fails, just hide sign-out and keep public links
-    navAuthed.style.display = "none";
-    navSignOutBtn.style.display = "none";
-  }
+  })();
 </script>
 
 </body>
