@@ -1,0 +1,317 @@
+/* assets/site.css
+   Global shared styles for RNA-Pathology.com
+*/
+
+/* =========================
+   1) Design tokens
+   ========================= */
+:root {
+  /* Colors */
+  --bg: #0b0f1a;
+  --surface: #11182a;
+  --surface-2: #0f1526;
+  --text: #e7ecf5;
+  --muted: #a9b4cc;
+  --border: rgba(231, 236, 245, 0.14);
+
+  --primary: #7aa7ff;
+  --primary-2: #a6c2ff;
+
+  --success: #59d39e;
+  --warning: #ffd37a;
+  --danger: #ff7a8a;
+
+  /* Typography */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica,
+    Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+
+  --fs-0: 0.95rem;
+  --fs-1: 1.05rem;
+  --fs-2: 1.35rem;
+  --fs-3: 1.8rem;
+
+  /* Layout */
+  --radius: 14px;
+  --radius-sm: 10px;
+
+  --shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  --shadow-soft: 0 8px 22px rgba(0, 0, 0, 0.22);
+
+  --container: 1100px;
+  --gutter: 18px;
+
+  /* Links */
+  --link: var(--primary);
+  --link-hover: var(--primary-2);
+}
+
+/* Using :root tokens is a maintainable pattern for shared styling. :contentReference[oaicite:1]{index=1} */
+
+/* =========================
+   2) Base
+   ========================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-0);
+  line-height: 1.6;
+  color: var(--text);
+  background: radial-gradient(1000px 600px at 25% 0%, rgba(122, 167, 255, 0.20), transparent 60%),
+              radial-gradient(900px 600px at 85% 10%, rgba(89, 211, 158, 0.12), transparent 55%),
+              var(--bg);
+}
+
+img, svg, video {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: var(--link);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--link-hover);
+  text-decoration: underline;
+}
+
+code, pre {
+  font-family: var(--font-mono);
+}
+
+/* =========================
+   3) Layout utilities
+   ========================= */
+.container {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.section {
+  padding: 34px 0;
+}
+
+.card {
+  background: linear-gradient(180deg, rgba(17, 24, 42, 0.92), rgba(15, 21, 38, 0.92));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  padding: 18px;
+}
+
+.card + .card {
+  margin-top: 14px;
+}
+
+.grid {
+  display: grid;
+  gap: 14px;
+}
+
+.grid.cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.grid.cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 900px) {
+  .grid.cols-2, .grid.cols-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================
+   4) Header / Nav
+   ========================= */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(10px);
+  background: rgba(11, 15, 26, 0.62);
+  border-bottom: 1px solid var(--border);
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.brand .logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(122, 167, 255, 0.95), rgba(89, 211, 158, 0.85));
+  box-shadow: 0 10px 26px rgba(122, 167, 255, 0.20);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.nav-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  color: var(--text);
+  text-decoration: none;
+  opacity: 0.92;
+}
+
+.nav-links a:hover {
+  border-color: var(--border);
+  background: rgba(231, 236, 245, 0.05);
+  text-decoration: none;
+}
+
+.nav-links a.active {
+  border-color: rgba(122, 167, 255, 0.35);
+  background: rgba(122, 167, 255, 0.12);
+  color: var(--text);
+  opacity: 1;
+}
+
+/* Mobile: collapse links into a simple dropdown */
+.nav-toggle {
+  display: none;
+  border: 1px solid var(--border);
+  background: rgba(231, 236, 245, 0.05);
+  color: var(--text);
+  padding: 8px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+@media (max-width: 720px) {
+  .nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .nav-links {
+    display: none;
+    width: 100%;
+    padding: 10px 0 4px;
+  }
+  .nav-links.open {
+    display: flex;
+  }
+  .site-nav {
+    flex-wrap: wrap;
+  }
+}
+
+/* =========================
+   5) Buttons
+   ========================= */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(231, 236, 245, 0.06);
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+}
+
+.btn:hover {
+  background: rgba(231, 236, 245, 0.10);
+}
+
+.btn.primary {
+  border-color: rgba(122, 167, 255, 0.40);
+  background: rgba(122, 167, 255, 0.14);
+}
+
+.btn.primary:hover {
+  background: rgba(122, 167, 255, 0.20);
+}
+
+/* =========================
+   6) Footer
+   ========================= */
+.site-footer {
+  border-top: 1px solid var(--border);
+  margin-top: 34px;
+  padding: 20px 0;
+  color: var(--muted);
+}
+
+.footer-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+}
+
+.footer-links a {
+  color: var(--muted);
+}
+
+.footer-links a:hover {
+  color: var(--text);
+}
+
+/* =========================
+   7) Content helpers
+   ========================= */
+h1, h2, h3 {
+  line-height: 1.25;
+  margin: 0.4em 0 0.35em;
+}
+
+h1 { font-size: var(--fs-3); }
+h2 { font-size: var(--fs-2); }
+h3 { font-size: var(--fs-1); }
+
+p { margin: 0.4em 0 0.8em; color: var(--text); }
+
+.muted { color: var(--muted); }
+.hr {
+  height: 1px;
+  background: var(--border);
+  margin: 14px 0;
+}
