@@ -211,6 +211,7 @@
       max-width:100%;
       border:1px solid #e5e7eb;
       border-radius:10px;
+      cursor: zoom-in; /* ✅ 提示可放大 */
     }
     .hint{
       font-size:12px;
@@ -273,18 +274,21 @@
       color:#334155;
       background:#fff;
       white-space:nowrap;
+      max-width: 160px;
+      overflow:hidden;
+      text-overflow: ellipsis;
     }
     .tag.done{
       border-color:#bbf7d0;
       background:#ecfdf5;
       color:#166534;
-      font-weight:700;
+      font-weight:800;
     }
     .tag.todo{
       border-color:#fed7aa;
       background:#fff7ed;
       color:#9a3412;
-      font-weight:700;
+      font-weight:800;
     }
 
     .results{
@@ -329,6 +333,64 @@
     @media (max-width: 900px){
       .challenge-container{ grid-template-columns: 1fr; }
       .list{ max-height: 220px; }
+      .tag{ max-width: 220px; }
+    }
+
+    /* ✅ Lightbox 放大查看 */
+    .lightbox{
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(2,6,23,0.86);
+      padding: 18px;
+    }
+    .lightbox.open{ display:flex; }
+    .lightbox-inner{
+      position: relative;
+      width: min(96vw, 1400px);
+      height: min(92vh, 900px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .lightbox-img{
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+      cursor: zoom-out;
+      background: #0b1220;
+    }
+    .lightbox-close{
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.22);
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      font-weight: 900;
+      cursor: pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      backdrop-filter: blur(6px);
+    }
+    .lightbox-close:hover{
+      background: rgba(255,255,255,0.18);
+    }
+    .lightbox-hint{
+      position:absolute;
+      left: 10px;
+      bottom: -2px;
+      font-size: 12px;
+      color: rgba(226,232,240,0.85);
+      user-select: none;
     }
   </style>
 </head>
@@ -377,7 +439,7 @@
       </div>
 
       <div class="hint">
-        All images come from the same slide. File name encodes the ground truth (hidden until you submit).
+        Click the image to zoom in. (ESC / click outside / ✕ to close)
       </div>
     </div>
 
@@ -399,7 +461,6 @@
         Progress: <b id="doneCount">0</b>/<b id="totalCount">0</b> answered
       </div>
 
-      <!-- ✅ List shows ONLY numbers (no cell type names) -->
       <div class="list" id="imageList"></div>
 
       <div class="results" id="resultsBox">
@@ -430,20 +491,18 @@
 
 </main>
 
+<!-- ✅ Lightbox DOM -->
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <div class="lightbox-inner" role="dialog" aria-modal="true" aria-label="Image zoom viewer">
+    <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Close">✕</button>
+    <img class="lightbox-img" id="lightboxImg" src="" alt="Zoomed image" />
+    <div class="lightbox-hint">ESC / click outside / ✕ to close</div>
+  </div>
+</div>
+
 <script>
-/**
- * Images location (confirmed):
- *   /images/challenge/human_lung_cancer_ffpe/set01
- */
 const IMAGE_BASE_PATH = "/images/challenge/human_lung_cancer_ffpe/set01";
 
-/**
- * Filenames MUST match your repo exactly.
- * NOTE: Your repo currently has typos:
- *   - "Alvelolar" (not "Alveolar")
- *   - "Smmoth" (not "Smooth")
- * We keep them here to avoid 404.
- */
 const FILES = [
   "Human_Lung_Cancer_FFPE Alvelolar Macrophage.png",
   "Human_Lung_Cancer_FFPE B cell.png",
@@ -461,26 +520,21 @@ const FILES = [
   "Human_Lung_Cancer_FFPE Tumor cell.png"
 ];
 
-// ---- Utilities ----
 function buildUrl(filename){
   return `${IMAGE_BASE_PATH}/${encodeURIComponent(filename)}`;
 }
 
 function parseTruthFromFilename(filename){
-  let s = filename.replace(/\.[^/.]+$/, "");     // drop extension
+  let s = filename.replace(/\.[^/.]+$/, "");
   s = s.replace(/^Human_Lung_Cancer_FFPE\s*/i, "");
   s = s.replace(/_/g, " ").trim();
   s = s.replace(/\s+/g, " ");
 
-  // Optional normalization so dropdown shows the correct spelling even if filename has typos
-  // (Does NOT change the correct-answer matching, because truth is derived from filename.)
-  // If you later rename the files correctly, this mapping can be removed safely.
   const fixMap = {
     "Alvelolar Macrophage": "Alveolar Macrophage",
     "Smmoth muscle cell": "Smooth muscle cell"
   };
   if (fixMap[s]) s = fixMap[s];
-
   return s;
 }
 
@@ -516,7 +570,46 @@ const resultsBox = document.getElementById("resultsBox");
 const scoreTitle = document.getElementById("scoreTitle");
 const resultsTableBody = document.querySelector("#resultsTable tbody");
 
-// ---- Init dropdown (14 cell types) ----
+// ---- Lightbox ----
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightboxImg");
+const lightboxClose = document.getElementById("lightboxClose");
+
+function openLightbox(src){
+  lightboxImg.src = src;
+  lightbox.classList.add("open");
+  lightbox.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+}
+
+function closeLightbox(){
+  lightbox.classList.remove("open");
+  lightbox.setAttribute("aria-hidden", "true");
+  lightboxImg.src = "";
+  document.body.style.overflow = "";
+}
+
+// 点击主图放大
+mainImg.addEventListener("click", () => {
+  if (!mainImg.src) return;
+  openLightbox(mainImg.src);
+});
+
+// 点遮罩空白关闭（点到 inner 或图片不关）
+lightbox.addEventListener("click", (e) => {
+  if (e.target === lightbox) closeLightbox();
+});
+
+// 点图片也关闭（符合你“点击图片后放大”的直觉，放大后再点一次图退出）
+lightboxImg.addEventListener("click", () => closeLightbox());
+lightboxClose.addEventListener("click", () => closeLightbox());
+
+// ESC 关闭
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && lightbox.classList.contains("open")) closeLightbox();
+});
+
+// ---- Init dropdown ----
 (function initDropdown(){
   for (const t of ALL_CELL_TYPES){
     const opt = document.createElement("option");
@@ -526,9 +619,10 @@ const resultsTableBody = document.querySelector("#resultsTable tbody");
   }
 })();
 
-// ---- Render list (NO answer leak) ----
+// ✅ Progress list: show your chosen answer
 function renderList(){
   imageList.innerHTML = "";
+
   items.forEach(it => {
     const row = document.createElement("div");
     row.className = "row" + (it.idx === current ? " active" : "");
@@ -537,9 +631,16 @@ function renderList(){
     left.innerHTML = `<b>${it.idx + 1}.</b> Image ${it.idx + 1}`;
 
     const tag = document.createElement("span");
-    const done = !!answers[it.idx];
-    tag.className = "tag " + (done ? "done" : "todo");
-    tag.textContent = done ? "Answered" : "Todo";
+    const chosen = answers[it.idx];
+
+    if (chosen) {
+      tag.className = "tag done";
+      tag.textContent = chosen;
+      tag.title = chosen;
+    } else {
+      tag.className = "tag todo";
+      tag.textContent = "Todo";
+    }
 
     row.appendChild(left);
     row.appendChild(tag);
@@ -553,10 +654,8 @@ function renderList(){
   totalCount.textContent = String(items.length);
 }
 
-// ---- Render main view ----
 function render(){
   const it = items[current];
-
   imgTitle.textContent = `Image ${current + 1}/${items.length}`;
   mainImg.src = it.url;
 
@@ -571,7 +670,6 @@ function render(){
   renderList();
 }
 
-// ---- Navigation ----
 function goTo(idx){
   current = Math.max(0, Math.min(items.length - 1, idx));
   render();
@@ -580,7 +678,6 @@ function goTo(idx){
 prevBtn.addEventListener("click", () => goTo(current - 1));
 nextBtn.addEventListener("click", () => goTo(current + 1));
 
-// ---- Save answer ----
 saveBtn.addEventListener("click", () => {
   if (submitted) return;
   const v = sel.value;
@@ -601,7 +698,6 @@ sel.addEventListener("change", () => {
   }
 });
 
-// ---- Submit & reveal ----
 submitBtn.addEventListener("click", () => {
   if (submitted) return;
 
@@ -639,7 +735,7 @@ submitBtn.addEventListener("click", () => {
   resultsBox.scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
-// ---- Boot ----
+// boot
 render();
 </script>
 
