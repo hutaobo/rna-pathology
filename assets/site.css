@@ -79,13 +79,22 @@ img, svg, video {
   height: auto;
 }
 
+/* Links (LVHA-ish order so visited/hover behave predictably) */
 a {
   color: var(--link);
   text-decoration: none;
 }
+a:visited {
+  color: var(--link);
+}
 a:hover {
   color: var(--link-hover);
   text-decoration: underline;
+}
+a:focus-visible {
+  outline: 2px solid rgba(122, 167, 255, 0.65);
+  outline-offset: 3px;
+  border-radius: 10px;
 }
 
 code, pre {
@@ -155,12 +164,23 @@ code, pre {
   padding: 12px 0;
 }
 
+/* Brand link should NOT inherit global a:hover color */
 .brand {
   display: flex;
   align-items: center;
   gap: 10px;
   font-weight: 700;
   letter-spacing: 0.2px;
+  color: var(--text);
+  text-decoration: none;
+}
+.brand:visited {
+  color: var(--text);
+}
+.brand:hover,
+.brand:focus-visible {
+  color: var(--text);
+  text-decoration: none;
 }
 
 .brand .logo {
@@ -190,7 +210,13 @@ code, pre {
   opacity: 0.92;
 }
 
-.nav-links a:hover {
+/* ✅ critical fix: override global a:hover color inside nav */
+.nav-links a:visited {
+  color: var(--text);
+}
+.nav-links a:hover,
+.nav-links a:focus-visible {
+  color: var(--text);
   border-color: var(--border);
   background: rgba(231, 236, 245, 0.05);
   text-decoration: none;
@@ -212,6 +238,11 @@ code, pre {
   padding: 8px 10px;
   border-radius: 12px;
   cursor: pointer;
+}
+.nav-toggle:hover,
+.nav-toggle:focus-visible {
+  color: var(--text);
+  background: rgba(231, 236, 245, 0.10);
 }
 
 @media (max-width: 720px) {
@@ -250,8 +281,15 @@ code, pre {
   user-select: none;
 }
 
-.btn:hover {
+/* ✅ critical fix: if btn is an <a>, stop global a:hover from recoloring it */
+.btn:visited {
+  color: var(--text);
+}
+.btn:hover,
+.btn:focus-visible {
+  color: var(--text);
   background: rgba(231, 236, 245, 0.10);
+  text-decoration: none;
 }
 
 .btn.primary {
@@ -259,7 +297,9 @@ code, pre {
   background: rgba(122, 167, 255, 0.14);
 }
 
-.btn.primary:hover {
+.btn.primary:hover,
+.btn.primary:focus-visible {
+  color: var(--text);
   background: rgba(122, 167, 255, 0.20);
 }
 
@@ -291,7 +331,8 @@ code, pre {
   color: var(--muted);
 }
 
-.footer-links a:hover {
+.footer-links a:hover,
+.footer-links a:focus-visible {
   color: var(--text);
 }
 
