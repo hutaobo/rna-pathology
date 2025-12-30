@@ -581,7 +581,7 @@
   function showBlocker(msg, { title="Members-only Challenge", showActions=true } = {}){
     const next = encodeURIComponent(window.location.pathname + window.location.search);
     const loginUrl = `/login.html?next=${next}`;
-    const signupUrl = `/signup.html?next=${next}`; // change if needed
+    const signupUrl = `/login.html?next=${next}`; // change if needed
 
     const el = document.createElement("div");
     el.style.cssText = `
