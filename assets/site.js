@@ -19,8 +19,8 @@
     { href: "/database.html", label: "Database" },
     // { href: "/datasets/", label: "Datasets" }, // removed (no longer used)
     { href: "/challenge.html", label: "Challenge" },
-    { href: "/docs/", label: "Docs" },
-    { href: "/access/", label: "Account" },
+    // { href: "/docs/", label: "Docs" },
+    { href: "/access/", label: "Access" },
   ];
 
   // ---- Supabase Auth (shared) ----
