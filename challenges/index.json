@@ -6,7 +6,8 @@
     "basePath": "/images/challenge/human_lung_cancer_ffpe/set01",
     "requiresAuth": true,
     "hePreview": "Xenium_Prime_Human_Lung_Cancer_FFPE_he_image_preview_L-2.jpg",
-    "dotplot": "dotplot_numbered.png"
+    "dotplot": "dotplot_numbered.png",
+    "filesJson": "/challenges/lung_ffpe_set01.json"
   },
   {
     "id": "demo_public",
