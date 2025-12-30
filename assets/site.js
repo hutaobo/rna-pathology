@@ -5,13 +5,9 @@
    - Mobile nav toggle
    - Auth-aware nav (Supabase): show email when signed in, hide Sign In/Up, provide Sign Out
 
-   IMPORTANT ADDITIONS:
-   - Expose auth state globally:
-       window.__supabaseClient
-       window.__memberEmail
-       window.__isSignedIn
-   - Broadcast auth changes:
-       window.dispatchEvent(new CustomEvent("rp:auth", {detail:{signedIn,email}}))
+   ✅ Added for Challenge unlock:
+   - window.__supabaseClient, window.__memberEmail, window.__isSignedIn
+   - dispatch CustomEvent "rp:auth" on auth changes
 */
 
 (function () {
@@ -47,6 +43,7 @@
 
   function normalizePath(pathname) {
     if (!pathname) return "/";
+    // Treat /index.html as /
     if (pathname.endsWith("/index.html")) return pathname.slice(0, -10) || "/";
     return pathname;
   }
@@ -54,10 +51,13 @@
   function isActive(currentPath, itemHref) {
     const cur = normalizePath(currentPath);
 
+    // Exact match for file pages
     if (itemHref.endsWith(".html")) return cur === itemHref;
 
+    // Folder-like routes: /docs/, /access/
     if (itemHref.endsWith("/")) return cur === itemHref || cur.startsWith(itemHref);
 
+    // Root
     if (itemHref === "/") return cur === "/";
 
     return false;
@@ -90,19 +90,22 @@
     document.head.appendChild(style);
   }
 
-  // ---------- Auth global bridge ----------
-  function setGlobalAuthState(signedIn, email, supabaseClient) {
+  // ---------- NEW: global auth bridge ----------
+  function setGlobalAuth(signedIn, email, supabaseClient) {
+    // Expose for other pages (e.g. challenge.html)
     try {
       window.__supabaseClient = supabaseClient || null;
       window.__memberEmail = email || "";
       window.__isSignedIn = !!signedIn;
 
-      // Broadcast for pages like challenge.html to unlock without polling
+      // Broadcast for pages that want to react immediately (challenge unlock)
+      // CustomEvent.detail is the standard payload slot. :contentReference[oaicite:2]{index=2}
       window.dispatchEvent(
         new CustomEvent("rp:auth", { detail: { signedIn: !!signedIn, email: email || "" } })
       );
+      // dispatchEvent runs listeners synchronously. :contentReference[oaicite:3]{index=3}
     } catch (_) {
-      // no-op
+      // ignore
     }
   }
 
@@ -113,6 +116,7 @@
       return `<a class="nav-link" data-href="${it.href}" href="${url}">${it.label}</a>`;
     }).join("");
 
+    // Auth URLs (respect basePath)
     const signInUrl = joinUrl(basePath, LOGIN_PATH);
     const signUpUrl = joinUrl(basePath, SIGNUP_PATH);
 
@@ -133,6 +137,7 @@
         ${linksHtml}
       </div>
 
+      <!-- Auth cluster (shared across pages) -->
       <div class="nav-auth" aria-label="Account actions">
         <a id="navSignUp" class="nav-auth-btn" href="${signUpUrl}">Sign Up</a>
         <a id="navSignIn" class="nav-auth-btn" href="${signInUrl}">Sign In</a>
@@ -247,6 +252,8 @@
 
     try {
       const supabase = await getSupabaseClient();
+
+      // getSession may return null when not signed in. :contentReference[oaicite:4]{index=4}
       const { data: { session }, error } = await supabase.auth.getSession();
       if (error) throw error;
 
@@ -254,20 +261,18 @@
         const email = session.user.email || "Signed in";
         setAuthUiSignedIn(els, email);
 
-        // ✅ critical: set global state for other pages (challenge unlock)
-        setGlobalAuthState(true, email, supabase);
+        // ✅ expose + broadcast
+        setGlobalAuth(true, email, supabase);
       } else {
         setAuthUiSignedOut(els);
 
-        // ✅ clear global state
-        setGlobalAuthState(false, "", supabase);
+        // ✅ expose + broadcast (signed out)
+        setGlobalAuth(false, "", supabase);
       }
     } catch (_) {
       // Fail open: keep public actions visible
       setAuthUiSignedOut(els);
-
-      // Also clear globals (best effort)
-      setGlobalAuthState(false, "", null);
+      setGlobalAuth(false, "", null);
     }
   }
 
@@ -275,6 +280,7 @@
     const els = findAuthEls();
     if (!els.navSignOutBtn && !els.navAuthed && !els.navSignIn && !els.navSignUp) return;
 
+    // Auth styles (only once)
     ensureStyle("siteAuthNavStyles", `
       .nav-auth{ display:flex; align-items:center; gap:10px; margin-left: 12px; flex-wrap:wrap; justify-content:flex-end; }
       .nav-auth-btn{
@@ -314,17 +320,19 @@
     try {
       const supabase = await getSupabaseClient();
 
-      // ✅ Make supabase client globally available as early as possible
-      setGlobalAuthState(false, "", supabase);
+      // Make client visible early (even before session check)
+      setGlobalAuth(false, "", supabase);
 
+      // Avoid double subscriptions
       if (!_authSub) {
+        // onAuthStateChange callback receives (event, session). :contentReference[oaicite:5]{index=5}
         const { data } = supabase.auth.onAuthStateChange((_event, _session) => {
-          // onAuthStateChange provides event + session :contentReference[oaicite:2]{index=2}
           refreshAuthNav();
         });
         _authSub = data?.subscription || null;
       }
 
+      // Sign out button
       if (els.navSignOutBtn && !els.navSignOutBtn.dataset.wired) {
         els.navSignOutBtn.dataset.wired = "1";
         els.navSignOutBtn.addEventListener("click", async () => {
@@ -345,12 +353,14 @@
       await refreshAuthNav();
     } catch (_) {
       setAuthUiSignedOut(els);
-      setGlobalAuthState(false, "", null);
+      setGlobalAuth(false, "", null);
     }
   }
 
   // ---------- main init ----------
   function init() {
+    // Avoid injecting a second header/footer if the page already has its own nav UI.
+    // Presence of auth ids means "custom header exists" to prevent duplicate IDs.
     const hasCustomAuthNav =
       elExists("#navSignIn") ||
       elExists("#navSignUp") ||
