@@ -80,26 +80,30 @@
       color: #222;
     }
 
+    /* ✅ thinner challenge header */
     header{
       background: #0b3c5d;
       color: #fff;
-      padding: 16px 24px;
+      padding: 10px 24px; /* was 16px 24px */
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:16px;
     }
 
-    header h1{ margin:0; font-size:20px; }
-    .header-left{ display:flex; flex-direction:column; }
-    .back-home{
-      display:inline-block;
-      margin-bottom:6px;
-      font-size:14px;
-      color:#cce4f6;
-      text-decoration:none;
+    header h1{
+      margin:0;
+      font-size:18px;     /* was 20px */
+      line-height:1.2;    /* reduce vertical height */
+      font-weight: 800;
     }
-    .back-home:hover{ text-decoration: underline; }
+
+    .header-left{
+      display:flex;
+      flex-direction: row; /* keep single-line layout */
+      align-items:center;
+      gap:12px;
+    }
 
     /* ✅ Member badge */
     .member-box{
@@ -211,7 +215,7 @@
       max-width:100%;
       border:1px solid #e5e7eb;
       border-radius:10px;
-      cursor: zoom-in; /* ✅ 提示可放大 */
+      cursor: zoom-in;
     }
     .hint{
       font-size:12px;
@@ -398,7 +402,6 @@
 <body>
 <header>
   <div class="header-left">
-    <a href="index.html" class="back-home">← Home</a>
     <h1>🫁 Lung FFPE Cell Type Challenge</h1>
   </div>
 
@@ -600,7 +603,7 @@ lightbox.addEventListener("click", (e) => {
   if (e.target === lightbox) closeLightbox();
 });
 
-// 点图片也关闭（符合你“点击图片后放大”的直觉，放大后再点一次图退出）
+// 点图片也关闭（放大后再点一次图退出）
 lightboxImg.addEventListener("click", () => closeLightbox());
 lightboxClose.addEventListener("click", () => closeLightbox());
 
