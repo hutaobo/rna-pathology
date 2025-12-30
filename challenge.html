@@ -1033,6 +1033,19 @@ boot().catch((e) => {
   document.getElementById("authActions").style.display = "none";
   authNotice.style.display = "block";
 });
+
+window.addEventListener("rp:auth", (e) => {
+  const signedIn = !!e.detail?.signedIn;
+  const email = e.detail?.email || "";
+
+  // 你 challenge 里的两个变量名如果不同，按你的实际改：
+  isSignedIn = signedIn;
+  if (signedIn) {
+    // 可选：更新右上角 member badge（如果你有那套 UI）
+    // wireMemberUI(email, window.__supabaseClient);
+  }
+  render(); // 重新渲染，Save/Submit 会立刻解锁
+});
 </script>
 
 </body>
