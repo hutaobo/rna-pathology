@@ -904,7 +904,7 @@ function setAuthNoticeVisible(visible, cfg){
 
   // IMPORTANT: change these if your routes differ
   const SIGNIN_URL = `/login.html?next=${next}`;
-  const SIGNUP_URL = `/signup.html?next=${next}`; // <-- change if you don't have signup.html
+  const SIGNUP_URL = `/login.html?next=${next}`; // <-- change if you don't have signup.html
 
   authSignupBtn.href = SIGNUP_URL;
   authSigninBtn.href = SIGNIN_URL;
