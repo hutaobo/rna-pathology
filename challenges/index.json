@@ -1,0 +1,18 @@
+[
+  {
+    "id": "lung_ffpe_set01",
+    "title": "Lung FFPE Cell Type Challenge (Set 01)",
+    "description": "Assign a cell type to each image (Human Lung Cancer FFPE).",
+    "basePath": "/images/challenge/human_lung_cancer_ffpe/set01",
+    "requiresAuth": true,
+    "hePreview": "Xenium_Prime_Human_Lung_Cancer_FFPE_he_image_preview_L-2.jpg",
+    "dotplot": "dotplot_numbered.png"
+  },
+  {
+    "id": "demo_public",
+    "title": "Demo Challenge (Public)",
+    "description": "Public demo (no login required).",
+    "basePath": "/images/challenge/demo/set01",
+    "requiresAuth": false
+  }
+]
