@@ -60,6 +60,7 @@
       if (!session) {
         window.location.href = "/login.html?next=" + next;
       } else {
+        // Optional (may help your site.js if it reads these)
         window.__memberEmail = session.user?.email || "";
         window.__supabaseClient = supabase;
       }
@@ -80,64 +81,24 @@
       color: #222;
     }
 
-    /* ✅ thinner challenge header */
-    header{
+    /* ✅ IMPORTANT: scope styles to avoid touching the global site header injected by site.js */
+    .challenge-header{
       background: #0b3c5d;
       color: #fff;
-      padding: 10px 24px; /* was 16px 24px */
+      padding: 10px 24px;
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:16px;
     }
 
-    header h1{
+    .challenge-header h1{
       margin:0;
-      font-size:18px;     /* was 20px */
-      line-height:1.2;    /* reduce vertical height */
+      font-size:18px;
+      line-height:1.2;
       font-weight: 800;
+      letter-spacing: 0.2px;
     }
-
-    .header-left{
-      display:flex;
-      flex-direction: row; /* keep single-line layout */
-      align-items:center;
-      gap:12px;
-    }
-
-    /* ✅ Member badge */
-    .member-box{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-size: 13px;
-      color:#e6f4ff;
-      white-space:nowrap;
-    }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 6px 10px;
-      border-radius:999px;
-      background: rgba(255,255,255,0.10);
-      border: 1px solid rgba(255,255,255,0.18);
-    }
-    .dot{
-      width:8px; height:8px; border-radius:50%;
-      background:#34d399;
-      box-shadow: 0 0 0 3px rgba(52,211,153,0.18);
-    }
-    .signout-btn{
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.18);
-      color:#fff;
-      padding:7px 10px;
-      border-radius:8px;
-      cursor:pointer;
-      font-weight:700;
-    }
-    .signout-btn:hover{ background: rgba(255,255,255,0.16); }
 
     main{
       max-width: 1200px;
@@ -168,6 +129,108 @@
       box-shadow: 0 10px 24px rgba(2,6,23,0.06);
     }
 
+    /* ===== Reference panel (NEW) ===== */
+    .reference-panel{
+      padding: 14px 14px;
+      margin-bottom: 16px;
+    }
+    .ref-top{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:12px;
+      padding: 2px 2px 10px 2px;
+    }
+    .ref-title{
+      font-weight: 900;
+      color:#0f172a;
+      font-size: 14px;
+    }
+    .ref-sub{
+      color:#64748b;
+      font-size: 12px;
+    }
+    .ref-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .ref-item{
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 10px;
+      background: #fff;
+    }
+    .ref-item-title{
+      font-weight: 800;
+      color:#0f172a;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    .ref-img{
+      width: 100%;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      cursor: zoom-in;
+      background: #f8fafc;
+      display:block;
+      max-height: 240px;
+      object-fit: contain;
+    }
+    .ref-caption{
+      margin-top: 8px;
+      font-size: 12px;
+      color:#64748b;
+    }
+
+    details.protein-map{
+      margin-top: 10px;
+      border: 1px dashed #e5e7eb;
+      border-radius: 10px;
+      padding: 8px 10px;
+      background: #fafafa;
+    }
+    details.protein-map > summary{
+      cursor: pointer;
+      font-weight: 800;
+      color:#0f172a;
+      font-size: 13px;
+      list-style: none;
+    }
+    details.protein-map > summary::-webkit-details-marker { display:none; }
+    .protein-map-inner{
+      margin-top: 10px;
+      overflow:auto;
+    }
+    .protein-table{
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      min-width: 380px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .protein-table th,
+    .protein-table td{
+      text-align:left;
+      padding: 8px 10px;
+      border-bottom: 1px solid #eef2f7;
+      vertical-align: top;
+    }
+    .protein-table th{
+      background: #f8fafc;
+      color:#334155;
+      font-weight: 900;
+    }
+    .small-note{
+      margin-top: 8px;
+      font-size: 12px;
+      color:#64748b;
+    }
+
+    /* ===== Image panel ===== */
     .image-panel{ padding: 12px; }
     .image-topbar{
       display:flex;
@@ -223,6 +286,7 @@
       padding: 0 12px 12px 12px;
     }
 
+    /* ===== Control panel ===== */
     .control-panel{ padding:16px; }
     .control-panel h3{
       margin: 0 0 10px 0;
@@ -338,6 +402,8 @@
       .challenge-container{ grid-template-columns: 1fr; }
       .list{ max-height: 220px; }
       .tag{ max-width: 220px; }
+      .ref-grid{ grid-template-columns: 1fr; }
+      .ref-img{ max-height: 320px; }
     }
 
     /* ✅ Lightbox 放大查看 */
@@ -400,111 +466,159 @@
 </head>
 
 <body>
-<header>
-  <div class="header-left">
+  <header class="challenge-header">
     <h1>🫁 Lung FFPE Cell Type Challenge</h1>
-  </div>
+  </header>
 
-  <div class="member-box" id="memberBox" style="display:none;">
-    <span class="pill" title="Signed-in member">
-      <span class="dot"></span>
-      <span id="memberEmail">Member</span>
-    </span>
-    <button class="signout-btn" id="signOutBtn" type="button">Sign out</button>
-  </div>
-</header>
-
-<main>
-
-  <div class="question-meta">
-    <strong>Dataset:</strong> Human Lung Cancer FFPE &nbsp;|&nbsp;
-    <strong>Task:</strong> Assign a cell type to each image &nbsp;|&nbsp;
-    <strong>Difficulty:</strong> Easy–Medium
-    <div class="small" style="margin-top:6px;">
-      Tip: make your best guess for each image, then click <b>Submit Answers</b> to reveal the ground truth.
+  <main>
+    <div class="question-meta">
+      <strong>Dataset:</strong> Human Lung Cancer FFPE &nbsp;|&nbsp;
+      <strong>Task:</strong> Assign a cell type to each image &nbsp;|&nbsp;
+      <strong>Difficulty:</strong> Easy–Medium
+      <div class="small" style="margin-top:6px;">
+        Tip: make your best guess for each image, then click <b>Submit Answers</b> to reveal the ground truth.
+      </div>
     </div>
-  </div>
 
-  <div class="challenge-container">
+    <!-- ✅ NEW: Reference materials (same for all questions) -->
+    <div class="panel reference-panel" id="referencePanel">
+      <div class="ref-top">
+        <div class="ref-title">Reference materials</div>
+        <div class="ref-sub">Same for all images · click any image to zoom</div>
+      </div>
 
-    <!-- Left: Image viewer -->
-    <div class="panel image-panel">
-      <div class="image-topbar">
-        <div class="image-title" id="imgTitle">Image</div>
-        <div class="nav-btns">
-          <button class="btn" id="prevBtn" type="button">← Prev</button>
-          <button class="btn" id="nextBtn" type="button">Next →</button>
+      <div class="ref-grid">
+        <div class="ref-item">
+          <div class="ref-item-title">H&E overview</div>
+          <img id="hePreviewImg" class="ref-img zoomable" src="" alt="H&E overview preview" loading="lazy" />
+          <div class="ref-caption">H&E morphology reference (whole-slide preview)</div>
+        </div>
+
+        <div class="ref-item">
+          <div class="ref-item-title">Cell type × gene dotplot</div>
+          <img id="dotplotImg" class="ref-img zoomable" src="" alt="Cell type by gene dotplot" loading="lazy" />
+          <div class="ref-caption">Molecular marker reference (dotplot)</div>
+
+          <details class="protein-map">
+            <summary>Gene → protein marker legend (for Note / IHC naming)</summary>
+            <div class="protein-map-inner">
+              <table class="protein-table" aria-label="Gene to protein marker mapping">
+                <thead>
+                  <tr><th>Gene</th><th>Protein</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>NKX2-1</td><td>TTF-1</td></tr>
+                  <tr><td>MUC5B</td><td>MUC5B</td></tr>
+                  <tr><td>HDC</td><td>HDC</td></tr>
+                  <tr><td>CD79A</td><td>CD79A</td></tr>
+                  <tr><td>MKI67</td><td>Ki-67</td></tr>
+                  <tr><td>PECAM1</td><td>CD31</td></tr>
+                  <tr><td>RGS5</td><td>RGS5</td></tr>
+                  <tr><td>SLC18A2</td><td>VMAT2</td></tr>
+                  <tr><td>PDGFRA</td><td>PDGFRα</td></tr>
+                  <tr><td>MYLK</td><td>MLCK</td></tr>
+                  <tr><td>MARCO</td><td>MARCO</td></tr>
+                  <tr><td>CDH1</td><td>E-cadherin</td></tr>
+                  <tr><td>CD8A</td><td>CD8</td></tr>
+                  <tr><td>CD3E</td><td>CD3</td></tr>
+                  <tr><td>CD2</td><td>CD2</td></tr>
+                  <tr><td>MS4A1</td><td>CD20</td></tr>
+                  <tr><td>MZB1</td><td>MZB1</td></tr>
+                  <tr><td>CD14</td><td>CD14</td></tr>
+                  <tr><td>CD68</td><td>CD68</td></tr>
+                  <tr><td>PDGFRB</td><td>PDGFRβ</td></tr>
+                  <tr><td>KIT</td><td>CD117</td></tr>
+                </tbody>
+              </table>
+              <div class="small-note">
+                Tip: dotplot gives transcript markers; pathology notes/papers often use protein (IHC) names.
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+
+    <div class="challenge-container">
+      <!-- Left: Image viewer -->
+      <div class="panel image-panel">
+        <div class="image-topbar">
+          <div class="image-title" id="imgTitle">Image</div>
+          <div class="nav-btns">
+            <button class="btn" id="prevBtn" type="button">← Prev</button>
+            <button class="btn" id="nextBtn" type="button">Next →</button>
+          </div>
+        </div>
+
+        <div class="img-wrap">
+          <img id="mainImg" class="zoomable" src="" alt="Challenge image" loading="lazy" />
+        </div>
+
+        <div class="hint">
+          Click any image to zoom in. (ESC / click outside / ✕ to close)
         </div>
       </div>
 
-      <div class="img-wrap">
-        <img id="mainImg" src="" alt="Challenge image" loading="lazy" />
-      </div>
+      <!-- Right: Controls + list -->
+      <div class="panel control-panel">
+        <h3>Answer Panel</h3>
 
-      <div class="hint">
-        Click the image to zoom in. (ESC / click outside / ✕ to close)
-      </div>
-    </div>
+        <label for="cell-type">Predicted Cell Type</label>
+        <select id="cell-type">
+          <option value="">Select cell type</option>
+        </select>
 
-    <!-- Right: Controls + list -->
-    <div class="panel control-panel">
-      <h3>Answer Panel</h3>
-
-      <label for="cell-type">Predicted Cell Type</label>
-      <select id="cell-type">
-        <option value="">Select cell type</option>
-      </select>
-
-      <div style="display:flex; gap:10px; margin-top:12px;">
-        <button class="btn" id="saveBtn" type="button" style="flex:1;">Save for this image</button>
-        <button class="btn primary" id="submitBtn" type="button" style="flex:1;">Submit Answers</button>
-      </div>
-
-      <div class="progress" id="progressBox">
-        Progress: <b id="doneCount">0</b>/<b id="totalCount">0</b> answered
-      </div>
-
-      <div class="list" id="imageList"></div>
-
-      <div class="results" id="resultsBox">
-        <h4 id="scoreTitle">Results</h4>
-        <div style="overflow:auto;">
-          <table id="resultsTable">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Image</th>
-                <th>Your answer</th>
-                <th>Correct answer</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
+        <div style="display:flex; gap:10px; margin-top:12px;">
+          <button class="btn" id="saveBtn" type="button" style="flex:1;">Save for this image</button>
+          <button class="btn primary" id="submitBtn" type="button" style="flex:1;">Submit Answers</button>
         </div>
-      </div>
 
+        <div class="progress" id="progressBox">
+          Progress: <b id="doneCount">0</b>/<b id="totalCount">0</b> answered
+        </div>
+
+        <div class="list" id="imageList"></div>
+
+        <div class="results" id="resultsBox">
+          <h4 id="scoreTitle">Results</h4>
+          <div style="overflow:auto;">
+            <table id="resultsTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Image</th>
+                  <th>Your answer</th>
+                  <th>Correct answer</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
     </div>
 
+    <footer>
+      RNA Pathology · Spatial Omics Literacy Initiative
+    </footer>
+  </main>
+
+  <!-- ✅ Lightbox DOM -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <div class="lightbox-inner" role="dialog" aria-modal="true" aria-label="Image zoom viewer">
+      <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Close">✕</button>
+      <img class="lightbox-img" id="lightboxImg" src="" alt="Zoomed image" />
+      <div class="lightbox-hint">ESC / click outside / ✕ to close</div>
+    </div>
   </div>
-
-  <footer>
-    RNA Pathology · Spatial Omics Literacy Initiative
-  </footer>
-
-</main>
-
-<!-- ✅ Lightbox DOM -->
-<div class="lightbox" id="lightbox" aria-hidden="true">
-  <div class="lightbox-inner" role="dialog" aria-modal="true" aria-label="Image zoom viewer">
-    <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Close">✕</button>
-    <img class="lightbox-img" id="lightboxImg" src="" alt="Zoomed image" />
-    <div class="lightbox-hint">ESC / click outside / ✕ to close</div>
-  </div>
-</div>
 
 <script>
 const IMAGE_BASE_PATH = "/images/challenge/human_lung_cancer_ffpe/set01";
+
+const HE_PREVIEW_FILE = "Xenium_Prime_Human_Lung_Cancer_FFPE_he_image_preview_L-2.jpg";
+const DOTPLOT_FILE = "dotplot_numbered.png";
 
 const FILES = [
   "Human_Lung_Cancer_FFPE Alvelolar Macrophage.png",
@@ -573,6 +687,12 @@ const resultsBox = document.getElementById("resultsBox");
 const scoreTitle = document.getElementById("scoreTitle");
 const resultsTableBody = document.querySelector("#resultsTable tbody");
 
+// Reference images
+const hePreviewImg = document.getElementById("hePreviewImg");
+const dotplotImg = document.getElementById("dotplotImg");
+if (hePreviewImg) hePreviewImg.src = buildUrl(HE_PREVIEW_FILE);
+if (dotplotImg) dotplotImg.src = buildUrl(DOTPLOT_FILE);
+
 // ---- Lightbox ----
 const lightbox = document.getElementById("lightbox");
 const lightboxImg = document.getElementById("lightboxImg");
@@ -592,22 +712,22 @@ function closeLightbox(){
   document.body.style.overflow = "";
 }
 
-// 点击主图放大
-mainImg.addEventListener("click", () => {
-  if (!mainImg.src) return;
-  openLightbox(mainImg.src);
+// ✅ click-to-zoom for ANY image with .zoomable
+document.addEventListener("click", (e) => {
+  const img = e.target.closest("img.zoomable");
+  if (!img) return;
+  if (!img.src) return;
+  // Don't re-open if we're clicking the lightbox image (it closes instead)
+  if (img === lightboxImg) return;
+  openLightbox(img.src);
 });
 
-// 点遮罩空白关闭（点到 inner 或图片不关）
+// Close behaviors
 lightbox.addEventListener("click", (e) => {
   if (e.target === lightbox) closeLightbox();
 });
-
-// 点图片也关闭（放大后再点一次图退出）
 lightboxImg.addEventListener("click", () => closeLightbox());
 lightboxClose.addEventListener("click", () => closeLightbox());
-
-// ESC 关闭
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && lightbox.classList.contains("open")) closeLightbox();
 });
@@ -740,30 +860,6 @@ submitBtn.addEventListener("click", () => {
 
 // boot
 render();
-</script>
-
-<!-- ✅ Member UI wiring + sign-out -->
-<script type="module">
-  const email = window.__memberEmail || "";
-  const supabase = window.__supabaseClient;
-
-  const box = document.getElementById("memberBox");
-  const emailEl = document.getElementById("memberEmail");
-  const signOutBtn = document.getElementById("signOutBtn");
-
-  if (email || supabase) {
-    box.style.display = "flex";
-    emailEl.textContent = email ? email : "Member";
-  }
-
-  signOutBtn?.addEventListener("click", async () => {
-    if (!supabase) {
-      window.location.href = "/login.html?next=" + encodeURIComponent(window.location.pathname || "/challenge.html");
-      return;
-    }
-    try { await supabase.auth.signOut(); } catch (e) {}
-    window.location.href = "/login.html?signed_out=1";
-  });
 </script>
 
 </body>
