@@ -16,7 +16,7 @@
       color: #222;
     }
 
-    /* Scope local header to avoid touching the global site header injected by site.js */
+    /* Local challenge header (not the global site header) */
     .challenge-header{
       background: #0b3c5d;
       color: #fff;
@@ -90,6 +90,52 @@
       border:1px solid #dde6ee;
     }
 
+    /* NEW: auth notice banner (non-blocking) */
+    .auth-notice{
+      display:none;
+      margin: 0 0 16px 0;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      border-radius: 12px;
+      padding: 12px 14px;
+      box-shadow: 0 8px 22px rgba(15,23,42,0.06);
+    }
+    .auth-notice h3{
+      margin: 0 0 6px 0;
+      font-size: 14px;
+      color:#0f172a;
+    }
+    .auth-notice p{
+      margin: 0;
+      font-size: 13px;
+      color:#475569;
+      line-height: 1.5;
+    }
+    .auth-actions{
+      margin-top: 10px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .auth-actions a{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      font-weight: 800;
+      text-decoration: none;
+      border: 1px solid #cbd5e1;
+      color:#0b3c5d;
+      background:#fff;
+    }
+    .auth-actions a.primary{
+      background:#0b3c5d;
+      border-color:#0b3c5d;
+      color:#fff;
+    }
+
     .challenge-container{
       display:grid;
       grid-template-columns: 2fr 1fr;
@@ -108,6 +154,7 @@
     .reference-panel{
       padding: 14px 14px;
       margin-bottom: 16px;
+      display:none;
     }
     .ref-top{
       display:flex;
@@ -455,15 +502,25 @@
     </div>
   </header>
 
-  <main id="mainContent">
-    <div class="question-meta" id="metaBox">
+  <main>
+    <div class="question-meta">
       <strong>Task:</strong> Assign a cell type to each image
       <div class="small" style="margin-top:6px;">
         Tip: make your best guess for each image, then click <b>Submit Answers</b> to reveal the ground truth.
       </div>
     </div>
 
-    <div class="panel reference-panel" id="referencePanel" style="display:none;">
+    <!-- NEW: Non-blocking auth notice -->
+    <div class="auth-notice" id="authNotice">
+      <h3 id="authNoticeTitle">Members-only Challenge</h3>
+      <p id="authNoticeText"></p>
+      <div class="auth-actions" id="authActions">
+        <a class="primary" id="authSignupBtn" href="#">Create an account</a>
+        <a id="authSigninBtn" href="#">Sign in</a>
+      </div>
+    </div>
+
+    <div class="panel reference-panel" id="referencePanel">
       <div class="ref-top">
         <div class="ref-title">Reference materials</div>
         <div class="ref-sub">Same for all images · click any image to zoom</div>
@@ -497,7 +554,7 @@
       </div>
     </div>
 
-    <div class="challenge-container" id="playArea">
+    <div class="challenge-container">
       <div class="panel image-panel">
         <div class="image-topbar">
           <div class="image-title" id="imgTitle">Image</div>
@@ -570,454 +627,413 @@
     </div>
   </div>
 
-<script type="module">
-  // ---------- helpers ----------
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, m => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    }[m]));
-  }
+<script>
+/* ---------- utilities ---------- */
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, m => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[m]));
+}
 
-  function showBlocker(msg, { title="Members-only Challenge", showActions=true } = {}){
-    const next = encodeURIComponent(window.location.pathname + window.location.search);
-    const loginUrl = `/login.html?next=${next}`;
-    const signupUrl = `/login.html?next=${next}`; // change if needed
+async function fetchJson(url){
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error(`Failed to load ${url} (${res.status})`);
+  return await res.json();
+}
 
-    const el = document.createElement("div");
-    el.style.cssText = `
-      position: fixed; inset: 0; z-index: 9999;
-      display: grid; place-items: center;
-      background: rgba(248,250,252,0.94);
-      color: #111827; padding: 24px;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    `;
+function buildUrl(basePath, filename){
+  return `${basePath}/${encodeURIComponent(filename)}`;
+}
 
-    el.innerHTML = `
-      <div style="
-        max-width: 760px; width: 100%;
-        background: #ffffff;
-        border: 1px solid #e5e7eb;
-        border-radius: 14px;
-        padding: 18px 18px;
-        box-shadow: 0 10px 26px rgba(2,6,23,0.12);
-      ">
-        <div style="font-weight: 900; margin-bottom: 8px; font-size: 16px;">
-          ${escapeHtml(title)}
-        </div>
-        <div style="color:#374151; white-space: pre-wrap; font-size: 14px; line-height:1.55;">
-          ${escapeHtml(msg)}
-        </div>
+function unique(arr){ return Array.from(new Set(arr)); }
 
-        ${showActions ? `
-          <div style="margin-top: 14px; display:flex; gap:10px; flex-wrap:wrap;">
-            <a href="${signupUrl}" style="
-              display:inline-block;
-              background:#0b3c5d; color:#fff;
-              text-decoration:none;
-              font-weight:800;
-              padding:10px 12px;
-              border-radius:10px;
-            ">Create an account</a>
+/* ---------- protein map ---------- */
+const PROTEIN_MAP = {
+  "NKX2-1": "TTF-1",
+  "MUC5B": "MUC5B",
+  "HDC": "HDC",
+  "CD79A": "CD79A",
+  "MKI67": "Ki-67",
+  "PECAM1": "CD31",
+  "RGS5": "RGS5",
+  "SLC18A2": "VMAT2",
+  "PDGFRA": "PDGFRα",
+  "MYLK": "MLCK",
+  "MARCO": "MARCO",
+  "CDH1": "E-cadherin",
+  "CD8A": "CD8",
+  "CD3E": "CD3",
+  "CD2": "CD2",
+  "MS4A1": "CD20",
+  "MZB1": "MZB1",
+  "CD14": "CD14",
+  "CD68": "CD68",
+  "PDGFRB": "PDGFRβ",
+  "KIT": "CD117"
+};
 
-            <a href="${loginUrl}" style="
-              display:inline-block;
-              background:#ffffff; color:#0b3c5d;
-              text-decoration:none;
-              font-weight:800;
-              padding:10px 12px;
-              border-radius:10px;
-              border: 1px solid #cbd5e1;
-            ">Sign in</a>
+function renderProteinMap(){
+  const body = document.getElementById("proteinMapBody");
+  body.innerHTML = "";
+  Object.entries(PROTEIN_MAP).forEach(([g,p]) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${escapeHtml(g)}</td><td>${escapeHtml(p)}</td>`;
+    body.appendChild(tr);
+  });
+}
 
-            <a href="/" style="
-              display:inline-block;
-              color:#334155;
-              text-decoration:none;
-              font-weight:700;
-              padding:10px 8px;
-            ">Back to Home</a>
-          </div>
-          <div style="margin-top:10px; color:#64748b; font-size:12px;">
-            Tip: for public challenges, you can play without signing in.
-          </div>
-        ` : ""}
-      </div>
-    `;
-    document.body.appendChild(el);
-  }
+/* ---------- truth parsing (your current convention) ---------- */
+function parseTruthFromFilename(filename){
+  let s = filename.replace(/\.[^/.]+$/, "");
+  s = s.replace(/^Human_Lung_Cancer_FFPE\s*/i, "");
+  s = s.replace(/_/g, " ").trim();
+  s = s.replace(/\s+/g, " ");
 
-  async function fetchJson(url){
-    const res = await fetch(url, { cache: "no-store" }); // :contentReference[oaicite:2]{index=2}
-    if (!res.ok) throw new Error(`Failed to load ${url} (${res.status})`);
-    return await res.json();
-  }
-
-  async function loadChallengeConfig(){
-    const params = new URLSearchParams(window.location.search); // :contentReference[oaicite:3]{index=3}
-    const id = params.get("id") || "lung_ffpe_set01";
-
-    const list = await fetchJson("/challenges/index.json");
-    const cfg = list.find(x => x.id === id);
-    if (!cfg) throw new Error(`Unknown challenge id: ${id}`);
-    return cfg;
-  }
-
-  async function loadFilesList(cfg){
-    if (!cfg.filesJson) {
-      throw new Error(`Challenge "${cfg.id}" is missing "filesJson" in /challenges/index.json`);
-    }
-    const payload = await fetchJson(cfg.filesJson);
-    if (!payload || !Array.isArray(payload.files)) {
-      throw new Error(`Invalid filesJson format at ${cfg.filesJson}. Expected: { "files": [...] }`);
-    }
-    if (payload.files.length === 0) {
-      throw new Error(`No files found in ${cfg.filesJson}`);
-    }
-    return payload.files;
-  }
-
-  // ---------- challenge rules / mapping ----------
-  const PROTEIN_MAP = {
-    "NKX2-1": "TTF-1",
-    "MUC5B": "MUC5B",
-    "HDC": "HDC",
-    "CD79A": "CD79A",
-    "MKI67": "Ki-67",
-    "PECAM1": "CD31",
-    "RGS5": "RGS5",
-    "SLC18A2": "VMAT2",
-    "PDGFRA": "PDGFRα",
-    "MYLK": "MLCK",
-    "MARCO": "MARCO",
-    "CDH1": "E-cadherin",
-    "CD8A": "CD8",
-    "CD3E": "CD3",
-    "CD2": "CD2",
-    "MS4A1": "CD20",
-    "MZB1": "MZB1",
-    "CD14": "CD14",
-    "CD68": "CD68",
-    "PDGFRB": "PDGFRβ",
-    "KIT": "CD117"
+  const fixMap = {
+    "Alvelolar Macrophage": "Alveolar Macrophage",
+    "Smmoth muscle cell": "Smooth muscle cell"
   };
+  if (fixMap[s]) s = fixMap[s];
+  return s;
+}
 
-  function unique(arr){ return Array.from(new Set(arr)); }
+/* ---------- Lightbox ---------- */
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightboxImg");
+const lightboxClose = document.getElementById("lightboxClose");
 
-  function buildUrl(basePath, filename){
-    return `${basePath}/${encodeURIComponent(filename)}`;
-  }
+function openLightbox(src){
+  lightboxImg.src = src;
+  lightbox.classList.add("open");
+  lightbox.setAttribute("aria-hidden","false");
+  document.body.style.overflow = "hidden";
+}
+function closeLightbox(){
+  lightbox.classList.remove("open");
+  lightbox.setAttribute("aria-hidden","true");
+  lightboxImg.src = "";
+  document.body.style.overflow = "";
+}
+document.addEventListener("click", (e) => {
+  const img = e.target.closest("img.zoomable");
+  if (!img || !img.src) return;
+  if (img === lightboxImg) return;
+  openLightbox(img.src);
+});
+lightbox.addEventListener("click", (e) => { if (e.target === lightbox) closeLightbox(); });
+lightboxImg.addEventListener("click", () => closeLightbox());
+lightboxClose.addEventListener("click", () => closeLightbox());
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && lightbox.classList.contains("open")) closeLightbox();
+});
 
-  // IMPORTANT: for now we keep your "truth is encoded in the filename" convention
-  function parseTruthFromFilename(filename){
-    let s = filename.replace(/\.[^/.]+$/, "");
-    s = s.replace(/^Human_Lung_Cancer_FFPE\s*/i, "");
-    s = s.replace(/_/g, " ").trim();
-    s = s.replace(/\s+/g, " ");
+/* ---------- UI refs ---------- */
+const challengeTitleEl = document.getElementById("challengeTitle");
+const challengeSubtitleEl = document.getElementById("challengeSubtitle");
 
-    const fixMap = {
-      "Alvelolar Macrophage": "Alveolar Macrophage",
-      "Smmoth muscle cell": "Smooth muscle cell"
-    };
-    if (fixMap[s]) s = fixMap[s];
-    return s;
-  }
+const referencePanel = document.getElementById("referencePanel");
+const heBox = document.getElementById("heBox");
+const dotBox = document.getElementById("dotBox");
+const hePreviewImg = document.getElementById("hePreviewImg");
+const dotplotImg = document.getElementById("dotplotImg");
 
-  // ---------- DOM ----------
-  const challengeTitle = document.getElementById("challengeTitle");
-  const challengeSubtitle = document.getElementById("challengeSubtitle");
+const imgTitle = document.getElementById("imgTitle");
+const mainImg = document.getElementById("mainImg");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+const sel = document.getElementById("cell-type");
+const saveBtn = document.getElementById("saveBtn");
+const submitBtn = document.getElementById("submitBtn");
+const imageList = document.getElementById("imageList");
+const doneCount = document.getElementById("doneCount");
+const totalCount = document.getElementById("totalCount");
+const resultsBox = document.getElementById("resultsBox");
+const scoreTitle = document.getElementById("scoreTitle");
+const resultsTableBody = document.querySelector("#resultsTable tbody");
 
-  const referencePanel = document.getElementById("referencePanel");
-  const heBox = document.getElementById("heBox");
-  const dotBox = document.getElementById("dotBox");
-  const hePreviewImg = document.getElementById("hePreviewImg");
-  const dotplotImg = document.getElementById("dotplotImg");
-  const proteinMapBody = document.getElementById("proteinMapBody");
+const authNotice = document.getElementById("authNotice");
+const authNoticeTitle = document.getElementById("authNoticeTitle");
+const authNoticeText = document.getElementById("authNoticeText");
+const authSignupBtn = document.getElementById("authSignupBtn");
+const authSigninBtn = document.getElementById("authSigninBtn");
 
-  const imgTitle = document.getElementById("imgTitle");
-  const mainImg = document.getElementById("mainImg");
-  const prevBtn = document.getElementById("prevBtn");
-  const nextBtn = document.getElementById("nextBtn");
-  const sel = document.getElementById("cell-type");
-  const saveBtn = document.getElementById("saveBtn");
-  const submitBtn = document.getElementById("submitBtn");
-  const imageList = document.getElementById("imageList");
-  const doneCount = document.getElementById("doneCount");
-  const totalCount = document.getElementById("totalCount");
-  const resultsBox = document.getElementById("resultsBox");
-  const scoreTitle = document.getElementById("scoreTitle");
-  const resultsTableBody = document.querySelector("#resultsTable tbody");
+/* ---------- state ---------- */
+let cfg = null;
+let files = [];
+let items = [];
+let ALL_CELL_TYPES = [];
+const answers = {};
+let current = 0;
+let submitted = false;
+let requiresAuth = false;
+let isSignedIn = false;
 
-  // Lightbox
-  const lightbox = document.getElementById("lightbox");
-  const lightboxImg = document.getElementById("lightboxImg");
-  const lightboxClose = document.getElementById("lightboxClose");
+/* ---------- core render ---------- */
+function renderList(){
+  imageList.innerHTML = "";
+  items.forEach(it => {
+    const row = document.createElement("div");
+    row.className = "row" + (it.idx === current ? " active" : "");
 
-  function openLightbox(src){
-    lightboxImg.src = src;
-    lightbox.classList.add("open");
-    lightbox.setAttribute("aria-hidden", "false");
-    document.body.style.overflow = "hidden";
-  }
-  function closeLightbox(){
-    lightbox.classList.remove("open");
-    lightbox.setAttribute("aria-hidden", "true");
-    lightboxImg.src = "";
-    document.body.style.overflow = "";
-  }
-  document.addEventListener("click", (e) => {
-    const img = e.target.closest("img.zoomable");
-    if (!img || !img.src) return;
-    if (img === lightboxImg) return;
-    openLightbox(img.src);
+    const left = document.createElement("div");
+    left.innerHTML = `<b>${it.idx + 1}.</b> Image ${it.idx + 1}`;
+
+    const tag = document.createElement("span");
+    const chosen = answers[it.idx];
+
+    if (chosen) {
+      tag.className = "tag done";
+      tag.textContent = chosen;
+      tag.title = chosen;
+    } else {
+      tag.className = "tag todo";
+      tag.textContent = "Todo";
+    }
+
+    row.appendChild(left);
+    row.appendChild(tag);
+    row.addEventListener("click", () => goTo(it.idx));
+    imageList.appendChild(row);
   });
-  lightbox.addEventListener("click", (e) => { if (e.target === lightbox) closeLightbox(); });
-  lightboxImg.addEventListener("click", () => closeLightbox());
-  lightboxClose.addEventListener("click", () => closeLightbox());
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && lightbox.classList.contains("open")) closeLightbox();
-  });
 
-  // ---------- state ----------
-  let cfg = null;
-  let files = [];
-  let items = [];
-  let ALL_CELL_TYPES = [];
-  const answers = {};
-  let current = 0;
-  let submitted = false;
+  doneCount.textContent = String(Object.keys(answers).length);
+  totalCount.textContent = String(items.length);
+}
 
-  function renderProteinMap(){
-    proteinMapBody.innerHTML = "";
-    Object.entries(PROTEIN_MAP).forEach(([gene, protein]) => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${escapeHtml(gene)}</td><td>${escapeHtml(protein)}</td>`;
-      proteinMapBody.appendChild(tr);
-    });
+function render(){
+  if (!items.length) {
+    imgTitle.textContent = "No images";
+    mainImg.removeAttribute("src");
+    renderList();
+    return;
   }
 
-  function renderList(){
-    imageList.innerHTML = "";
+  const it = items[current];
+  imgTitle.textContent = `Image ${current + 1}/${items.length}`;
+  mainImg.src = it.url;
+  sel.value = answers[current] || "";
 
-    items.forEach(it => {
-      const row = document.createElement("div");
-      row.className = "row" + (it.idx === current ? " active" : "");
+  prevBtn.disabled = current === 0;
+  nextBtn.disabled = current === items.length - 1;
 
-      const left = document.createElement("div");
-      left.innerHTML = `<b>${it.idx + 1}.</b> Image ${it.idx + 1}`;
+  // If auth required and not signed in: disable submitting, but still allow browsing
+  const lock = (requiresAuth && !isSignedIn);
+  sel.disabled = submitted || lock;
+  saveBtn.disabled = submitted || lock;
+  submitBtn.disabled = submitted || lock;
 
-      const tag = document.createElement("span");
-      const chosen = answers[it.idx];
+  renderList();
+}
 
-      if (chosen) {
-        tag.className = "tag done";
-        tag.textContent = chosen;
-        tag.title = chosen;
-      } else {
-        tag.className = "tag todo";
-        tag.textContent = "Todo";
-      }
+function goTo(idx){
+  current = Math.max(0, Math.min(items.length - 1, idx));
+  render();
+}
 
-      row.appendChild(left);
-      row.appendChild(tag);
-      row.addEventListener("click", () => goTo(it.idx));
-      imageList.appendChild(row);
-    });
+prevBtn.addEventListener("click", () => goTo(current - 1));
+nextBtn.addEventListener("click", () => goTo(current + 1));
 
-    doneCount.textContent = String(Object.keys(answers).length);
-    totalCount.textContent = String(items.length);
+saveBtn.addEventListener("click", () => {
+  if (submitted) return;
+  if (requiresAuth && !isSignedIn) return;
+
+  const v = sel.value;
+  if (!v){
+    alert("Please select a cell type first.");
+    return;
   }
+  answers[current] = v;
+  renderList();
+});
 
-  function render(){
-    const it = items[current];
-    imgTitle.textContent = `Image ${current + 1}/${items.length}`;
-    mainImg.src = it.url;
+sel.addEventListener("change", () => {
+  if (submitted) return;
+  if (requiresAuth && !isSignedIn) return;
 
-    sel.value = answers[current] || "";
-
-    prevBtn.disabled = current === 0;
-    nextBtn.disabled = current === items.length - 1;
-
-    sel.disabled = submitted;
-    saveBtn.disabled = submitted;
-
+  if (sel.value){
+    answers[current] = sel.value;
     renderList();
   }
+});
 
-  function goTo(idx){
-    current = Math.max(0, Math.min(items.length - 1, idx));
-    render();
+submitBtn.addEventListener("click", () => {
+  if (submitted) return;
+  if (requiresAuth && !isSignedIn) return;
+
+  const missing = items.filter(it => !answers[it.idx]);
+  if (missing.length > 0){
+    alert(`You still have ${missing.length} unanswered image(s). Please answer them before submitting.`);
+    return;
   }
 
-  prevBtn.addEventListener("click", () => goTo(current - 1));
-  nextBtn.addEventListener("click", () => goTo(current + 1));
+  submitted = true;
+  render();
 
-  saveBtn.addEventListener("click", () => {
-    if (submitted) return;
-    const v = sel.value;
-    if (!v){
-      alert("Please select a cell type first.");
-      return;
-    }
-    answers[current] = v;
-    renderList();
+  resultsTableBody.innerHTML = "";
+  let correctN = 0;
+
+  items.forEach(it => {
+    const your = answers[it.idx] || "";
+    const ok = (your === it.truth);
+    if (ok) correctN++;
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><b>${it.idx + 1}</b></td>
+      <td>Image ${it.idx + 1}</td>
+      <td>${your ? escapeHtml(your) : "<span class='small'>—</span>"}</td>
+      <td><b>${escapeHtml(it.truth)}</b></td>
+      <td class="${ok ? "ok" : "bad"}">${ok ? "✅ Correct" : "❌ Wrong"}</td>
+    `;
+    resultsTableBody.appendChild(tr);
   });
 
-  sel.addEventListener("change", () => {
-    if (submitted) return;
-    if (sel.value){
-      answers[current] = sel.value;
-      renderList();
-    }
+  const pct = Math.round((correctN / items.length) * 100);
+  scoreTitle.textContent = `Results — Score: ${correctN}/${items.length} (${pct}%)`;
+  resultsBox.style.display = "block";
+  resultsBox.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+/* ---------- auth UI ---------- */
+function setAuthNoticeVisible(visible, cfg){
+  if (!visible) {
+    authNotice.style.display = "none";
+    return;
+  }
+  const next = encodeURIComponent(window.location.pathname + window.location.search);
+
+  // IMPORTANT: change these if your routes differ
+  const SIGNIN_URL = `/login.html?next=${next}`;
+  const SIGNUP_URL = `/signup.html?next=${next}`; // <-- change if you don't have signup.html
+
+  authSignupBtn.href = SIGNUP_URL;
+  authSigninBtn.href = SIGNIN_URL;
+
+  authNoticeTitle.textContent = "Members-only Challenge";
+  authNoticeText.textContent =
+    "This challenge requires an account to save answers and submit a score. " +
+    "You can still browse images and references without signing in.";
+
+  authNotice.style.display = "block";
+}
+
+function wireMemberUI(email, supabaseClient){
+  const box = document.getElementById("memberBox");
+  const emailEl = document.getElementById("memberEmail");
+  const signOutBtn = document.getElementById("signOutBtn");
+
+  if (!email && !supabaseClient) return;
+
+  box.style.display = "flex";
+  emailEl.textContent = email || "Member";
+
+  signOutBtn?.addEventListener("click", async () => {
+    try { await supabaseClient?.auth?.signOut(); } catch (e) {}
+    window.location.href = "/login.html?signed_out=1";
   });
+}
 
-  submitBtn.addEventListener("click", () => {
-    if (submitted) return;
+/* ---------- load config + files (always) ---------- */
+async function boot(){
+  // 1) get challenge id
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id") || "lung_ffpe_set01";
 
-    const missing = items.filter(it => !answers[it.idx]);
-    if (missing.length > 0){
-      alert(`You still have ${missing.length} unanswered image(s). Please answer them before submitting.`);
-      return;
-    }
+  // 2) load config list + find cfg
+  const list = await fetchJson("/challenges/index.json");
+  cfg = list.find(x => x.id === id);
+  if (!cfg) throw new Error(`Unknown challenge id: ${id}`);
 
-    submitted = true;
-    render();
+  requiresAuth = !!cfg.requiresAuth;
 
-    resultsTableBody.innerHTML = "";
-    let correctN = 0;
+  // 3) set header text early
+  challengeTitleEl.textContent = cfg.title || "Challenge";
+  challengeSubtitleEl.textContent = cfg.description || "";
 
-    items.forEach(it => {
-      const your = answers[it.idx] || "";
-      const ok = (your === it.truth);
-      if (ok) correctN++;
+  // 4) load files list (must exist)
+  if (!cfg.filesJson) throw new Error(`Missing filesJson for challenge "${cfg.id}".`);
+  const filesPayload = await fetchJson(cfg.filesJson);
+  if (!filesPayload || !Array.isArray(filesPayload.files)) {
+    throw new Error(`Invalid filesJson format at ${cfg.filesJson}. Expected { "files": [...] }`);
+  }
+  files = filesPayload.files;
 
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td><b>${it.idx + 1}</b></td>
-        <td>Image ${it.idx + 1}</td>
-        <td>${your ? escapeHtml(your) : "<span class='small'>—</span>"}</td>
-        <td><b>${escapeHtml(it.truth)}</b></td>
-        <td class="${ok ? "ok" : "bad"}">${ok ? "✅ Correct" : "❌ Wrong"}</td>
-      `;
-      resultsTableBody.appendChild(tr);
-    });
+  // 5) build items
+  items = files.map((fn, idx) => ({
+    idx,
+    filename: fn,
+    url: buildUrl(cfg.basePath, fn),
+    truth: parseTruthFromFilename(fn),
+  }));
 
-    const pct = Math.round((correctN / items.length) * 100);
-    scoreTitle.textContent = `Results — Score: ${correctN}/${items.length} (${pct}%)`;
-    resultsBox.style.display = "block";
-    resultsBox.scrollIntoView({ behavior: "smooth", block: "start" });
-  });
-
-  // ---------- auth gate (config-driven) ----------
-  async function maybeGateByAuth(requiresAuth){
-    if (!requiresAuth) return { ok: true, supabase: null, email: "" };
-
-    const SUPABASE_URL = "https://xxlkxorwprtynemmbeya.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_ZzCo8J6b6y0xVkExiOtHyg_gOpGEJFv";
-
-    const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    const { data: { session }, error } = await supabase.auth.getSession(); // can be null :contentReference[oaicite:4]{index=4}
-    if (error) throw error;
-
-    if (!session){
-      showBlocker(
-        "This challenge is available to registered users only.\n\n" +
-        "Why? Accounts help us:\n" +
-        "• prevent duplicate submissions\n" +
-        "• track your progress and score\n" +
-        "• attribute leaderboard results (optional)\n\n" +
-        "Please create an account or sign in to continue."
-      );
-      return { ok: false, supabase: null, email: "" };
-    }
-
-    return { ok: true, supabase, email: session.user?.email || "" };
+  // 6) dropdown options
+  ALL_CELL_TYPES = unique(items.map(x => x.truth)).sort((a,b)=>a.localeCompare(b));
+  while (sel.options.length > 1) sel.remove(1);
+  for (const t of ALL_CELL_TYPES){
+    const opt = document.createElement("option");
+    opt.value = t;
+    opt.textContent = t;
+    sel.appendChild(opt);
   }
 
-  // ---------- boot ----------
-  try {
-    cfg = await loadChallengeConfig();
-    challengeTitle.textContent = cfg.title || "Challenge";
-    challengeSubtitle.textContent = cfg.description || "";
+  // 7) reference panel
+  renderProteinMap();
+  const hasHe = !!cfg.hePreview;
+  const hasDot = !!cfg.dotplot;
+  referencePanel.style.display = (hasHe || hasDot) ? "block" : "none";
 
-    // Gate by config
-    const auth = await maybeGateByAuth(!!cfg.requiresAuth);
+  if (hasHe){
+    heBox.style.display = "block";
+    hePreviewImg.src = buildUrl(cfg.basePath, cfg.hePreview);
+  } else {
+    heBox.style.display = "none";
+  }
 
-    // If gated, disable controls and stop booting
-    if (!auth.ok) {
-      submitBtn.disabled = true;
-      saveBtn.disabled = true;
-      sel.disabled = true;
-      prevBtn.disabled = true;
-      nextBtn.disabled = true;
+  if (hasDot){
+    dotBox.style.display = "block";
+    dotplotImg.src = buildUrl(cfg.basePath, cfg.dotplot);
+  } else {
+    dotBox.style.display = "none";
+  }
+
+  // 8) render now (even if not signed in)
+  render();
+
+  // 9) check auth (non-blocking)
+  // Prefer globals set by site.js
+  const globalEmail = window.__memberEmail || "";
+  const globalSupabase = window.__supabaseClient || null;
+
+  if (requiresAuth) {
+    if (globalEmail || globalSupabase) {
+      isSignedIn = true;
+      setAuthNoticeVisible(false, cfg);
+      wireMemberUI(globalEmail, globalSupabase);
+      render();
       return;
     }
 
-    // Member UI (optional)
-    if (auth.supabase) {
-      const box = document.getElementById("memberBox");
-      const emailEl = document.getElementById("memberEmail");
-      const signOutBtn = document.getElementById("signOutBtn");
-      box.style.display = "flex";
-      emailEl.textContent = auth.email || "Member";
-
-      signOutBtn?.addEventListener("click", async () => {
-        try { await auth.supabase.auth.signOut(); } catch (e) {}
-        window.location.href = "/login.html?signed_out=1";
-      });
-    }
-
-    // Load files list from cfg.filesJson
-    files = await loadFilesList(cfg);
-
-    // Reference images
-    const basePath = cfg.basePath;
-    renderProteinMap();
-
-    const hasHe = !!cfg.hePreview;
-    const hasDot = !!cfg.dotplot;
-
-    if (hasHe || hasDot) referencePanel.style.display = "block";
-    if (hasHe){
-      heBox.style.display = "block";
-      hePreviewImg.src = buildUrl(basePath, cfg.hePreview);
-    }
-    if (hasDot){
-      dotBox.style.display = "block";
-      dotplotImg.src = buildUrl(basePath, cfg.dotplot);
-    }
-
-    // Build items
-    items = files.map((fn, idx) => ({
-      idx,
-      filename: fn,
-      url: buildUrl(basePath, fn),
-      truth: parseTruthFromFilename(fn),
-    }));
-
-    ALL_CELL_TYPES = unique(items.map(x => x.truth)).sort((a,b)=>a.localeCompare(b));
-
-    // Dropdown init (keep placeholder)
-    while (sel.options.length > 1) sel.remove(1);
-    for (const t of ALL_CELL_TYPES){
-      const opt = document.createElement("option");
-      opt.value = t;
-      opt.textContent = t;
-      sel.appendChild(opt);
-    }
-
-    // boot render
+    // Not signed in (or site.js hasn't populated yet)
+    isSignedIn = false;
+    setAuthNoticeVisible(true, cfg);
     render();
-
-  } catch (e) {
-    showBlocker(
-      "Challenge failed to load.\n\n" +
-      "Reason: " + (e?.message || String(e)) + "\n\n" +
-      "Please try again later.",
-      { title: "Load error", showActions: false }
-    );
+  } else {
+    // Public challenge
+    isSignedIn = !!(globalEmail || globalSupabase);
+    setAuthNoticeVisible(false, cfg);
+    if (isSignedIn) wireMemberUI(globalEmail, globalSupabase);
+    render();
   }
+}
+
+boot().catch((e) => {
+  // If config/files failed, show a clear error in the auth notice area (non-blocking)
+  authNoticeTitle.textContent = "Challenge failed to load";
+  authNoticeText.textContent = (e?.message || String(e));
+  document.getElementById("authActions").style.display = "none";
+  authNotice.style.display = "block";
+});
 </script>
+
 </body>
 </html>
