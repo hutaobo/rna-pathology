@@ -16,7 +16,7 @@
       color: #222;
     }
 
-    /* Scope local header to avoid touching global site header */
+    /* Scope local header to avoid touching the global site header injected by site.js */
     .challenge-header{
       background: #0b3c5d;
       color: #fff;
@@ -38,9 +38,10 @@
       color: rgba(226,232,240,0.92);
       margin-top: 3px;
       font-weight: 600;
+      max-width: 70ch;
     }
 
-    /* Member badge (optional; you can remove if you don’t use it) */
+    /* Member badge */
     .member-box{
       display:flex;
       align-items:center;
@@ -570,7 +571,7 @@
   </div>
 
 <script type="module">
-  // --------- helpers ----------
+  // ---------- helpers ----------
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, m => ({
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
@@ -580,7 +581,7 @@
   function showBlocker(msg, { title="Members-only Challenge", showActions=true } = {}){
     const next = encodeURIComponent(window.location.pathname + window.location.search);
     const loginUrl = `/login.html?next=${next}`;
-    const signupUrl = `/signup.html?next=${next}`; // change if your signup page path differs
+    const signupUrl = `/signup.html?next=${next}`; // change if needed
 
     const el = document.createElement("div");
     el.style.cssText = `
@@ -645,41 +646,37 @@
     document.body.appendChild(el);
   }
 
+  async function fetchJson(url){
+    const res = await fetch(url, { cache: "no-store" }); // :contentReference[oaicite:2]{index=2}
+    if (!res.ok) throw new Error(`Failed to load ${url} (${res.status})`);
+    return await res.json();
+  }
+
   async function loadChallengeConfig(){
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get("id") || "lung_ffpe_set01"; // default :contentReference[oaicite:3]{index=3}
+    const params = new URLSearchParams(window.location.search); // :contentReference[oaicite:3]{index=3}
+    const id = params.get("id") || "lung_ffpe_set01";
 
-    const res = await fetch("/challenges/index.json", { cache: "no-store" }); // :contentReference[oaicite:4]{index=4}
-    if (!res.ok) throw new Error(`Failed to load /challenges/index.json (${res.status})`);
-    const list = await res.json();
-
+    const list = await fetchJson("/challenges/index.json");
     const cfg = list.find(x => x.id === id);
     if (!cfg) throw new Error(`Unknown challenge id: ${id}`);
     return cfg;
   }
 
-  // --------- data model (kept from your current setup) ----------
-  function buildUrl(basePath, filename){
-    return `${basePath}/${encodeURIComponent(filename)}`;
+  async function loadFilesList(cfg){
+    if (!cfg.filesJson) {
+      throw new Error(`Challenge "${cfg.id}" is missing "filesJson" in /challenges/index.json`);
+    }
+    const payload = await fetchJson(cfg.filesJson);
+    if (!payload || !Array.isArray(payload.files)) {
+      throw new Error(`Invalid filesJson format at ${cfg.filesJson}. Expected: { "files": [...] }`);
+    }
+    if (payload.files.length === 0) {
+      throw new Error(`No files found in ${cfg.filesJson}`);
+    }
+    return payload.files;
   }
 
-  function parseTruthFromFilename(filename){
-    let s = filename.replace(/\.[^/.]+$/, "");
-    s = s.replace(/^Human_Lung_Cancer_FFPE\s*/i, "");
-    s = s.replace(/_/g, " ").trim();
-    s = s.replace(/\s+/g, " ");
-
-    const fixMap = {
-      "Alvelolar Macrophage": "Alveolar Macrophage",
-      "Smmoth muscle cell": "Smooth muscle cell"
-    };
-    if (fixMap[s]) s = fixMap[s];
-    return s;
-  }
-
-  function unique(arr){ return Array.from(new Set(arr)); }
-
-  // Protein map (your provided mapping)
+  // ---------- challenge rules / mapping ----------
   const PROTEIN_MAP = {
     "NKX2-1": "TTF-1",
     "MUC5B": "MUC5B",
@@ -704,28 +701,30 @@
     "KIT": "CD117"
   };
 
-  // Your existing file list (for now)
-  const FILES = [
-    "Human_Lung_Cancer_FFPE Alvelolar Macrophage.png",
-    "Human_Lung_Cancer_FFPE B cell.png",
-    "Human_Lung_Cancer_FFPE Endothelial cell in Normal Lung.png",
-    "Human_Lung_Cancer_FFPE Endothelial in tumor.png",
-    "Human_Lung_Cancer_FFPE Fibroblast.png",
-    "Human_Lung_Cancer_FFPE Mast cell.png",
-    "Human_Lung_Cancer_FFPE Monocyte.png",
-    "Human_Lung_Cancer_FFPE Normal bronchiolar epithelial.png",
-    "Human_Lung_Cancer_FFPE Normal lung epithelial.png",
-    "Human_Lung_Cancer_FFPE Pericyte.png",
-    "Human_Lung_Cancer_FFPE Plasma.png",
-    "Human_Lung_Cancer_FFPE Smmoth muscle cell.png",
-    "Human_Lung_Cancer_FFPE T cell.png",
-    "Human_Lung_Cancer_FFPE Tumor cell.png"
-  ];
+  function unique(arr){ return Array.from(new Set(arr)); }
 
-  // --------- DOM ----------
+  function buildUrl(basePath, filename){
+    return `${basePath}/${encodeURIComponent(filename)}`;
+  }
+
+  // IMPORTANT: for now we keep your "truth is encoded in the filename" convention
+  function parseTruthFromFilename(filename){
+    let s = filename.replace(/\.[^/.]+$/, "");
+    s = s.replace(/^Human_Lung_Cancer_FFPE\s*/i, "");
+    s = s.replace(/_/g, " ").trim();
+    s = s.replace(/\s+/g, " ");
+
+    const fixMap = {
+      "Alvelolar Macrophage": "Alveolar Macrophage",
+      "Smmoth muscle cell": "Smooth muscle cell"
+    };
+    if (fixMap[s]) s = fixMap[s];
+    return s;
+  }
+
+  // ---------- DOM ----------
   const challengeTitle = document.getElementById("challengeTitle");
   const challengeSubtitle = document.getElementById("challengeSubtitle");
-  const metaBox = document.getElementById("metaBox");
 
   const referencePanel = document.getElementById("referencePanel");
   const heBox = document.getElementById("heBox");
@@ -778,8 +777,9 @@
     if (e.key === "Escape" && lightbox.classList.contains("open")) closeLightbox();
   });
 
-  // --------- state ----------
+  // ---------- state ----------
   let cfg = null;
+  let files = [];
   let items = [];
   let ALL_CELL_TYPES = [];
   const answers = {};
@@ -787,7 +787,6 @@
   let submitted = false;
 
   function renderProteinMap(){
-    if (!proteinMapBody) return;
     proteinMapBody.innerHTML = "";
     Object.entries(PROTEIN_MAP).forEach(([gene, protein]) => {
       const tr = document.createElement("tr");
@@ -798,6 +797,7 @@
 
   function renderList(){
     imageList.innerHTML = "";
+
     items.forEach(it => {
       const row = document.createElement("div");
       row.className = "row" + (it.idx === current ? " active" : "");
@@ -907,7 +907,7 @@
     resultsBox.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
-  // --------- auth gate (config-driven) ----------
+  // ---------- auth gate (config-driven) ----------
   async function maybeGateByAuth(requiresAuth){
     if (!requiresAuth) return { ok: true, supabase: null, email: "" };
 
@@ -917,7 +917,7 @@
     const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const { data: { session }, error } = await supabase.auth.getSession(); // :contentReference[oaicite:5]{index=5}
+    const { data: { session }, error } = await supabase.auth.getSession(); // can be null :contentReference[oaicite:4]{index=4}
     if (error) throw error;
 
     if (!session){
@@ -927,8 +927,7 @@
         "• prevent duplicate submissions\n" +
         "• track your progress and score\n" +
         "• attribute leaderboard results (optional)\n\n" +
-        "Please create an account or sign in to continue.",
-        { title: "Members-only Challenge" }
+        "Please create an account or sign in to continue."
       );
       return { ok: false, supabase: null, email: "" };
     }
@@ -936,21 +935,17 @@
     return { ok: true, supabase, email: session.user?.email || "" };
   }
 
-  // --------- boot ----------
+  // ---------- boot ----------
   try {
     cfg = await loadChallengeConfig();
-
-    // UI header
     challengeTitle.textContent = cfg.title || "Challenge";
     challengeSubtitle.textContent = cfg.description || "";
 
     // Gate by config
     const auth = await maybeGateByAuth(!!cfg.requiresAuth);
 
-    // If gated, stop here (blocker is visible)
+    // If gated, disable controls and stop booting
     if (!auth.ok) {
-      // Still show title/subtitle; main content remains but user can’t interact
-      // Optional: could hide playArea here if you want
       submitBtn.disabled = true;
       saveBtn.disabled = true;
       sel.disabled = true;
@@ -973,6 +968,9 @@
       });
     }
 
+    // Load files list from cfg.filesJson
+    files = await loadFilesList(cfg);
+
     // Reference images
     const basePath = cfg.basePath;
     renderProteinMap();
@@ -984,16 +982,14 @@
     if (hasHe){
       heBox.style.display = "block";
       hePreviewImg.src = buildUrl(basePath, cfg.hePreview);
-      hePreviewImg.classList.add("zoomable");
     }
     if (hasDot){
       dotBox.style.display = "block";
       dotplotImg.src = buildUrl(basePath, cfg.dotplot);
-      dotplotImg.classList.add("zoomable");
     }
 
-    // Build items (still using your current FILES list)
-    items = FILES.map((fn, idx) => ({
+    // Build items
+    items = files.map((fn, idx) => ({
       idx,
       filename: fn,
       url: buildUrl(basePath, fn),
@@ -1002,8 +998,7 @@
 
     ALL_CELL_TYPES = unique(items.map(x => x.truth)).sort((a,b)=>a.localeCompare(b));
 
-    // Dropdown
-    // reset options (keep first placeholder)
+    // Dropdown init (keep placeholder)
     while (sel.options.length > 1) sel.remove(1);
     for (const t of ALL_CELL_TYPES){
       const opt = document.createElement("option");
