@@ -4,6 +4,14 @@
    - Highlight current nav item
    - Mobile nav toggle
    - Auth-aware nav (Supabase): show email when signed in, hide Sign In/Up, provide Sign Out
+
+   IMPORTANT ADDITIONS:
+   - Expose auth state globally:
+       window.__supabaseClient
+       window.__memberEmail
+       window.__isSignedIn
+   - Broadcast auth changes:
+       window.dispatchEvent(new CustomEvent("rp:auth", {detail:{signedIn,email}}))
 */
 
 (function () {
@@ -17,14 +25,11 @@
   const NAV_ITEMS = [
     { href: "/", label: "Home" },
     { href: "/database.html", label: "Database" },
-    // { href: "/datasets/", label: "Datasets" }, // removed (no longer used)
     { href: "/challenge.html", label: "Challenge" },
-    // { href: "/docs/", label: "Docs" },
     { href: "/access/", label: "Access" },
   ];
 
   // ---- Supabase Auth (shared) ----
-  // Keep these in ONE place so every page stays consistent.
   const SUPABASE_URL = "https://xxlkxorwprtynemmbeya.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_ZzCo8J6b6y0xVkExiOtHyg_gOpGEJFv";
 
@@ -42,7 +47,6 @@
 
   function normalizePath(pathname) {
     if (!pathname) return "/";
-    // Treat /index.html as /
     if (pathname.endsWith("/index.html")) return pathname.slice(0, -10) || "/";
     return pathname;
   }
@@ -50,13 +54,10 @@
   function isActive(currentPath, itemHref) {
     const cur = normalizePath(currentPath);
 
-    // Exact match for file pages
     if (itemHref.endsWith(".html")) return cur === itemHref;
 
-    // Folder-like routes: /docs/, /access/
     if (itemHref.endsWith("/")) return cur === itemHref || cur.startsWith(itemHref);
 
-    // Root
     if (itemHref === "/") return cur === "/";
 
     return false;
@@ -89,6 +90,22 @@
     document.head.appendChild(style);
   }
 
+  // ---------- Auth global bridge ----------
+  function setGlobalAuthState(signedIn, email, supabaseClient) {
+    try {
+      window.__supabaseClient = supabaseClient || null;
+      window.__memberEmail = email || "";
+      window.__isSignedIn = !!signedIn;
+
+      // Broadcast for pages like challenge.html to unlock without polling
+      window.dispatchEvent(
+        new CustomEvent("rp:auth", { detail: { signedIn: !!signedIn, email: email || "" } })
+      );
+    } catch (_) {
+      // no-op
+    }
+  }
+
   // ---------- UI builders ----------
   function buildHeader() {
     const linksHtml = NAV_ITEMS.map((it) => {
@@ -96,7 +113,6 @@
       return `<a class="nav-link" data-href="${it.href}" href="${url}">${it.label}</a>`;
     }).join("");
 
-    // Auth URLs (respect basePath)
     const signInUrl = joinUrl(basePath, LOGIN_PATH);
     const signUpUrl = joinUrl(basePath, SIGNUP_PATH);
 
@@ -117,7 +133,6 @@
         ${linksHtml}
       </div>
 
-      <!-- Auth cluster (shared across pages) -->
       <div class="nav-auth" aria-label="Account actions">
         <a id="navSignUp" class="nav-auth-btn" href="${signUpUrl}">Sign Up</a>
         <a id="navSignIn" class="nav-auth-btn" href="${signInUrl}">Sign In</a>
@@ -196,7 +211,6 @@
   }
 
   function findAuthEls() {
-    // Works for injected header or a hand-built page that reuses the same ids.
     const navSignUp = document.getElementById("navSignUp");
     const navSignIn = document.getElementById("navSignIn");
     const navSignOutBtn = document.getElementById("navSignOutBtn");
@@ -237,22 +251,30 @@
       if (error) throw error;
 
       if (session && session.user) {
-        setAuthUiSignedIn(els, session.user.email || "Signed in");
+        const email = session.user.email || "Signed in";
+        setAuthUiSignedIn(els, email);
+
+        // ✅ critical: set global state for other pages (challenge unlock)
+        setGlobalAuthState(true, email, supabase);
       } else {
         setAuthUiSignedOut(els);
+
+        // ✅ clear global state
+        setGlobalAuthState(false, "", supabase);
       }
     } catch (_) {
       // Fail open: keep public actions visible
       setAuthUiSignedOut(els);
+
+      // Also clear globals (best effort)
+      setGlobalAuthState(false, "", null);
     }
   }
 
   async function wireAuthNav() {
     const els = findAuthEls();
-    // If page doesn't have the auth cluster, do nothing.
     if (!els.navSignOutBtn && !els.navAuthed && !els.navSignIn && !els.navSignUp) return;
 
-    // Auth styles (only once)
     ensureStyle("siteAuthNavStyles", `
       .nav-auth{ display:flex; align-items:center; gap:10px; margin-left: 12px; flex-wrap:wrap; justify-content:flex-end; }
       .nav-auth-btn{
@@ -292,15 +314,17 @@
     try {
       const supabase = await getSupabaseClient();
 
-      // Avoid double subscriptions
+      // ✅ Make supabase client globally available as early as possible
+      setGlobalAuthState(false, "", supabase);
+
       if (!_authSub) {
-        const { data } = supabase.auth.onAuthStateChange(() => {
+        const { data } = supabase.auth.onAuthStateChange((_event, _session) => {
+          // onAuthStateChange provides event + session :contentReference[oaicite:2]{index=2}
           refreshAuthNav();
         });
         _authSub = data?.subscription || null;
       }
 
-      // Sign out button
       if (els.navSignOutBtn && !els.navSignOutBtn.dataset.wired) {
         els.navSignOutBtn.dataset.wired = "1";
         els.navSignOutBtn.addEventListener("click", async () => {
@@ -309,7 +333,7 @@
             const { error } = await supabase.auth.signOut();
             if (error) throw error;
           } catch (_) {
-            // Even if signOut fails, we still refresh UI and redirect.
+            // ignore
           } finally {
             els.navSignOutBtn.disabled = false;
           }
@@ -321,20 +345,18 @@
       await refreshAuthNav();
     } catch (_) {
       setAuthUiSignedOut(els);
+      setGlobalAuthState(false, "", null);
     }
   }
 
   // ---------- main init ----------
   function init() {
-    // IMPORTANT: avoid injecting a second header/footer if the page already has its own nav UI.
-    // We treat the presence of the auth ids as "custom header exists" to prevent duplicate IDs.
     const hasCustomAuthNav =
       elExists("#navSignIn") ||
       elExists("#navSignUp") ||
       elExists("#navAuthed") ||
       elExists("#navSignOutBtn");
 
-    // If the page already has a header/footer (hand-written), do NOT inject again.
     const hasHeader = elExists("header.site-header") || hasCustomAuthNav;
     const hasFooter = elExists("footer.site-footer") || elExists("footer");
 
@@ -350,9 +372,6 @@
 
     highlightActiveNav();
     wireMobileToggle();
-
-    // Auth nav works whether injected or hand-written, as long as ids match.
-    // (If the page doesn't have auth elements, it just no-ops.)
     wireAuthNav();
   }
 
