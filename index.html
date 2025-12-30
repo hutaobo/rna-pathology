@@ -82,7 +82,8 @@
       pointer-events:none;
     }
 
-    .brand{
+    /* ✅ rename to avoid clobbering header .brand injected by site.js */
+    .hero-brand{
       display:flex;
       align-items: baseline;
       gap: 10px;
@@ -91,14 +92,14 @@
       z-index: 1;
     }
 
-    .brand h1{
+    .hero-brand h1{
       margin: 0;
       font-size: 44px;
       letter-spacing: -0.6px;
       line-height: 1.1;
     }
 
-    .tm{
+    .hero-brand .tm{
       font-size: 0.55em;
       vertical-align: super;
       opacity: 0.9;
@@ -250,7 +251,7 @@
       .hero{
         padding: 34px 18px;
       }
-      .brand h1{
+      .hero-brand h1{
         font-size: 34px;
       }
       .cta-primary, .cta-secondary{
@@ -266,7 +267,7 @@
 <section class="home-hero-wrap">
   <div class="container">
     <div class="hero">
-      <div class="brand">
+      <div class="hero-brand">
         <h1>RNA-Pathology<span class="tm">™</span></h1>
       </div>
 
