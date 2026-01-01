@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Share — RNA-Pathology.com</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Share RNA-Pathology.com via QR code and link." />
+
+  <!-- Shared global styles -->
+  <link rel="stylesheet" href="/assets/site.css" />
+
+  <!-- Shared global behavior (inject header/footer) -->
+  <script defer src="/assets/site.js"></script>
+
+  <style>
+    /* Page-only styling: keep it simple and consistent with your theme */
+    .share-wrap {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 34px 0;
+    }
+    .share-hero {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 16px;
+      align-items: start;
+    }
+    .share-qr {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      text-align: center;
+    }
+    .share-qr img {
+      width: 240px;
+      height: 240px;
+      border-radius: 18px;
+      border: 1px solid rgba(231,236,245,0.16);
+      background: rgba(255,255,255,0.06);
+      box-shadow: 0 14px 34px rgba(0,0,0,0.28);
+    }
+    .share-url {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 12px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(231,236,245,0.14);
+      background: rgba(231,236,245,0.06);
+      overflow: hidden;
+    }
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      font-size: 0.95rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 520px;
+    }
+    .small {
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 860px) {
+      .share-hero {
+        grid-template-columns: 1fr;
+      }
+      .share-qr img {
+        width: 220px;
+        height: 220px;
+      }
+      .mono { max-width: 100%; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container share-wrap">
+    <div class="card">
+      <h1>Share RNA-Pathology.com</h1>
+      <p class="muted">
+        Use the QR code for posters, slides, or lab meetings — scanning opens the homepage.
+      </p>
+
+      <div class="hr"></div>
+
+      <div class="share-hero">
+        <div>
+          <h2>Link</h2>
+          <div class="share-url">
+            <div class="pill">
+              <span class="small">URL</span>
+              <span class="mono" id="shareUrlText">https://www.rna-pathology.com/</span>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn primary" id="copyBtn" type="button">Copy link</button>
+            <a class="btn" href="https://www.rna-pathology.com/" target="_blank" rel="noopener">Open homepage</a>
+            <a class="btn" href="/images/qr/rna-pathology-home.png" download>Download QR</a>
+          </div>
+
+          <div class="hr"></div>
+
+          <h2>Suggested citation</h2>
+          <p class="muted" style="margin-bottom:0;">
+            RNA-Pathology.com — a resource for RNA spatial pathology & benchmarks.
+          </p>
+        </div>
+
+        <div class="share-qr">
+          <div class="muted">Scan to open</div>
+          <img
+            src="/images/qr/rna-pathology-home.png"
+            alt="QR code for https://www.rna-pathology.com/"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="small">https://www.rna-pathology.com/</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      const url = "https://www.rna-pathology.com/";
+      const btn = document.getElementById("copyBtn");
+      const txt = document.getElementById("shareUrlText");
+      if (txt) txt.textContent = url;
+
+      if (btn) {
+        btn.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(url);
+            btn.textContent = "Copied!";
+            setTimeout(() => (btn.textContent = "Copy link"), 1200);
+          } catch (e) {
+            // Fallback: select text is more annoying; just prompt
+            window.prompt("Copy this link:", url);
+          }
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
