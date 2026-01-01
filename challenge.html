@@ -510,7 +510,7 @@
       </div>
     </div>
 
-    <!-- NEW: Non-blocking auth notice -->
+    <!-- Non-blocking auth notice -->
     <div class="auth-notice" id="authNotice">
       <h3 id="authNoticeTitle">Members-only Challenge</h3>
       <p id="authNoticeText"></p>
@@ -756,6 +756,7 @@ const authNoticeTitle = document.getElementById("authNoticeTitle");
 const authNoticeText = document.getElementById("authNoticeText");
 const authSignupBtn = document.getElementById("authSignupBtn");
 const authSigninBtn = document.getElementById("authSigninBtn");
+const authActions = document.getElementById("authActions");
 
 /* ---------- state ---------- */
 let cfg = null;
@@ -766,6 +767,11 @@ const answers = {};
 let current = 0;
 let submitted = false;
 let requiresAuth = false;
+
+/* IMPORTANT:
+   - window.__supabaseClient exists even when signed out.
+   - ONLY window.__isSignedIn (or a real session/email) means the user is signed in.
+*/
 let isSignedIn = false;
 
 /* ---------- core render ---------- */
@@ -895,16 +901,17 @@ submitBtn.addEventListener("click", () => {
 });
 
 /* ---------- auth UI ---------- */
-function setAuthNoticeVisible(visible, cfg){
+function setAuthNoticeVisible(visible){
   if (!visible) {
     authNotice.style.display = "none";
     return;
   }
+
   const next = encodeURIComponent(window.location.pathname + window.location.search);
 
-  // IMPORTANT: change these if your routes differ
+  // Correct routes
   const SIGNIN_URL = `/login.html?next=${next}`;
-  const SIGNUP_URL = `/login.html?next=${next}`; // <-- change if you don't have signup.html
+  const SIGNUP_URL = `/login.html?signup=1&next=${next}`;
 
   authSignupBtn.href = SIGNUP_URL;
   authSigninBtn.href = SIGNIN_URL;
@@ -917,20 +924,53 @@ function setAuthNoticeVisible(visible, cfg){
   authNotice.style.display = "block";
 }
 
+function hideMemberUI(){
+  const box = document.getElementById("memberBox");
+  if (box) box.style.display = "none";
+}
+
 function wireMemberUI(email, supabaseClient){
   const box = document.getElementById("memberBox");
   const emailEl = document.getElementById("memberEmail");
   const signOutBtn = document.getElementById("signOutBtn");
 
-  if (!email && !supabaseClient) return;
+  if (!box || !emailEl || !signOutBtn) return;
 
   box.style.display = "flex";
   emailEl.textContent = email || "Member";
 
-  signOutBtn?.addEventListener("click", async () => {
-    try { await supabaseClient?.auth?.signOut(); } catch (e) {}
-    window.location.href = "/login.html?signed_out=1";
-  });
+  // Avoid duplicate listeners
+  if (!signOutBtn.dataset.wired) {
+    signOutBtn.dataset.wired = "1";
+    signOutBtn.addEventListener("click", async () => {
+      try { await supabaseClient?.auth?.signOut(); } catch (e) {}
+      // Keep consistent with site.js
+      window.location.href = "/?signed_out=1";
+    });
+  }
+}
+
+function applyAuthState(signedIn, email){
+  isSignedIn = !!signedIn;
+
+  const globalSupabase = window.__supabaseClient || null;
+
+  if (requiresAuth) {
+    if (isSignedIn) {
+      setAuthNoticeVisible(false);
+      wireMemberUI(email || "", globalSupabase);
+    } else {
+      hideMemberUI();
+      setAuthNoticeVisible(true);
+    }
+  } else {
+    // Public challenge: never show the auth notice; member badge is optional
+    setAuthNoticeVisible(false);
+    if (isSignedIn) wireMemberUI(email || "", globalSupabase);
+    else hideMemberUI();
+  }
+
+  render(); // lock/unlock controls immediately
 }
 
 /* ---------- load config + files (always) ---------- */
@@ -999,52 +1039,30 @@ async function boot(){
   // 8) render now (even if not signed in)
   render();
 
-  // 9) check auth (non-blocking)
-  // Prefer globals set by site.js
-  const globalEmail = window.__memberEmail || "";
-  const globalSupabase = window.__supabaseClient || null;
+  // 9) read authoritative auth state from site.js globals
+  // NOTE: __supabaseClient existing != signed in.
+  const signedIn = !!window.__isSignedIn;
+  const email = window.__memberEmail || "";
 
-  if (requiresAuth) {
-    if (globalEmail || globalSupabase) {
-      isSignedIn = true;
-      setAuthNoticeVisible(false, cfg);
-      wireMemberUI(globalEmail, globalSupabase);
-      render();
-      return;
-    }
-
-    // Not signed in (or site.js hasn't populated yet)
-    isSignedIn = false;
-    setAuthNoticeVisible(true, cfg);
-    render();
-  } else {
-    // Public challenge
-    isSignedIn = !!(globalEmail || globalSupabase);
-    setAuthNoticeVisible(false, cfg);
-    if (isSignedIn) wireMemberUI(globalEmail, globalSupabase);
-    render();
-  }
+  applyAuthState(signedIn, email);
 }
 
 boot().catch((e) => {
   // If config/files failed, show a clear error in the auth notice area (non-blocking)
   authNoticeTitle.textContent = "Challenge failed to load";
   authNoticeText.textContent = (e?.message || String(e));
-  document.getElementById("authActions").style.display = "none";
+  if (authActions) authActions.style.display = "none";
   authNotice.style.display = "block";
+
+  // Also ensure member UI is hidden on fatal load error
+  hideMemberUI();
 });
 
+/* ---------- live auth updates from site.js ---------- */
 window.addEventListener("rp:auth", (e) => {
   const signedIn = !!e.detail?.signedIn;
   const email = e.detail?.email || "";
-
-  // 你 challenge 里的两个变量名如果不同，按你的实际改：
-  isSignedIn = signedIn;
-  if (signedIn) {
-    // 可选：更新右上角 member badge（如果你有那套 UI）
-    // wireMemberUI(email, window.__supabaseClient);
-  }
-  render(); // 重新渲染，Save/Submit 会立刻解锁
+  applyAuthState(signedIn, email);
 });
 </script>
 
