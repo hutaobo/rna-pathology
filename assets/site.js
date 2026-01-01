@@ -182,6 +182,7 @@
         <a href="${joinUrl(basePath, "/docs/schema.html")}">Schema</a>
         <a href="${joinUrl(basePath, "/legal/")}">Legal</a>
         <a href="${joinUrl(basePath, "/legal/privacy.html")}">Privacy</a>
+        <a href="${joinUrl(basePath, "/share/")}">Share</a>
         <a href="${joinUrl(basePath, "/")}">Home</a>
       </div>
 
