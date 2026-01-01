@@ -37,6 +37,9 @@
   const SUPABASE_JS_CDN =
     "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
+  // ---- QR (Step 2: footer HTML only; styling comes in Step 3) ----
+  const FOOTER_QR_IMG_PATH = "/images/qr/rna-pathology-home.png";
+
   // ---------- small helpers ----------
   function joinUrl(base, path) {
     const b = base.endsWith("/") ? base.slice(0, -1) : base;
@@ -165,11 +168,14 @@
 
   function buildFooter() {
     const year = new Date().getFullYear();
+    const qrImgUrl = joinUrl(basePath, FOOTER_QR_IMG_PATH);
+
     return `
 <footer class="site-footer" role="contentinfo">
   <div class="container">
     <div class="footer-row">
       <div class="muted">© <span id="siteYear">${year}</span> RNA-Pathology.com</div>
+
       <div class="footer-links">
         <a href="${joinUrl(basePath, "/docs/")}">Docs</a>
         <a href="${joinUrl(basePath, "/docs/roadmap.html")}">Roadmap</a>
@@ -177,6 +183,21 @@
         <a href="${joinUrl(basePath, "/legal/")}">Legal</a>
         <a href="${joinUrl(basePath, "/legal/privacy.html")}">Privacy</a>
         <a href="${joinUrl(basePath, "/")}">Home</a>
+      </div>
+
+      <!-- Step 2: QR in footer (styling comes in Step 3 via site.css) -->
+      <div class="footer-qr" aria-label="QR code to share RNA-Pathology.com">
+        <div class="footer-qr-title muted">Scan to share</div>
+        <img
+          class="footer-qr-img"
+          src="${qrImgUrl}"
+          alt="QR code for https://www.rna-pathology.com/"
+          loading="lazy"
+          decoding="async"
+          width="96"
+          height="96"
+        />
+        <a class="footer-qr-link" href="${qrImgUrl}" download>Download QR</a>
       </div>
     </div>
   </div>
