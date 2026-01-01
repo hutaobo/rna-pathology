@@ -5,8 +5,10 @@
    - Mobile nav toggle
    - Auth-aware nav (Supabase): show email when signed in, hide Sign In/Up, provide Sign Out
 
-   ✅ Added for Challenge unlock:
-   - window.__supabaseClient, window.__memberEmail, window.__isSignedIn
+   ✅ Global auth bridge (for Challenge unlock + other pages):
+   - window.__supabaseClient   (Supabase client object; existence != signed-in)
+   - window.__memberEmail      ("" when signed out)
+   - window.__isSignedIn       (true only when a valid session exists)
    - dispatch CustomEvent "rp:auth" on auth changes
 */
 
@@ -32,7 +34,8 @@
   const LOGIN_PATH = "/login.html";
   const SIGNUP_PATH = "/login.html?signup=1";
 
-  const SUPABASE_JS_CDN = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+  const SUPABASE_JS_CDN =
+    "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
   // ---------- small helpers ----------
   function joinUrl(base, path) {
@@ -90,20 +93,24 @@
     document.head.appendChild(style);
   }
 
-  // ---------- NEW: global auth bridge ----------
+  // ---------- Global auth bridge ----------
+  // IMPORTANT: __supabaseClient existing does NOT mean the user is signed in.
+  // The only authoritative signed-in flag is window.__isSignedIn (and/or non-empty __memberEmail).
   function setGlobalAuth(signedIn, email, supabaseClient) {
-    // Expose for other pages (e.g. challenge.html)
     try {
       window.__supabaseClient = supabaseClient || null;
-      window.__memberEmail = email || "";
+      window.__memberEmail = signedIn ? (email || "") : "";
       window.__isSignedIn = !!signedIn;
 
-      // Broadcast for pages that want to react immediately (challenge unlock)
-      // CustomEvent.detail is the standard payload slot. :contentReference[oaicite:2]{index=2}
+      // Broadcast to any page that listens (e.g. challenge.html unlock logic)
       window.dispatchEvent(
-        new CustomEvent("rp:auth", { detail: { signedIn: !!signedIn, email: email || "" } })
+        new CustomEvent("rp:auth", {
+          detail: {
+            signedIn: !!signedIn,
+            email: signedIn ? (email || "") : "",
+          },
+        })
       );
-      // dispatchEvent runs listeners synchronously. :contentReference[oaicite:3]{index=3}
     } catch (_) {
       // ignore
     }
@@ -221,7 +228,6 @@
     const navSignOutBtn = document.getElementById("navSignOutBtn");
     const navAuthed = document.getElementById("navAuthed");
     const navEmail = document.getElementById("navEmail");
-
     return { navSignUp, navSignIn, navSignOutBtn, navAuthed, navEmail };
   }
 
@@ -253,25 +259,23 @@
     try {
       const supabase = await getSupabaseClient();
 
-      // getSession may return null when not signed in. :contentReference[oaicite:4]{index=4}
+      // Always expose the client, but don't confuse that with signed-in.
+      // Signed-in is determined ONLY by session existence.
       const { data: { session }, error } = await supabase.auth.getSession();
       if (error) throw error;
 
       if (session && session.user) {
         const email = session.user.email || "Signed in";
         setAuthUiSignedIn(els, email);
-
-        // ✅ expose + broadcast
         setGlobalAuth(true, email, supabase);
       } else {
         setAuthUiSignedOut(els);
-
-        // ✅ expose + broadcast (signed out)
         setGlobalAuth(false, "", supabase);
       }
     } catch (_) {
       // Fail open: keep public actions visible
-      setAuthUiSignedOut(els);
+      const els2 = findAuthEls();
+      setAuthUiSignedOut(els2);
       setGlobalAuth(false, "", null);
     }
   }
@@ -320,13 +324,13 @@
     try {
       const supabase = await getSupabaseClient();
 
-      // Make client visible early (even before session check)
+      // Expose client immediately (still signed-out until session proves otherwise)
       setGlobalAuth(false, "", supabase);
 
       // Avoid double subscriptions
       if (!_authSub) {
-        // onAuthStateChange callback receives (event, session). :contentReference[oaicite:5]{index=5}
-        const { data } = supabase.auth.onAuthStateChange((_event, _session) => {
+        const { data } = supabase.auth.onAuthStateChange(() => {
+          // Re-check session on every auth change; this keeps __isSignedIn authoritative.
           refreshAuthNav();
         });
         _authSub = data?.subscription || null;
@@ -345,14 +349,13 @@
           } finally {
             els.navSignOutBtn.disabled = false;
           }
-
           window.location.href = joinUrl(basePath, "/?signed_out=1");
         });
       }
 
       await refreshAuthNav();
     } catch (_) {
-      setAuthUiSignedOut(els);
+      setAuthUiSignedOut(findAuthEls());
       setGlobalAuth(false, "", null);
     }
   }
