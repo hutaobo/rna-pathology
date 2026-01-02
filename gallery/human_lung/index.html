@@ -135,12 +135,6 @@
     }
     .btn-ghost:hover { transform: translateY(-1px); filter: brightness(1.05); }
 
-    .disabled {
-      opacity: 0.55;
-      cursor: not-allowed;
-      pointer-events: none;
-    }
-
     .note {
       margin-top: 22px;
       color: var(--muted, rgba(231, 236, 245, 0.72));
@@ -166,7 +160,7 @@
 
     <h1 class="page-title">Human Lung</h1>
     <p class="page-subtitle">
-      Browse lung-related galleries in RNA-Pathology. (More will be added as the database grows.)
+      Browse lung-related galleries in RNA-Pathology.
     </p>
 
     <section class="grid" aria-label="Human Lung galleries">
@@ -175,14 +169,13 @@
         <h2>Normal Lung</h2>
         <div class="meta">
           <span class="pill">Organ: Lung</span>
-          <span class="pill">Status: Coming soon</span>
+          <span class="pill">Status: Available</span>
         </div>
         <p class="desc">
           Reference gallery for normal lung tissue (baseline morphology & spatial patterns).
         </p>
         <div class="actions">
-          <!-- Enable once the gallery exists -->
-          <a class="btn btn-primary disabled" href="/gallery/human_lung/normal_lung/" aria-disabled="true">
+          <a class="btn btn-primary" href="/gallery/human_lung/normal_lung/">
             Open gallery
           </a>
           <a class="btn btn-ghost" href="/gallery/index.html">Back to hub</a>
@@ -194,14 +187,13 @@
         <h2>Lung Adenocarcinoma Spectrum</h2>
         <div class="meta">
           <span class="pill">Organ: Lung</span>
-          <span class="pill">Status: Coming soon</span>
+          <span class="pill">Status: Available</span>
         </div>
         <p class="desc">
           A gallery spanning lung adenocarcinoma states/regions to support comparative learning and annotation.
         </p>
         <div class="actions">
-          <!-- Enable once the gallery exists -->
-          <a class="btn btn-primary disabled" href="/gallery/human_lung/luad_spectrum/" aria-disabled="true">
+          <a class="btn btn-primary" href="/gallery/human_lung/luad_spectrum/">
             Open gallery
           </a>
           <a class="btn btn-ghost" href="/gallery/index.html">Back to hub</a>
@@ -210,8 +202,8 @@
     </section>
 
     <p class="note">
-      Implementation note (for us humans): once the gallery folders exist, remove the <code>disabled</code>
-      class (and keep the same links) to activate the buttons.
+      Next step: update <code>/gallery/index.html</code> to remove the <code>disabled</code> state
+      for these two Lung cards (since both pages now exist).
     </p>
   </main>
 </body>
