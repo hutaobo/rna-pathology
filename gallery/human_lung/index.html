@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="/assets/site.css" />
+  <script defer src="/assets/site.js"></script>
+
+  <title>Human Lung Galleries | RNA-Pathology</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="description"
+    content="Human Lung galleries in the RNA-Pathology database."
+  />
+
+  <style>
+    /* Page-scoped styling only (won't affect global header/footer) */
+    .page-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 44px 20px 80px;
+    }
+
+    .page-title {
+      margin: 0 0 8px;
+      font-size: 2.2rem;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+
+    .page-subtitle {
+      margin: 0 0 18px;
+      color: var(--muted, rgba(231, 236, 245, 0.72));
+      line-height: 1.6;
+    }
+
+    .crumbs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin: 0 0 22px;
+      font-size: 0.95rem;
+      color: var(--muted, rgba(231, 236, 245, 0.72));
+    }
+    .crumbs a {
+      color: var(--primary, #7aa7ff);
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .crumbs a:hover { text-decoration: underline; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .card {
+      grid-column: span 12;
+      background: var(--surface, #11182a);
+      border: 1px solid var(--border, rgba(231, 236, 245, 0.14));
+      border-radius: 14px;
+      padding: 18px 18px 16px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+
+    @media (min-width: 860px) {
+      .card { grid-column: span 6; }
+    }
+
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 1.25rem;
+      color: var(--text, #e7ecf5);
+      letter-spacing: -0.01em;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0 14px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border: 1px solid var(--border, rgba(231, 236, 245, 0.14));
+      color: var(--muted, rgba(231, 236, 245, 0.72));
+      background: rgba(255,255,255,0.04);
+    }
+
+    .desc {
+      margin: 0 0 16px;
+      color: var(--muted, rgba(231, 236, 245, 0.72));
+      line-height: 1.65;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: 800;
+      text-decoration: none;
+      border: 1px solid var(--border, rgba(231, 236, 245, 0.14));
+      transition: transform 0.15s ease, filter 0.15s ease;
+      user-select: none;
+    }
+
+    .btn-primary {
+      background: var(--primary, #7aa7ff);
+      color: #0b0f1a;
+      border-color: transparent;
+    }
+    .btn-primary:hover { transform: translateY(-1px); filter: brightness(1.02); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text, #e7ecf5);
+    }
+    .btn-ghost:hover { transform: translateY(-1px); filter: brightness(1.05); }
+
+    .disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .note {
+      margin-top: 22px;
+      color: var(--muted, rgba(231, 236, 245, 0.72));
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .note code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.92em;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page-wrap">
+    <div class="crumbs">
+      <a href="/database.html">← Database</a>
+      <span>•</span>
+      <a href="/gallery/index.html">All Galleries (Hub)</a>
+      <span>•</span>
+      <span>Human Lung</span>
+    </div>
+
+    <h1 class="page-title">Human Lung</h1>
+    <p class="page-subtitle">
+      Browse lung-related galleries in RNA-Pathology. (More will be added as the database grows.)
+    </p>
+
+    <section class="grid" aria-label="Human Lung galleries">
+      <!-- Normal Lung -->
+      <article class="card">
+        <h2>Normal Lung</h2>
+        <div class="meta">
+          <span class="pill">Organ: Lung</span>
+          <span class="pill">Status: Coming soon</span>
+        </div>
+        <p class="desc">
+          Reference gallery for normal lung tissue (baseline morphology & spatial patterns).
+        </p>
+        <div class="actions">
+          <!-- Enable once the gallery exists -->
+          <a class="btn btn-primary disabled" href="/gallery/human_lung/normal_lung/" aria-disabled="true">
+            Open gallery
+          </a>
+          <a class="btn btn-ghost" href="/gallery/index.html">Back to hub</a>
+        </div>
+      </article>
+
+      <!-- Lung Adenocarcinoma Spectrum -->
+      <article class="card">
+        <h2>Lung Adenocarcinoma Spectrum</h2>
+        <div class="meta">
+          <span class="pill">Organ: Lung</span>
+          <span class="pill">Status: Coming soon</span>
+        </div>
+        <p class="desc">
+          A gallery spanning lung adenocarcinoma states/regions to support comparative learning and annotation.
+        </p>
+        <div class="actions">
+          <!-- Enable once the gallery exists -->
+          <a class="btn btn-primary disabled" href="/gallery/human_lung/luad_spectrum/" aria-disabled="true">
+            Open gallery
+          </a>
+          <a class="btn btn-ghost" href="/gallery/index.html">Back to hub</a>
+        </div>
+      </article>
+    </section>
+
+    <p class="note">
+      Implementation note (for us humans): once the gallery folders exist, remove the <code>disabled</code>
+      class (and keep the same links) to activate the buttons.
+    </p>
+  </main>
+</body>
+</html>
