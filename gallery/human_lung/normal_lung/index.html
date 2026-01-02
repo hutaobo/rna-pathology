@@ -22,276 +22,232 @@
   </script>
 
   <style>
-    body {
-      background: var(--bg, #0b0f1a);
-      color: var(--text, #e7ecf5);
-    }
+    /* Page-scoped styling only (won't affect global header/footer) */
+    body { background: var(--bg, #0b0f1a); color: var(--text, #e7ecf5); }
 
-    .page-wrap{
-      max-width: 1160px;
+    .wrap{
+      max-width: 1100px;
       margin: 0 auto;
       padding: 44px 20px 90px;
     }
 
-    .crumbs{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      align-items:center;
-      margin:0 0 18px;
-      font-size:.95rem;
-      color: var(--muted, rgba(231,236,245,.72));
-    }
-    .crumbs a{
-      color: var(--primary, #7aa7ff);
-      text-decoration:none;
-      font-weight:800;
-    }
-    .crumbs a:hover{ text-decoration:underline; }
-
-    .title{
-      margin:0 0 10px;
-      font-size:2.35rem;
-      line-height:1.12;
-      letter-spacing:-0.02em;
-      color: var(--text, #e7ecf5);
-    }
-    .subtitle{
-      margin:0 0 16px;
-      color: var(--muted, rgba(231,236,245,.72));
-      line-height:1.75;
-      max-width: 92ch;
-    }
-
-    .controls{
+    .toplinks{
       display:flex;
       flex-wrap:wrap;
       gap:12px;
       align-items:center;
-      margin: 18px 0 22px;
-      padding: 14px;
-      border-radius: 14px;
+      margin: 0 0 14px;
+      color: var(--muted, rgba(231,236,245,.72));
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+    .toplinks a{
+      color: var(--primary, #7aa7ff);
+      text-decoration: none;
+      font-weight: 900;
+    }
+    .toplinks a:hover{ text-decoration: underline; }
+
+    .navbox{
       background: var(--surface, #11182a);
       border: 1px solid var(--border, rgba(231,236,245,.14));
+      border-radius: 14px;
+      padding: 14px;
       box-shadow: 0 14px 40px rgba(0,0,0,.28);
+      margin: 12px 0 20px;
     }
-
-    .search{
-      flex: 1 1 260px;
-      min-width: 240px;
-      display:flex;
-      gap:10px;
-      align-items:center;
-    }
-
-    .search input{
-      width:100%;
-      padding: 10px 12px;
-      border-radius: 10px;
-      border: 1px solid var(--border, rgba(231,236,245,.14));
-      background: rgba(255,255,255,0.04);
+    .navbox h2{
+      margin: 0 0 10px;
+      font-size: 1.05rem;
       color: var(--text, #e7ecf5);
-      outline: none;
+      letter-spacing: -0.01em;
     }
-    .search input::placeholder{
-      color: rgba(231,236,245,.55);
-    }
-
-    .toggles{
+    .navlist{
       display:flex;
       flex-wrap:wrap;
       gap:10px;
-      align-items:center;
     }
-
-    .toggle{
+    .navitem{
       display:inline-flex;
-      gap:8px;
       align-items:center;
-      padding: 8px 10px;
+      justify-content:center;
+      padding: 8px 12px;
       border-radius: 999px;
       border: 1px solid var(--border, rgba(231,236,245,.14));
       background: rgba(255,255,255,0.04);
       color: var(--text, #e7ecf5);
-      font-weight: 800;
-      font-size: .9rem;
+      text-decoration: none;
+      font-weight: 900;
+      font-size: 0.92rem;
       user-select:none;
+      transition: transform .15s ease, filter .15s ease;
     }
-    .toggle input{ accent-color: var(--primary, #7aa7ff); }
-
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 16px;
-      margin-top: 18px;
+    .navitem:hover{ transform: translateY(-1px); filter: brightness(1.06); }
+    .navitem.active{
+      background: var(--primary, #7aa7ff);
+      color: #0b0f1a;
+      border-color: transparent;
     }
 
-    .sample{
-      grid-column: span 12;
+    h1{
+      margin: 6px 0 10px;
+      font-size: 2.15rem;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--text, #e7ecf5);
+    }
+    .lead{
+      margin: 0 0 18px;
+      color: var(--muted, rgba(231,236,245,.72));
+      line-height: 1.75;
+      max-width: 92ch;
+    }
+
+    .section{
       background: var(--surface, #11182a);
       border: 1px solid var(--border, rgba(231,236,245,.14));
       border-radius: 14px;
       padding: 16px 16px 14px;
       box-shadow: 0 14px 40px rgba(0,0,0,.28);
+      margin: 16px 0;
     }
-
-    .sample-head{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      align-items:baseline;
-      justify-content:space-between;
-      margin-bottom: 10px;
-    }
-
-    .sample h2{
-      margin:0;
+    .section h2{
+      margin: 0 0 10px;
       font-size: 1.25rem;
       letter-spacing: -0.01em;
+      color: var(--text, #e7ecf5);
+    }
+    .section h3{
+      margin: 14px 0 10px;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+      color: var(--text, #e7ecf5);
+    }
+    .muted{
+      color: var(--muted, rgba(231,236,245,.72));
+      line-height: 1.7;
     }
 
-    .pills{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      align-items:center;
-      margin: 6px 0 0;
-    }
-    .pill{
+    /* Core metadata layout */
+    .meta-status{
       display:inline-flex;
       align-items:center;
       gap:8px;
       padding: 6px 10px;
       border-radius: 999px;
-      font-size: .85rem;
-      font-weight: 800;
       border: 1px solid var(--border, rgba(231,236,245,.14));
-      color: var(--muted, rgba(231,236,245,.72));
       background: rgba(255,255,255,0.04);
-      white-space: nowrap;
-    }
-
-    /* --- Metadata block --- */
-    details.meta {
-      margin-top: 10px;
-      border-radius: 12px;
-      border: 1px solid var(--border, rgba(231,236,245,.14));
-      background: rgba(255,255,255,0.03);
-      overflow: hidden;
-    }
-    details.meta > summary {
-      cursor: pointer;
-      list-style: none;
-      padding: 10px 12px;
-      font-weight: 900;
-      color: var(--text, #e7ecf5);
-      user-select: none;
-      border-bottom: 1px solid var(--border, rgba(231,236,245,.14));
-      background: rgba(255,255,255,0.03);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-    details.meta > summary::-webkit-details-marker { display: none; }
-    .meta-badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-size: .82rem;
-      font-weight: 900;
-      border: 1px solid var(--border, rgba(231,236,245,.14));
       color: var(--muted, rgba(231,236,245,.72));
-      background: rgba(255,255,255,0.04);
-      white-space: nowrap;
+      font-weight: 900;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
     }
-    .meta-body{
-      padding: 12px;
-      color: var(--muted, rgba(231,236,245,.72));
-      line-height: 1.7;
-    }
-    .meta-dl{
+    .meta-grid{
       margin: 0;
-      display: grid;
+      display:grid;
       grid-template-columns: 220px 1fr;
       gap: 8px 12px;
     }
-    .meta-dl dt{
+    .meta-grid dt{
       margin: 0;
       font-weight: 900;
-      color: rgba(231,236,245,.9);
+      color: rgba(231,236,245,.92);
     }
-    .meta-dl dd{
+    .meta-grid dd{
       margin: 0;
       color: var(--muted, rgba(231,236,245,.72));
     }
     @media (max-width: 720px){
-      .meta-dl{ grid-template-columns: 1fr; }
-      .meta-dl dt{ margin-top: 6px; }
+      .meta-grid{ grid-template-columns: 1fr; }
+      .meta-grid dt{ margin-top: 6px; }
     }
 
-    .img-grid{
-      display:grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 12px;
-      margin-top: 12px;
-    }
-
-    .panel{
-      grid-column: span 12;
-      border-radius: 12px;
-      overflow:hidden;
+    /* Images */
+    figure{
+      margin: 0;
+      border-radius: 14px;
+      overflow: hidden;
       border: 1px solid var(--border, rgba(231,236,245,.14));
       background: rgba(255,255,255,0.02);
     }
-    @media (min-width: 820px){
-      .panel{ grid-column: span 6; }
-    }
-
-    .panel .label{
+    .figcap{
+      padding: 10px 12px;
+      font-weight: 900;
+      border-bottom: 1px solid var(--border, rgba(231,236,245,.14));
+      background: rgba(255,255,255,0.03);
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:10px;
-      padding: 10px 12px;
-      font-weight: 900;
-      color: var(--text, #e7ecf5);
-      border-bottom: 1px solid var(--border, rgba(231,236,245,.14));
-      background: rgba(255,255,255,0.03);
+      gap: 10px;
     }
-    .panel .label small{
-      font-weight: 800;
+    .figcap small{
       color: var(--muted, rgba(231,236,245,.72));
+      font-weight: 800;
     }
 
-    .panel button{
+    .imgbtn{
       all: unset;
       display:block;
       cursor: zoom-in;
     }
-
-    .panel img{
-      width:100%;
-      height:auto;
+    img{
+      width: 100%;
+      height: auto;
       display:block;
     }
 
-    .missing{
-      padding: 18px 12px 20px;
-      color: var(--muted, rgba(231,236,245,.72));
-      font-size: .95rem;
+    .maps3{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    @media (min-width: 980px){
+      .maps3{ grid-template-columns: repeat(3, 1fr); }
     }
 
-    .empty{
-      margin-top: 18px;
-      padding: 16px;
-      border-radius: 14px;
-      border: 1px dashed var(--border, rgba(231,236,245,.14));
-      background: rgba(255,255,255,0.03);
+    .missing{
+      padding: 14px 12px 16px;
       color: var(--muted, rgba(231,236,245,.72));
-      line-height: 1.7;
+      line-height: 1.6;
+    }
+
+    /* Pager */
+    .pager{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      margin-top: 16px;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: 950;
+      text-decoration:none;
+      border: 1px solid var(--border, rgba(231,236,245,.14));
+      background: rgba(255,255,255,0.04);
+      color: var(--text, #e7ecf5);
+      user-select:none;
+      cursor:pointer;
+      transition: transform .15s ease, filter .15s ease;
+      white-space: nowrap;
+    }
+    .btn:hover{ transform: translateY(-1px); filter: brightness(1.06); }
+    .btn.primary{
+      background: var(--primary, #7aa7ff);
+      color: #0b0f1a;
+      border-color: transparent;
+    }
+    .btn:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      transform:none;
+      filter:none;
     }
 
     /* Lightbox */
@@ -307,7 +263,7 @@
     }
     .lightbox.open{ display:flex; }
 
-    .lightbox-card{
+    .lb-card{
       width: min(1180px, 100%);
       max-height: 92vh;
       overflow: hidden;
@@ -318,8 +274,7 @@
       display:flex;
       flex-direction: column;
     }
-
-    .lightbox-bar{
+    .lb-bar{
       display:flex;
       align-items:center;
       justify-content:space-between;
@@ -328,85 +283,144 @@
       border-bottom: 1px solid rgba(255,255,255,0.12);
       background: rgba(255,255,255,0.04);
       color: rgba(255,255,255,0.9);
-      font-weight: 900;
+      font-weight: 950;
     }
-
-    .lightbox-close{
+    .lb-actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    .lb-close, .lb-nav{
       all: unset;
       cursor: pointer;
       padding: 8px 10px;
       border-radius: 10px;
       border: 1px solid rgba(255,255,255,0.14);
       background: rgba(255,255,255,0.06);
-      font-weight: 900;
+      font-weight: 950;
+      user-select:none;
     }
-    .lightbox-close:hover{ filter: brightness(1.08); }
+    .lb-close:hover, .lb-nav:hover{ filter: brightness(1.08); }
 
-    .lightbox-body{
+    .lb-body{
       overflow:auto;
       padding: 10px;
     }
-    .lightbox-body img{
+    .lb-body img{
       width: 100%;
       height: auto;
       display:block;
       border-radius: 10px;
     }
-
     @media (prefers-reduced-motion: reduce){
-      *{ scroll-behavior: auto !important; transition: none !important; }
+      *{ transition: none !important; }
     }
   </style>
 </head>
 
 <body>
-  <main class="page-wrap">
-    <div class="crumbs">
-      <a href="/database.html">← Database</a>
-      <span>•</span>
-      <a href="/gallery/index.html">All Galleries (Hub)</a>
-      <span>•</span>
-      <a href="/gallery/human_lung/">Human Lung</a>
-      <span>•</span>
-      <span>Normal Lung</span>
+  <main class="wrap">
+    <div class="toplinks">
+      <a href="/database.html">← Database Overview</a>
+      <a href="/gallery/human_lung/">← Gallery</a>
     </div>
 
-    <h1 class="title">Normal Lung</h1>
-    <p class="subtitle">
-      Each sample is displayed with four image types: <strong>HE</strong>, <strong>Epithelial</strong>,
-      <strong>Stromal</strong>, and <strong>Immune</strong>.<br/>
-      Files follow <code>&lt;Sample&gt;_&lt;Type&gt;.png</code>. Samples may appear in any order.
+    <section class="navbox" aria-label="Navigate datasets">
+      <h2>Navigate datasets (Normal Lung samples)</h2>
+      <div id="navList" class="navlist"></div>
+    </section>
+
+    <h1 id="pageTitle">Normal Lung</h1>
+    <p class="lead" id="pageLead">
+      Normal lung tissue reference gallery. Select a sample above to browse its H&E and cell-type spatial maps.
     </p>
 
-    <div class="controls" aria-label="Gallery controls">
-      <div class="search">
-        <input id="searchBox" type="text" placeholder="Search sample (e.g., THD0008, VUHD116A)..." autocomplete="off" />
+    <section class="section" aria-label="Core metadata">
+      <h2>Core Metadata</h2>
+      <div id="metaStatus" class="meta-status">Loading metadata…</div>
+      <dl id="metaDL" class="meta-grid"></dl>
+    </section>
+
+    <section class="section" aria-label="Associated images">
+      <h2>Associated Images</h2>
+
+      <h3>Histology (H&E)</h3>
+      <figure id="figHE">
+        <div class="figcap">
+          <span id="capHE">H&E</span>
+          <small id="capHE2">click to zoom</small>
+        </div>
+        <button class="imgbtn" type="button" id="btnHE">
+          <img id="imgHE" alt="H&E" loading="lazy" decoding="async" />
+        </button>
+        <div id="missHE" class="missing" style="display:none;"></div>
+      </figure>
+
+      <h3>Cell-type spatial maps (colored by subtype)</h3>
+      <div class="maps3">
+        <figure id="figEpi">
+          <div class="figcap">
+            <span>Epithelial cells</span><small>click to zoom</small>
+          </div>
+          <button class="imgbtn" type="button" id="btnEpi">
+            <img id="imgEpi" alt="Epithelial" loading="lazy" decoding="async" />
+          </button>
+          <div id="missEpi" class="missing" style="display:none;"></div>
+        </figure>
+
+        <figure id="figStr">
+          <div class="figcap">
+            <span>Stromal cells</span><small>click to zoom</small>
+          </div>
+          <button class="imgbtn" type="button" id="btnStr">
+            <img id="imgStr" alt="Stromal" loading="lazy" decoding="async" />
+          </button>
+          <div id="missStr" class="missing" style="display:none;"></div>
+        </figure>
+
+        <figure id="figImm">
+          <div class="figcap">
+            <span>Immune cells</span><small>click to zoom</small>
+          </div>
+          <button class="imgbtn" type="button" id="btnImm">
+            <img id="imgImm" alt="Immune" loading="lazy" decoding="async" />
+          </button>
+          <div id="missImm" class="missing" style="display:none;"></div>
+        </figure>
       </div>
+    </section>
 
-      <div class="toggles" aria-label="Type filters">
-        <label class="toggle"><input type="checkbox" data-type="HE" checked /> HE</label>
-        <label class="toggle"><input type="checkbox" data-type="Epithelial" checked /> Epithelial</label>
-        <label class="toggle"><input type="checkbox" data-type="Stromal" checked /> Stromal</label>
-        <label class="toggle"><input type="checkbox" data-type="Immune" checked /> Immune</label>
+    <section class="section" aria-label="Usage notes">
+      <h2>Usage Notes</h2>
+      <p class="muted">
+        Images on this page are intended for visualization and reference. Full-resolution images and raw spatial omics matrices
+        may be subject to controlled access in future releases.
+      </p>
+
+      <div class="pager" aria-label="Prev Next navigation">
+        <button id="prevBtn" class="btn" type="button">◀ Prev</button>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+          <a class="btn" href="/gallery/human_lung/">Human Lung (Category Hub)</a>
+          <a class="btn primary" href="/gallery/index.html">All Galleries (Hub)</a>
+        </div>
+        <button id="nextBtn" class="btn" type="button">Next ▶</button>
       </div>
-    </div>
-
-    <section id="galleryGrid" class="grid" aria-label="Normal Lung samples"></section>
-
-    <div id="emptyState" class="empty" style="display:none;">
-      No samples match your filters. Try clearing the search box or re-enabling image types.
-    </div>
+    </section>
   </main>
 
   <!-- Lightbox -->
   <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
-    <div class="lightbox-card">
-      <div class="lightbox-bar">
-        <div class="meta" id="lightboxTitle">Preview</div>
-        <button class="lightbox-close" id="lightboxClose" type="button">Close ✕</button>
+    <div class="lb-card">
+      <div class="lb-bar">
+        <div id="lbTitle">Preview</div>
+        <div class="lb-actions">
+          <button class="lb-nav" id="lbPrev" type="button">‹</button>
+          <button class="lb-nav" id="lbNext" type="button">›</button>
+          <button class="lb-close" id="lbClose" type="button">×</button>
+        </div>
       </div>
-      <div class="lightbox-body">
-        <img id="lightboxImg" alt="" />
+      <div class="lb-body">
+        <img id="lbImg" alt="" />
       </div>
     </div>
   </div>
@@ -428,85 +442,72 @@
         "VUHD116B"
       ];
 
-      const TYPES = [
-        { key: "HE", label: "HE", hint: "H&E" },
-        { key: "Epithelial", label: "Epithelial", hint: "Epithelial" },
-        { key: "Stromal", label: "Stromal", hint: "Stromal" },
-        { key: "Immune", label: "Immune", hint: "Immune" }
+      const IMAGE_SPECS = [
+        { key: "HE", label: "H&E", slot: "HE", title: "Histology (H&E)" },
+        { key: "Epithelial", label: "Epithelial cells", slot: "Epi", title: "Epithelial cells" },
+        { key: "Stromal", label: "Stromal cells", slot: "Str", title: "Stromal cells" },
+        { key: "Immune", label: "Immune cells", slot: "Imm", title: "Immune cells" }
       ];
 
-      const grid = document.getElementById("galleryGrid");
-      const emptyState = document.getElementById("emptyState");
-      const searchBox = document.getElementById("searchBox");
-      const toggleInputs = Array.from(document.querySelectorAll('.toggle input'));
+      // DOM
+      const navList = document.getElementById("navList");
+      const pageTitle = document.getElementById("pageTitle");
+
+      const metaStatus = document.getElementById("metaStatus");
+      const metaDL = document.getElementById("metaDL");
+
+      const imgHE = document.getElementById("imgHE");
+      const imgEpi = document.getElementById("imgEpi");
+      const imgStr = document.getElementById("imgStr");
+      const imgImm = document.getElementById("imgImm");
+
+      const missHE = document.getElementById("missHE");
+      const missEpi = document.getElementById("missEpi");
+      const missStr = document.getElementById("missStr");
+      const missImm = document.getElementById("missImm");
+
+      const btnHE = document.getElementById("btnHE");
+      const btnEpi = document.getElementById("btnEpi");
+      const btnStr = document.getElementById("btnStr");
+      const btnImm = document.getElementById("btnImm");
+
+      const prevBtn = document.getElementById("prevBtn");
+      const nextBtn = document.getElementById("nextBtn");
 
       // Lightbox
       const lightbox = document.getElementById("lightbox");
-      const lightboxImg = document.getElementById("lightboxImg");
-      const lightboxTitle = document.getElementById("lightboxTitle");
-      const lightboxClose = document.getElementById("lightboxClose");
+      const lbImg = document.getElementById("lbImg");
+      const lbTitle = document.getElementById("lbTitle");
+      const lbClose = document.getElementById("lbClose");
+      const lbPrev = document.getElementById("lbPrev");
+      const lbNext = document.getElementById("lbNext");
 
-      // Parsed metadata: Map<sampleId, Array<[key, value]>>
+      // Metadata store: Map<sampleId, Array<[key,value]>>
       let META = new Map();
       let META_STATUS = "loading"; // loading | ok | error
 
-      function buildImageSrc(sample, typeKey) {
+      // State
+      let currentSample = SAMPLES[0];
+      let currentImgIndex = 0;
+
+      function buildImgSrc(sample, typeKey) {
         return `${BASE}${sample}_${typeKey}.png`;
       }
 
-      function getEnabledTypes() {
-        const enabled = new Set();
-        for (const input of toggleInputs) {
-          if (input.checked) enabled.add(input.getAttribute("data-type"));
-        }
-        return enabled;
-      }
-
-      function matchesSearch(sample, q) {
-        if (!q) return true;
-        return sample.toLowerCase().includes(q.toLowerCase().trim());
-      }
-
-      function openLightbox(src, title, alt) {
-        lightboxTitle.textContent = title;
-        lightboxImg.src = src;
-        lightboxImg.alt = alt || title;
-        lightbox.classList.add("open");
-        document.body.style.overflow = "hidden";
-      }
-
-      function closeLightbox() {
-        lightbox.classList.remove("open");
-        lightboxImg.src = "";
-        document.body.style.overflow = "";
-      }
-
-      lightboxClose.addEventListener("click", closeLightbox);
-      lightbox.addEventListener("click", (e) => {
-        if (e.target === lightbox) closeLightbox();
-      });
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && lightbox.classList.contains("open")) closeLightbox();
-      });
-
       function parseMetadataTxt(txt) {
-        // Format:
-        // [SAMPLE]
-        // Key: Value
-        // ...
         const lines = txt.split(/\r?\n/);
         const map = new Map();
 
         let currentId = null;
-        let currentPairs = [];
+        let pairs = [];
 
         function commit() {
-          if (currentId) map.set(currentId, currentPairs);
+          if (currentId) map.set(currentId, pairs);
           currentId = null;
-          currentPairs = [];
+          pairs = [];
         }
 
-        for (let raw of lines) {
+        for (const raw of lines) {
           const line = raw.trim();
           if (!line) continue;
 
@@ -517,12 +518,11 @@
             continue;
           }
 
-          // Key: Value
           const idx = line.indexOf(":");
           if (idx > 0) {
             const k = line.slice(0, idx).trim();
             const v = line.slice(idx + 1).trim();
-            currentPairs.push([k, v]);
+            pairs.push([k, v]);
           }
         }
         commit();
@@ -537,185 +537,201 @@
           META = parseMetadataTxt(txt);
           META_STATUS = "ok";
         } catch (e) {
-          META_STATUS = "error";
+          console.warn("metadata load failed:", e);
           META = new Map();
-          // still render; we’ll show an error badge in metadata panels
-          console.warn("Failed to load metadata:", e);
+          META_STATUS = "error";
         }
       }
 
-      function buildMetadataDetails(sample) {
-        const details = document.createElement("details");
-        details.className = "meta";
-        details.open = false;
+      function renderNav() {
+        navList.innerHTML = "";
+        for (const s of SAMPLES) {
+          const a = document.createElement("a");
+          a.href = `#${s}`;
+          a.className = "navitem" + (s === currentSample ? " active" : "");
+          a.textContent = s;
+          a.dataset.sample = s;
+          a.addEventListener("click", (ev) => {
+            ev.preventDefault();
+            setSample(s, true);
+          });
+          navList.appendChild(a);
+        }
+      }
 
-        const summary = document.createElement("summary");
-        summary.innerHTML = `
-          <span>Metadata</span>
-          <span class="meta-badge">${
-            META_STATUS === "loading" ? "Loading…" :
-            META_STATUS === "error" ? "Unavailable" :
-            (META.has(sample) ? "Available" : "Missing")
-          }</span>
-        `;
-        details.appendChild(summary);
-
-        const body = document.createElement("div");
-        body.className = "meta-body";
+      function renderMetadata() {
+        metaDL.innerHTML = "";
 
         if (META_STATUS === "loading") {
-          body.textContent = "Loading metadata…";
-          details.appendChild(body);
-          return details;
+          metaStatus.textContent = "Loading metadata…";
+          return;
         }
 
         if (META_STATUS === "error") {
-          body.textContent = `Failed to load ${META_URL}. Check the path and filename casing.`;
-          details.appendChild(body);
-          return details;
+          metaStatus.textContent = "Metadata unavailable (check metadata.txt path/casing).";
+          return;
         }
 
-        const pairs = META.get(sample);
+        const pairs = META.get(currentSample);
         if (!pairs || pairs.length === 0) {
-          body.textContent = "No metadata found for this sample.";
-          details.appendChild(body);
-          return details;
+          metaStatus.textContent = "No metadata found for this sample.";
+          return;
         }
 
-        const dl = document.createElement("dl");
-        dl.className = "meta-dl";
+        metaStatus.textContent = "Preview available";
 
+        // Optional: enforce a preferred display order
+        const preferred = [
+          "Dataset",
+          "Sample ID",
+          "Species",
+          "Tissue",
+          "Pathology annotation",
+          "Original Source",
+          "Technology"
+        ];
+
+        const dict = new Map(pairs);
+        const ordered = [];
+
+        for (const k of preferred) {
+          if (dict.has(k)) ordered.push([k, dict.get(k)]);
+        }
+        // append any extra keys not in preferred
         for (const [k, v] of pairs) {
+          if (!preferred.includes(k)) ordered.push([k, v]);
+        }
+
+        for (const [k, v] of ordered) {
           const dt = document.createElement("dt");
           dt.textContent = k;
           const dd = document.createElement("dd");
           dd.textContent = v;
-          dl.appendChild(dt);
-          dl.appendChild(dd);
+          metaDL.appendChild(dt);
+          metaDL.appendChild(dd);
         }
-
-        body.appendChild(dl);
-        details.appendChild(body);
-        return details;
       }
 
-      function render() {
-        const q = searchBox.value || "";
-        const enabledTypes = getEnabledTypes();
-
-        grid.innerHTML = "";
-        let shownSamples = 0;
-
-        for (const sample of SAMPLES) {
-          if (!matchesSearch(sample, q)) continue;
-
-          const card = document.createElement("article");
-          card.className = "sample";
-
-          const head = document.createElement("div");
-          head.className = "sample-head";
-
-          const h2 = document.createElement("h2");
-          h2.textContent = sample;
-
-          const pills = document.createElement("div");
-          pills.className = "pills";
-
-          const p1 = document.createElement("span");
-          p1.className = "pill";
-          p1.textContent = "Organ: Lung";
-          const p2 = document.createElement("span");
-          p2.className = "pill";
-          p2.textContent = "Gallery: Normal Lung";
-
-          pills.appendChild(p1);
-          pills.appendChild(p2);
-
-          head.appendChild(h2);
-          head.appendChild(pills);
-
-          card.appendChild(head);
-
-          // NEW: metadata panel per sample
-          card.appendChild(buildMetadataDetails(sample));
-
-          const imgGrid = document.createElement("div");
-          imgGrid.className = "img-grid";
-
-          let anyPanel = false;
-
-          for (const t of TYPES) {
-            if (!enabledTypes.has(t.key)) continue;
-
-            anyPanel = true;
-
-            const panel = document.createElement("div");
-            panel.className = "panel";
-            panel.setAttribute("data-type", t.key);
-
-            const label = document.createElement("div");
-            label.className = "label";
-            const left = document.createElement("span");
-            left.textContent = t.label;
-            const right = document.createElement("small");
-            right.textContent = t.hint || "";
-            label.appendChild(left);
-            label.appendChild(right);
-
-            const btn = document.createElement("button");
-            btn.type = "button";
-
-            const img = document.createElement("img");
-            const src = buildImageSrc(sample, t.key);
-
-            img.loading = "lazy";
-            img.decoding = "async";
-            img.src = src;
-            img.alt = `${sample} — ${t.label}`;
-
-            img.onerror = function () {
-              panel.innerHTML = "";
-              panel.appendChild(label);
-              const miss = document.createElement("div");
-              miss.className = "missing";
-              miss.textContent = `Missing file: ${sample}_${t.key}.png (check filename casing & path).`;
-              panel.appendChild(miss);
-            };
-
-            btn.addEventListener("click", () => {
-              openLightbox(src, `${sample} • ${t.label}`, `${sample} ${t.label}`);
-            });
-
-            btn.appendChild(img);
-            panel.appendChild(label);
-            panel.appendChild(btn);
-            imgGrid.appendChild(panel);
-          }
-
-          if (!anyPanel) {
-            const note = document.createElement("div");
-            note.className = "empty";
-            note.textContent = "All image types are currently hidden. Enable at least one type above.";
-            card.appendChild(note);
-          } else {
-            card.appendChild(imgGrid);
-          }
-
-          grid.appendChild(card);
-          shownSamples += 1;
-        }
-
-        emptyState.style.display = shownSamples === 0 ? "block" : "none";
+      function attachImgWithMissing(imgEl, missEl, src, missingLabel) {
+        missEl.style.display = "none";
+        missEl.textContent = "";
+        imgEl.onerror = function () {
+          missEl.style.display = "block";
+          missEl.textContent = `Missing file: ${missingLabel} (check filename casing & path).`;
+        };
+        imgEl.src = src;
       }
 
-      searchBox.addEventListener("input", render);
-      for (const input of toggleInputs) input.addEventListener("change", render);
+      function renderImages() {
+        const heSrc = buildImgSrc(currentSample, "HE");
+        const epiSrc = buildImgSrc(currentSample, "Epithelial");
+        const strSrc = buildImgSrc(currentSample, "Stromal");
+        const immSrc = buildImgSrc(currentSample, "Immune");
 
-      // Load metadata first, then render once (and render again on completion)
+        attachImgWithMissing(imgHE,  missHE,  heSrc,  `${currentSample}_HE.png`);
+        attachImgWithMissing(imgEpi, missEpi, epiSrc, `${currentSample}_Epithelial.png`);
+        attachImgWithMissing(imgStr, missStr, strSrc, `${currentSample}_Stromal.png`);
+        attachImgWithMissing(imgImm, missImm, immSrc, `${currentSample}_Immune.png`);
+      }
+
+      function updatePager() {
+        const idx = SAMPLES.indexOf(currentSample);
+        prevBtn.disabled = idx <= 0;
+        nextBtn.disabled = idx >= SAMPLES.length - 1;
+      }
+
+      function setSample(sample, updateHash) {
+        if (!SAMPLES.includes(sample)) return;
+
+        currentSample = sample;
+        pageTitle.textContent = `Normal Lung — ${sample}`;
+
+        renderNav();
+        renderMetadata();
+        renderImages();
+        updatePager();
+
+        if (updateHash) {
+          // update hash without jumping
+          history.replaceState(null, "", `#${sample}`);
+        }
+
+        // Keep it feeling like a dataset-card page: snap back to top
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      // Lightbox
+      function openLightbox(index) {
+        currentImgIndex = index;
+        const spec = IMAGE_SPECS[currentImgIndex];
+        const src = buildImgSrc(currentSample, spec.key);
+
+        lbTitle.textContent = `${currentSample} • ${spec.title}`;
+        lbImg.src = src;
+        lbImg.alt = `${currentSample} — ${spec.title}`;
+
+        lightbox.classList.add("open");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeLightbox() {
+        lightbox.classList.remove("open");
+        lbImg.src = "";
+        document.body.style.overflow = "";
+      }
+
+      function stepLightbox(delta) {
+        const n = IMAGE_SPECS.length;
+        currentImgIndex = (currentImgIndex + delta + n) % n;
+        openLightbox(currentImgIndex);
+      }
+
+      lbClose.addEventListener("click", closeLightbox);
+      lightbox.addEventListener("click", (e) => { if (e.target === lightbox) closeLightbox(); });
+      lbPrev.addEventListener("click", () => stepLightbox(-1));
+      lbNext.addEventListener("click", () => stepLightbox(1));
+
+      document.addEventListener("keydown", (e) => {
+        if (lightbox.classList.contains("open")) {
+          if (e.key === "Escape") closeLightbox();
+          if (e.key === "ArrowLeft") stepLightbox(-1);
+          if (e.key === "ArrowRight") stepLightbox(1);
+          return;
+        }
+
+        // sample navigation
+        const idx = SAMPLES.indexOf(currentSample);
+        if (e.key === "ArrowLeft" && idx > 0) setSample(SAMPLES[idx - 1], true);
+        if (e.key === "ArrowRight" && idx < SAMPLES.length - 1) setSample(SAMPLES[idx + 1], true);
+      });
+
+      btnHE.addEventListener("click", () => openLightbox(0));
+      btnEpi.addEventListener("click", () => openLightbox(1));
+      btnStr.addEventListener("click", () => openLightbox(2));
+      btnImm.addEventListener("click", () => openLightbox(3));
+
+      prevBtn.addEventListener("click", () => {
+        const idx = SAMPLES.indexOf(currentSample);
+        if (idx > 0) setSample(SAMPLES[idx - 1], true);
+      });
+      nextBtn.addEventListener("click", () => {
+        const idx = SAMPLES.indexOf(currentSample);
+        if (idx < SAMPLES.length - 1) setSample(SAMPLES[idx + 1], true);
+      });
+
+      // Init
       (async function init(){
-        render();         // quick first render (shows metadata "Loading…")
+        // Build initial sample from hash if present
+        const fromHash = (location.hash || "").replace("#", "").trim();
+        if (fromHash && SAMPLES.includes(fromHash)) currentSample = fromHash;
+
+        renderNav();
+        pageTitle.textContent = `Normal Lung — ${currentSample}`;
+        renderImages();
+        updatePager();
+
         await loadMetadata();
-        render();         // second render with metadata filled
+        renderMetadata();
       })();
     })();
   </script>
