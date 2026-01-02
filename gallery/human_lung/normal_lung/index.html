@@ -276,6 +276,7 @@
     }
     .lb-bar{
       display:flex;
+      flex-wrap: wrap;
       align-items:center;
       justify-content:space-between;
       gap:12px;
@@ -285,11 +286,21 @@
       color: rgba(255,255,255,0.9);
       font-weight: 950;
     }
+    .lb-title{
+      flex: 1 1 280px;
+      min-width: 220px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
     .lb-actions{
       display:flex;
+      flex-wrap: wrap;
       gap:10px;
       align-items:center;
+      justify-content:flex-end;
     }
+
     .lb-close, .lb-nav{
       all: unset;
       cursor: pointer;
@@ -302,16 +313,54 @@
     }
     .lb-close:hover, .lb-nav:hover{ filter: brightness(1.08); }
 
+    /* Zoom bar */
+    .zoomwrap{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 6px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+    }
+    .zoomwrap label{
+      font-weight: 950;
+      color: rgba(255,255,255,0.92);
+      user-select:none;
+    }
+    .zoomwrap input[type="range"]{
+      width: 180px;
+    }
+    .zoomval{
+      font-weight: 950;
+      color: rgba(255,255,255,0.92);
+      min-width: 54px;
+      text-align: right;
+    }
+
     .lb-body{
       overflow:auto;
       padding: 10px;
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
     }
+
+    /* 默认适配屏幕：contain（max-width/max-height） */
     .lb-body img{
-      width: 100%;
+      max-width: 100%;
+      max-height: calc(92vh - 74px);
+      width: auto;
       height: auto;
       display:block;
       border-radius: 10px;
+
+      /* 通过 transform 缩放 */
+      transform: scale(1);
+      transform-origin: center top;
+      will-change: transform;
     }
+
     @media (prefers-reduced-motion: reduce){
       *{ transition: none !important; }
     }
@@ -412,13 +461,21 @@
   <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
     <div class="lb-card">
       <div class="lb-bar">
-        <div id="lbTitle">Preview</div>
+        <div class="lb-title" id="lbTitle">Preview</div>
+
         <div class="lb-actions">
-          <button class="lb-nav" id="lbPrev" type="button">‹</button>
-          <button class="lb-nav" id="lbNext" type="button">›</button>
-          <button class="lb-close" id="lbClose" type="button">×</button>
+          <div class="zoomwrap" aria-label="Zoom control">
+            <label for="zoomRange">Zoom</label>
+            <input id="zoomRange" type="range" min="0.5" max="2" step="0.01" value="1" />
+            <span class="zoomval" id="zoomVal">100%</span>
+          </div>
+
+          <button class="lb-nav" id="lbPrev" type="button" title="Previous image">‹</button>
+          <button class="lb-nav" id="lbNext" type="button" title="Next image">›</button>
+          <button class="lb-close" id="lbClose" type="button" title="Close">×</button>
         </div>
       </div>
+
       <div class="lb-body">
         <img id="lbImg" alt="" />
       </div>
@@ -481,6 +538,10 @@
       const lbClose = document.getElementById("lbClose");
       const lbPrev = document.getElementById("lbPrev");
       const lbNext = document.getElementById("lbNext");
+
+      // Zoom UI
+      const zoomRange = document.getElementById("zoomRange");
+      const zoomVal = document.getElementById("zoomVal");
 
       // Metadata store: Map<sampleId, Array<[key,value]>>
       let META = new Map();
@@ -580,7 +641,6 @@
 
         metaStatus.textContent = "Preview available";
 
-        // Optional: enforce a preferred display order
         const preferred = [
           "Dataset",
           "Sample ID",
@@ -597,7 +657,6 @@
         for (const k of preferred) {
           if (dict.has(k)) ordered.push([k, dict.get(k)]);
         }
-        // append any extra keys not in preferred
         for (const [k, v] of pairs) {
           if (!preferred.includes(k)) ordered.push([k, v]);
         }
@@ -652,15 +711,20 @@
         updatePager();
 
         if (updateHash) {
-          // update hash without jumping
           history.replaceState(null, "", `#${sample}`);
         }
 
-        // Keep it feeling like a dataset-card page: snap back to top
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
 
-      // Lightbox
+      // ---- Lightbox + Zoom ----
+      function applyZoom(scale) {
+        const s = Math.max(0.5, Math.min(2, Number(scale) || 1));
+        lbImg.style.transform = `scale(${s})`;
+        zoomRange.value = String(s);
+        zoomVal.textContent = `${Math.round(s * 100)}%`;
+      }
+
       function openLightbox(index) {
         currentImgIndex = index;
         const spec = IMAGE_SPECS[currentImgIndex];
@@ -670,6 +734,9 @@
         lbImg.src = src;
         lbImg.alt = `${currentSample} — ${spec.title}`;
 
+        // 默认适配屏幕：scale=1
+        applyZoom(1);
+
         lightbox.classList.add("open");
         document.body.style.overflow = "hidden";
       }
@@ -677,6 +744,7 @@
       function closeLightbox() {
         lightbox.classList.remove("open");
         lbImg.src = "";
+        lbImg.style.transform = "scale(1)";
         document.body.style.overflow = "";
       }
 
@@ -685,6 +753,11 @@
         currentImgIndex = (currentImgIndex + delta + n) % n;
         openLightbox(currentImgIndex);
       }
+
+      // Zoom slider (drag bar)
+      zoomRange.addEventListener("input", () => {
+        applyZoom(zoomRange.value);
+      });
 
       lbClose.addEventListener("click", closeLightbox);
       lightbox.addEventListener("click", (e) => { if (e.target === lightbox) closeLightbox(); });
@@ -699,7 +772,6 @@
           return;
         }
 
-        // sample navigation
         const idx = SAMPLES.indexOf(currentSample);
         if (e.key === "ArrowLeft" && idx > 0) setSample(SAMPLES[idx - 1], true);
         if (e.key === "ArrowRight" && idx < SAMPLES.length - 1) setSample(SAMPLES[idx + 1], true);
@@ -721,7 +793,6 @@
 
       // Init
       (async function init(){
-        // Build initial sample from hash if present
         const fromHash = (location.hash || "").replace("#", "").trim();
         if (fromHash && SAMPLES.includes(fromHash)) currentSample = fromHash;
 
