@@ -9,221 +9,915 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta
     name="description"
-    content="Lung Adenocarcinoma Spectrum gallery (coming soon) in the RNA-Pathology database."
+    content="Lung Adenocarcinoma Spectrum gallery in the RNA-Pathology database."
   />
 
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-B2L5CDD57"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-B2L5CDD57');
+  </script>
+
   <style>
-    /* Page-scoped styling only (won't affect global header/footer) */
-    .page-wrap {
+    body { background: var(--bg, #0b0f1a); color: var(--text, #e7ecf5); }
+
+    .wrap{
       max-width: 1100px;
       margin: 0 auto;
       padding: 44px 20px 90px;
     }
 
-    .crumbs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      margin: 0 0 22px;
+    .toplinks{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      align-items:center;
+      margin: 0 0 14px;
+      color: var(--muted, rgba(231,236,245,.72));
+      font-weight: 800;
       font-size: 0.95rem;
-      color: var(--muted, rgba(231, 236, 245, 0.72));
     }
-    .crumbs a {
+    .toplinks a{
       color: var(--primary, #7aa7ff);
       text-decoration: none;
-      font-weight: 800;
+      font-weight: 900;
     }
-    .crumbs a:hover { text-decoration: underline; }
+    .toplinks a:hover{ text-decoration: underline; }
 
-    .title {
-      margin: 0 0 10px;
-      font-size: 2.35rem;
-      line-height: 1.12;
-      letter-spacing: -0.02em;
-      color: var(--text, #e7ecf5);
-    }
-
-    .subtitle {
-      margin: 0 0 18px;
-      color: var(--muted, rgba(231, 236, 245, 0.72));
-      line-height: 1.75;
-      max-width: 92ch;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 16px;
-      margin-top: 18px;
-    }
-
-    .card {
-      grid-column: span 12;
+    .navbox{
       background: var(--surface, #11182a);
-      border: 1px solid var(--border, rgba(231, 236, 245, 0.14));
+      border: 1px solid var(--border, rgba(231,236,245,.14));
       border-radius: 14px;
-      padding: 18px 18px 16px;
-      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+      padding: 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,.28);
+      margin: 12px 0 20px;
     }
-
-    @media (min-width: 900px) {
-      .card.half { grid-column: span 6; }
-    }
-
-    .card h2 {
-      margin: 0 0 8px;
-      font-size: 1.18rem;
+    .navbox h2{
+      margin: 0 0 12px;
+      font-size: 1.05rem;
       color: var(--text, #e7ecf5);
       letter-spacing: -0.01em;
     }
 
-    .meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 10px 0 14px;
+    .navgroups{
+      display:flex;
+      flex-direction:column;
+      gap: 12px;
     }
 
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 0.85rem;
-      font-weight: 850;
-      border: 1px solid var(--border, rgba(231, 236, 245, 0.14));
-      color: var(--muted, rgba(231, 236, 245, 0.72));
-      background: rgba(255,255,255,0.04);
-      white-space: nowrap;
-    }
-
-    .desc {
-      margin: 0 0 16px;
-      color: var(--muted, rgba(231, 236, 245, 0.72));
-      line-height: 1.7;
-      max-width: 95ch;
-    }
-
-    .callout {
-      margin: 0;
-      padding: 14px 14px;
+    .group{
+      border: 1px solid var(--border, rgba(231,236,245,.14));
       border-radius: 12px;
-      border: 1px dashed var(--border, rgba(231, 236, 245, 0.14));
       background: rgba(255,255,255,0.03);
-      color: var(--muted, rgba(231, 236, 245, 0.72));
-      line-height: 1.7;
+      padding: 10px;
+    }
+    .ghead{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border, rgba(231,236,245,.14));
+    }
+    .ghead .name{
+      font-weight: 950;
+      color: var(--text, #e7ecf5);
+      letter-spacing: -0.01em;
+    }
+    .ghead .hint{
+      color: var(--muted, rgba(231,236,245,.72));
+      font-weight: 850;
+      font-size: 0.92rem;
     }
 
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      margin-top: 6px;
+    .navlist{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
     }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-weight: 900;
+    .navitem{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border, rgba(231,236,245,.14));
+      background: rgba(255,255,255,0.04);
+      color: var(--text, #e7ecf5);
       text-decoration: none;
-      border: 1px solid var(--border, rgba(231, 236, 245, 0.14));
-      transition: transform 0.15s ease, filter 0.15s ease;
-      user-select: none;
-      white-space: nowrap;
+      font-weight: 900;
+      font-size: 0.92rem;
+      user-select:none;
+      transition: transform .15s ease, filter .15s ease;
     }
-
-    .btn-primary {
+    .navitem:hover{ transform: translateY(-1px); filter: brightness(1.06); }
+    .navitem.active{
       background: var(--primary, #7aa7ff);
       color: #0b0f1a;
       border-color: transparent;
     }
-    .btn-primary:hover { transform: translateY(-1px); filter: brightness(1.02); }
 
-    .btn-ghost {
-      background: transparent;
+    h1{
+      margin: 6px 0 10px;
+      font-size: 2.15rem;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
       color: var(--text, #e7ecf5);
     }
-    .btn-ghost:hover { transform: translateY(-1px); filter: brightness(1.05); }
-
-    .note {
-      margin-top: 22px;
-      color: var(--muted, rgba(231, 236, 245, 0.72));
-      font-size: 0.95rem;
-      line-height: 1.7;
-      max-width: 96ch;
+    .lead{
+      margin: 0 0 18px;
+      color: var(--muted, rgba(231,236,245,.72));
+      line-height: 1.75;
+      max-width: 92ch;
     }
 
-    .note code {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 0.92em;
+    .section{
+      background: var(--surface, #11182a);
+      border: 1px solid var(--border, rgba(231,236,245,.14));
+      border-radius: 14px;
+      padding: 16px 16px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,.28);
+      margin: 16px 0;
+    }
+    .section h2{
+      margin: 0 0 10px;
+      font-size: 1.25rem;
+      letter-spacing: -0.01em;
+      color: var(--text, #e7ecf5);
+    }
+    .section h3{
+      margin: 14px 0 10px;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+      color: var(--text, #e7ecf5);
+    }
+    .muted{
+      color: var(--muted, rgba(231,236,245,.72));
+      line-height: 1.7;
+    }
+
+    /* Core metadata */
+    .meta-status{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border, rgba(231,236,245,.14));
+      background: rgba(255,255,255,0.04);
+      color: var(--muted, rgba(231,236,245,.72));
+      font-weight: 900;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+    }
+    .meta-grid{
+      margin: 0;
+      display:grid;
+      grid-template-columns: 220px 1fr;
+      gap: 8px 12px;
+    }
+    .meta-grid dt{
+      margin: 0;
+      font-weight: 900;
+      color: rgba(231,236,245,.92);
+    }
+    .meta-grid dd{
+      margin: 0;
+      color: var(--muted, rgba(231,236,245,.72));
+    }
+    @media (max-width: 720px){
+      .meta-grid{ grid-template-columns: 1fr; }
+      .meta-grid dt{ margin-top: 6px; }
+    }
+
+    /* Images */
+    figure{
+      margin: 0;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border, rgba(231,236,245,.14));
+      background: rgba(255,255,255,0.02);
+    }
+    .figcap{
+      padding: 10px 12px;
+      font-weight: 900;
+      border-bottom: 1px solid var(--border, rgba(231,236,245,.14));
+      background: rgba(255,255,255,0.03);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+    }
+    .figcap small{
+      color: var(--muted, rgba(231,236,245,.72));
+      font-weight: 800;
+    }
+
+    .imgbtn{
+      all: unset;
+      display:block;
+      cursor: zoom-in;
+    }
+    img{
+      width: 100%;
+      height: auto;
+      display:block;
+    }
+
+    .maps3{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    @media (min-width: 980px){
+      .maps3{ grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .missing{
+      padding: 14px 12px 16px;
+      color: var(--muted, rgba(231,236,245,.72));
+      line-height: 1.6;
+    }
+
+    /* Pager */
+    .pager{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      margin-top: 16px;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: 950;
+      text-decoration:none;
+      border: 1px solid var(--border, rgba(231,236,245,.14));
+      background: rgba(255,255,255,0.04);
+      color: var(--text, #e7ecf5);
+      user-select:none;
+      cursor:pointer;
+      transition: transform .15s ease, filter .15s ease;
+      white-space: nowrap;
+    }
+    .btn:hover{ transform: translateY(-1px); filter: brightness(1.06); }
+    .btn.primary{
+      background: var(--primary, #7aa7ff);
+      color: #0b0f1a;
+      border-color: transparent;
+    }
+    .btn:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      transform:none;
+      filter:none;
+    }
+
+    /* Lightbox + Zoom */
+    .lightbox{
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(0,0,0,0.78);
+      z-index: 9999;
+    }
+    .lightbox.open{ display:flex; }
+
+    .lb-card{
+      width: min(1180px, 100%);
+      max-height: 92vh;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: #0b0f1a;
+      box-shadow: 0 30px 90px rgba(0,0,0,0.55);
+      display:flex;
+      flex-direction: column;
+    }
+    .lb-bar{
+      display:flex;
+      flex-wrap: wrap;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      color: rgba(255,255,255,0.9);
+      font-weight: 950;
+    }
+    .lb-title{
+      flex: 1 1 280px;
+      min-width: 220px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .lb-actions{
+      display:flex;
+      flex-wrap: wrap;
+      gap:10px;
+      align-items:center;
+      justify-content:flex-end;
+    }
+
+    .lb-close, .lb-nav{
+      all: unset;
+      cursor: pointer;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+      font-weight: 950;
+      user-select:none;
+    }
+    .lb-close:hover, .lb-nav:hover{ filter: brightness(1.08); }
+
+    .zoomwrap{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 6px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+    }
+    .zoomwrap label{
+      font-weight: 950;
+      color: rgba(255,255,255,0.92);
+      user-select:none;
+    }
+    .zoomwrap input[type="range"]{ width: 180px; }
+    .zoomval{
+      font-weight: 950;
+      color: rgba(255,255,255,0.92);
+      min-width: 54px;
+      text-align: right;
+    }
+
+    .lb-body{
+      overflow:auto;
+      padding: 10px;
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+    }
+    .lb-body img{
+      max-width: 100%;
+      max-height: calc(92vh - 74px);
+      width: auto;
+      height: auto;
+      display:block;
+      border-radius: 10px;
+
+      transform: scale(1);
+      transform-origin: center top;
+      will-change: transform;
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      *{ transition: none !important; }
     }
   </style>
 </head>
 
 <body>
-  <main class="page-wrap">
-    <div class="crumbs">
-      <a href="/database.html">← Database</a>
-      <span>•</span>
-      <a href="/gallery/index.html">All Galleries (Hub)</a>
-      <span>•</span>
-      <a href="/gallery/human_lung/">Human Lung</a>
-      <span>•</span>
-      <span>Lung Adenocarcinoma Spectrum</span>
+  <main class="wrap">
+    <div class="toplinks">
+      <a href="/database.html">← Database Overview</a>
+      <a href="/gallery/human_lung/">← Gallery</a>
     </div>
 
-    <h1 class="title">Lung Adenocarcinoma Spectrum</h1>
-    <p class="subtitle">
-      A gallery spanning lung adenocarcinoma states/regions to support comparative learning and annotation.
-      This page is live as a placeholder now, and will be populated with images + structured metadata as the gallery is released.
-    </p>
-
-    <section class="grid" aria-label="LUAD Spectrum gallery status">
-      <article class="card half">
-        <h2>Status</h2>
-        <div class="meta">
-          <span class="pill">Organ: Lung</span>
-          <span class="pill">Category: Human Lung</span>
-          <span class="pill">Status: Coming soon</span>
-        </div>
-        <p class="desc">
-          The gallery structure is ready; content will be added next.
-        </p>
-        <div class="actions">
-          <a class="btn btn-primary" href="/gallery/human_lung/">Back to Human Lung</a>
-          <a class="btn btn-ghost" href="/gallery/index.html">All Galleries</a>
-        </div>
-      </article>
-
-      <article class="card half">
-        <h2>What will appear here</h2>
-        <p class="callout">
-          • Multiple LUAD regions / phenotypic states (spectrum)<br/>
-          • Consistent “dataset card” pages for each subset/region<br/>
-          • Optional: progression-style browsing (later)
-        </p>
-      </article>
-
-      <article class="card">
-        <h2>Implementation note</h2>
-        <p class="desc">
-          Once you upload the actual gallery content, we’ll:
-          (1) add real cards/links here, and (2) remove the <code>disabled</code> state in the hub pages so buttons are active everywhere.
-        </p>
-      </article>
+    <section class="navbox" aria-label="Navigate datasets">
+      <h2>Navigate datasets (Lung adenocarcinoma spectrum)</h2>
+      <div id="navGroups" class="navgroups"></div>
     </section>
 
-    <p class="note">
-      Next step after you upload this file: I’ll give you the complete updated code for
-      <code>gallery/human_lung/index.html</code> to “activate” the two lung gallery buttons
-      (remove <code>disabled</code>) now that both pages exist.
+    <h1 id="pageTitle">Lung Adenocarcinoma Spectrum</h1>
+    <p class="lead" id="pageLead">
+      Samples are grouped by pathology category in the order:
+      <strong>Noguchi typeA → typeB → typeC → Invasive</strong>.
+      Select a sample above to browse its H&E and cell-type spatial maps.
     </p>
+
+    <section class="section" aria-label="Core metadata">
+      <h2>Core Metadata</h2>
+      <div id="metaStatus" class="meta-status">Loading metadata…</div>
+      <dl id="metaDL" class="meta-grid"></dl>
+    </section>
+
+    <section class="section" aria-label="Associated images">
+      <h2>Associated Images</h2>
+
+      <h3>Histology (H&E)</h3>
+      <figure>
+        <div class="figcap">
+          <span>H&E</span><small>click to zoom</small>
+        </div>
+        <button class="imgbtn" type="button" id="btnHE">
+          <img id="imgHE" alt="H&E" loading="lazy" decoding="async" />
+        </button>
+        <div id="missHE" class="missing" style="display:none;"></div>
+      </figure>
+
+      <h3>Cell-type spatial maps (colored by subtype)</h3>
+      <div class="maps3">
+        <figure>
+          <div class="figcap">
+            <span>Epithelial cells</span><small>click to zoom</small>
+          </div>
+          <button class="imgbtn" type="button" id="btnEpi">
+            <img id="imgEpi" alt="Epithelial" loading="lazy" decoding="async" />
+          </button>
+          <div id="missEpi" class="missing" style="display:none;"></div>
+        </figure>
+
+        <figure>
+          <div class="figcap">
+            <span>Stromal cells</span><small>click to zoom</small>
+          </div>
+          <button class="imgbtn" type="button" id="btnStr">
+            <img id="imgStr" alt="Stromal" loading="lazy" decoding="async" />
+          </button>
+          <div id="missStr" class="missing" style="display:none;"></div>
+        </figure>
+
+        <figure>
+          <div class="figcap">
+            <span>Immune cells</span><small>click to zoom</small>
+          </div>
+          <button class="imgbtn" type="button" id="btnImm">
+            <img id="imgImm" alt="Immune" loading="lazy" decoding="async" />
+          </button>
+          <div id="missImm" class="missing" style="display:none;"></div>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section" aria-label="Usage notes">
+      <h2>Usage Notes</h2>
+      <p class="muted">
+        This page visualizes the LUAD spectrum across pathology categories.
+        Click images to open the zoomable viewer (50%–200%).
+      </p>
+
+      <div class="pager" aria-label="Prev Next navigation">
+        <button id="prevBtn" class="btn" type="button">◀ Prev</button>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+          <a class="btn" href="/gallery/human_lung/">Human Lung (Category Hub)</a>
+          <a class="btn primary" href="/gallery/index.html">All Galleries (Hub)</a>
+        </div>
+        <button id="nextBtn" class="btn" type="button">Next ▶</button>
+      </div>
+    </section>
   </main>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
+    <div class="lb-card">
+      <div class="lb-bar">
+        <div class="lb-title" id="lbTitle">Preview</div>
+
+        <div class="lb-actions">
+          <div class="zoomwrap" aria-label="Zoom control">
+            <label for="zoomRange">Zoom</label>
+            <input id="zoomRange" type="range" min="0.5" max="2" step="0.01" value="1" />
+            <span class="zoomval" id="zoomVal">100%</span>
+          </div>
+
+          <button class="lb-nav" id="lbPrev" type="button" title="Previous image">‹</button>
+          <button class="lb-nav" id="lbNext" type="button" title="Next image">›</button>
+          <button class="lb-close" id="lbClose" type="button" title="Close">×</button>
+        </div>
+      </div>
+
+      <div class="lb-body">
+        <img id="lbImg" alt="" />
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      const BASE = "/images/gallery/human_lung/luad_spectrum/";
+      const META_URL = BASE + "metadata.txt";
+
+      // Fallback desired order (even if metadata fails to load)
+      const ORDERED_SAMPLES = [
+        // Noguchi typeA
+        "TSU-23", "TSU-25",
+        // Noguchi typeB
+        "TSU-21", "TSU-24", "TSU-35",
+        // Noguchi typeC
+        "TSU-27", "TSU-28", "TSU-30", "TSU-33", "TSU-36", "TSU-41",
+        // Invasive
+        "LUAD-No14", "LUAD-No16", "LUAD-No17", "LUAD-No2", "LUAD-No3"
+      ];
+
+      const CATEGORY_ORDER = ["Noguchi typeA", "Noguchi typeB", "Noguchi typeC", "Invasive"];
+
+      const IMAGE_SPECS = [
+        { key: "HE", title: "Histology (H&E)" },
+        { key: "Epithelial", title: "Epithelial cells" },
+        { key: "Stromal", title: "Stromal cells" },
+        { key: "Immune", title: "Immune cells" }
+      ];
+
+      // DOM
+      const navGroups = document.getElementById("navGroups");
+      const pageTitle = document.getElementById("pageTitle");
+
+      const metaStatus = document.getElementById("metaStatus");
+      const metaDL = document.getElementById("metaDL");
+
+      const imgHE = document.getElementById("imgHE");
+      const imgEpi = document.getElementById("imgEpi");
+      const imgStr = document.getElementById("imgStr");
+      const imgImm = document.getElementById("imgImm");
+
+      const missHE = document.getElementById("missHE");
+      const missEpi = document.getElementById("missEpi");
+      const missStr = document.getElementById("missStr");
+      const missImm = document.getElementById("missImm");
+
+      const btnHE = document.getElementById("btnHE");
+      const btnEpi = document.getElementById("btnEpi");
+      const btnStr = document.getElementById("btnStr");
+      const btnImm = document.getElementById("btnImm");
+
+      const prevBtn = document.getElementById("prevBtn");
+      const nextBtn = document.getElementById("nextBtn");
+
+      // Lightbox
+      const lightbox = document.getElementById("lightbox");
+      const lbImg = document.getElementById("lbImg");
+      const lbTitle = document.getElementById("lbTitle");
+      const lbClose = document.getElementById("lbClose");
+      const lbPrev = document.getElementById("lbPrev");
+      const lbNext = document.getElementById("lbNext");
+
+      // Zoom UI
+      const zoomRange = document.getElementById("zoomRange");
+      const zoomVal = document.getElementById("zoomVal");
+
+      // Metadata: Map<sampleId, Array<[key,value]>>
+      let META = new Map();
+      let META_STATUS = "loading"; // loading | ok | error
+
+      // State
+      let samples = ORDERED_SAMPLES.slice();
+      let currentSample = samples[0];
+      let currentImgIndex = 0;
+
+      function buildImgSrc(sample, typeKey) {
+        return `${BASE}${sample}_${typeKey}.png`;
+      }
+
+      function parseMetadataTxt(txt) {
+        const lines = txt.split(/\r?\n/);
+        const map = new Map();
+
+        let currentId = null;
+        let pairs = [];
+
+        function commit() {
+          if (currentId) map.set(currentId, pairs);
+          currentId = null;
+          pairs = [];
+        }
+
+        for (const raw of lines) {
+          const line = raw.trim();
+          if (!line) continue;
+
+          const header = line.match(/^\[(.+?)\]$/);
+          if (header) {
+            commit();
+            currentId = header[1].trim();
+            continue;
+          }
+
+          const idx = line.indexOf(":");
+          if (idx > 0) {
+            const k = line.slice(0, idx).trim();
+            const v = line.slice(idx + 1).trim();
+            pairs.push([k, v]);
+          }
+        }
+        commit();
+        return map;
+      }
+
+      async function loadMetadata() {
+        try {
+          const res = await fetch(META_URL, { cache: "no-store" });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const txt = await res.text();
+          META = parseMetadataTxt(txt);
+          META_STATUS = "ok";
+        } catch (e) {
+          console.warn("metadata load failed:", e);
+          META = new Map();
+          META_STATUS = "error";
+        }
+      }
+
+      function getMetaValue(sample, key) {
+        const pairs = META.get(sample);
+        if (!pairs) return null;
+        for (const [k, v] of pairs) if (k === key) return v;
+        return null;
+      }
+
+      function categorize(sample) {
+        // Prefer metadata-driven category
+        const cat = getMetaValue(sample, "Pathology annotation");
+        if (cat) return cat;
+        // Fallback: infer from sample name
+        if (sample.startsWith("LUAD-")) return "Invasive";
+        return null;
+      }
+
+      function buildOrderedSamplesFromMeta() {
+        // If metadata loaded, re-order samples by CATEGORY_ORDER (A->B->C->Invasive)
+        if (META_STATUS !== "ok") return ORDERED_SAMPLES.slice();
+
+        const all = Array.from(META.keys());
+        // Keep only samples we expect (avoid stray blocks)
+        const setExpected = new Set(ORDERED_SAMPLES);
+        const filtered = all.filter(s => setExpected.has(s));
+
+        const buckets = new Map(CATEGORY_ORDER.map(c => [c, []]));
+        for (const s of filtered) {
+          const c = categorize(s) || "Unknown";
+          if (!buckets.has(c)) buckets.set(c, []);
+          buckets.get(c).push(s);
+        }
+
+        // Within each bucket: stable by fallback order
+        const fallbackIndex = new Map(ORDERED_SAMPLES.map((s, i) => [s, i]));
+        for (const [c, arr] of buckets) {
+          arr.sort((a, b) => (fallbackIndex.get(a) ?? 1e9) - (fallbackIndex.get(b) ?? 1e9));
+        }
+
+        const ordered = [];
+        for (const c of CATEGORY_ORDER) {
+          ordered.push(...(buckets.get(c) || []));
+        }
+        // append anything unexpected at the end (rare)
+        for (const [c, arr] of buckets) {
+          if (!CATEGORY_ORDER.includes(c)) ordered.push(...arr);
+        }
+        return ordered;
+      }
+
+      function renderNav() {
+        navGroups.innerHTML = "";
+
+        // group samples for nav display
+        const groups = new Map(CATEGORY_ORDER.map(c => [c, []]));
+        for (const s of samples) {
+          const c = categorize(s) || "Unknown";
+          if (!groups.has(c)) groups.set(c, []);
+          groups.get(c).push(s);
+        }
+
+        for (const cat of CATEGORY_ORDER) {
+          const arr = groups.get(cat) || [];
+          if (arr.length === 0) continue;
+
+          const box = document.createElement("div");
+          box.className = "group";
+
+          const head = document.createElement("div");
+          head.className = "ghead";
+
+          const name = document.createElement("div");
+          name.className = "name";
+          name.textContent = cat;
+
+          const hint = document.createElement("div");
+          hint.className = "hint";
+          hint.textContent = `${arr.length} sample${arr.length > 1 ? "s" : ""}`;
+
+          head.appendChild(name);
+          head.appendChild(hint);
+
+          const list = document.createElement("div");
+          list.className = "navlist";
+
+          for (const s of arr) {
+            const a = document.createElement("a");
+            a.href = `#${s}`;
+            a.className = "navitem" + (s === currentSample ? " active" : "");
+            a.textContent = s;
+            a.addEventListener("click", (ev) => {
+              ev.preventDefault();
+              setSample(s, true);
+            });
+            list.appendChild(a);
+          }
+
+          box.appendChild(head);
+          box.appendChild(list);
+          navGroups.appendChild(box);
+        }
+      }
+
+      function renderMetadata() {
+        metaDL.innerHTML = "";
+
+        if (META_STATUS === "loading") {
+          metaStatus.textContent = "Loading metadata…";
+          return;
+        }
+        if (META_STATUS === "error") {
+          metaStatus.textContent = "Metadata unavailable (check metadata.txt path/casing).";
+          return;
+        }
+
+        const pairs = META.get(currentSample);
+        if (!pairs || pairs.length === 0) {
+          metaStatus.textContent = "No metadata found for this sample.";
+          return;
+        }
+
+        metaStatus.textContent = "Preview available";
+
+        const preferred = [
+          "Dataset",
+          "Sample ID",
+          "Species",
+          "Tissue",
+          "Pathology annotation",
+          "Original Source",
+          "Technology"
+        ];
+
+        const dict = new Map(pairs);
+        const ordered = [];
+
+        for (const k of preferred) if (dict.has(k)) ordered.push([k, dict.get(k)]);
+        for (const [k, v] of pairs) if (!preferred.includes(k)) ordered.push([k, v]);
+
+        for (const [k, v] of ordered) {
+          const dt = document.createElement("dt");
+          dt.textContent = k;
+          const dd = document.createElement("dd");
+          dd.textContent = v;
+          metaDL.appendChild(dt);
+          metaDL.appendChild(dd);
+        }
+      }
+
+      function attachImgWithMissing(imgEl, missEl, src, missingLabel) {
+        missEl.style.display = "none";
+        missEl.textContent = "";
+        imgEl.onerror = function () {
+          missEl.style.display = "block";
+          missEl.textContent = `Missing file: ${missingLabel} (check filename casing & path).`;
+        };
+        imgEl.src = src;
+      }
+
+      function renderImages() {
+        attachImgWithMissing(imgHE,  missHE,  buildImgSrc(currentSample, "HE"),         `${currentSample}_HE.png`);
+        attachImgWithMissing(imgEpi, missEpi, buildImgSrc(currentSample, "Epithelial"),`${currentSample}_Epithelial.png`);
+        attachImgWithMissing(imgStr, missStr, buildImgSrc(currentSample, "Stromal"),   `${currentSample}_Stromal.png`);
+        attachImgWithMissing(imgImm, missImm, buildImgSrc(currentSample, "Immune"),   `${currentSample}_Immune.png`);
+      }
+
+      function updatePager() {
+        const idx = samples.indexOf(currentSample);
+        prevBtn.disabled = idx <= 0;
+        nextBtn.disabled = idx >= samples.length - 1;
+      }
+
+      function setSample(sample, updateHash) {
+        if (!samples.includes(sample)) return;
+
+        currentSample = sample;
+
+        const cat = categorize(sample);
+        pageTitle.textContent = cat
+          ? `Lung Adenocarcinoma Spectrum — ${sample} (${cat})`
+          : `Lung Adenocarcinoma Spectrum — ${sample}`;
+
+        renderNav();
+        renderMetadata();
+        renderImages();
+        updatePager();
+
+        if (updateHash) history.replaceState(null, "", `#${sample}`);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      // Lightbox + Zoom
+      function applyZoom(scale) {
+        const s = Math.max(0.5, Math.min(2, Number(scale) || 1));
+        lbImg.style.transform = `scale(${s})`;
+        zoomRange.value = String(s);
+        zoomVal.textContent = `${Math.round(s * 100)}%`;
+      }
+
+      function openLightbox(index) {
+        currentImgIndex = index;
+        const spec = IMAGE_SPECS[currentImgIndex];
+        const src = buildImgSrc(currentSample, spec.key);
+
+        lbTitle.textContent = `${currentSample} • ${spec.title}`;
+        lbImg.src = src;
+        lbImg.alt = `${currentSample} — ${spec.title}`;
+
+        applyZoom(1); // default fit
+        lightbox.classList.add("open");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeLightbox() {
+        lightbox.classList.remove("open");
+        lbImg.src = "";
+        lbImg.style.transform = "scale(1)";
+        document.body.style.overflow = "";
+      }
+
+      function stepLightbox(delta) {
+        const n = IMAGE_SPECS.length;
+        currentImgIndex = (currentImgIndex + delta + n) % n;
+        openLightbox(currentImgIndex);
+      }
+
+      zoomRange.addEventListener("input", () => applyZoom(zoomRange.value));
+
+      lbClose.addEventListener("click", closeLightbox);
+      lightbox.addEventListener("click", (e) => { if (e.target === lightbox) closeLightbox(); });
+      lbPrev.addEventListener("click", () => stepLightbox(-1));
+      lbNext.addEventListener("click", () => stepLightbox(1));
+
+      document.addEventListener("keydown", (e) => {
+        if (lightbox.classList.contains("open")) {
+          if (e.key === "Escape") closeLightbox();
+          if (e.key === "ArrowLeft") stepLightbox(-1);
+          if (e.key === "ArrowRight") stepLightbox(1);
+          return;
+        }
+
+        const idx = samples.indexOf(currentSample);
+        if (e.key === "ArrowLeft" && idx > 0) setSample(samples[idx - 1], true);
+        if (e.key === "ArrowRight" && idx < samples.length - 1) setSample(samples[idx + 1], true);
+      });
+
+      btnHE.addEventListener("click", () => openLightbox(0));
+      btnEpi.addEventListener("click", () => openLightbox(1));
+      btnStr.addEventListener("click", () => openLightbox(2));
+      btnImm.addEventListener("click", () => openLightbox(3));
+
+      prevBtn.addEventListener("click", () => {
+        const idx = samples.indexOf(currentSample);
+        if (idx > 0) setSample(samples[idx - 1], true);
+      });
+      nextBtn.addEventListener("click", () => {
+        const idx = samples.indexOf(currentSample);
+        if (idx < samples.length - 1) setSample(samples[idx + 1], true);
+      });
+
+      // Init
+      (async function init(){
+        // choose initial sample from hash if present
+        const fromHash = (location.hash || "").replace("#", "").trim();
+
+        // render a quick initial view before metadata arrives
+        samples = ORDERED_SAMPLES.slice();
+        currentSample = (fromHash && samples.includes(fromHash)) ? fromHash : samples[0];
+        pageTitle.textContent = `Lung Adenocarcinoma Spectrum — ${currentSample}`;
+        renderNav();
+        renderImages();
+        updatePager();
+
+        await loadMetadata();
+
+        // now that metadata is available, re-order samples by category (and re-render nav)
+        samples = buildOrderedSamplesFromMeta();
+        if (!samples.includes(currentSample)) currentSample = samples[0];
+
+        setSample(currentSample, false);
+      })();
+    })();
+  </script>
 </body>
 </html>
