@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="/assets/site.css" />
+  <script defer src="/assets/site.js"></script>
+
+  <title>Human Breast Biomarkers | RNA-Pathology</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="description"
+    content="Human Breast Biomarkers gallery in the RNA-Pathology database."
+  />
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-B2L5CDD57"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-B2L5CDD57');
+  </script>
+
+  <style>
+    /* Page-scoped styling only (won't affect global header/footer) */
+    .page-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 44px 20px 80px;
+    }
+
+    .crumbs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin: 0 0 22px;
+      font-size: 0.95rem;
+      color: var(--muted, rgba(231, 236, 245, 0.72));
+    }
+    .crumbs a {
+      color: var(--primary, #7aa7ff);
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .crumbs a:hover { text-decoration: underline; }
+
+    .page-title {
+      margin: 0 0 10px;
+      font-size: 2.2rem;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--text, #e7ecf5);
+    }
+
+    .page-subtitle {
+      margin: 0 0 18px;
+      color: var(--muted, rgba(231, 236, 245, 0.72));
+      line-height: 1.7;
+      max-width: 78ch;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .card {
+      grid-column: span 12;
+      background: var(--surface, #11182a);
+      border: 1px solid var(--border, rgba(231, 236, 245, 0.14));
+      border-radius: 14px;
+      padding: 18px 18px 16px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+
+    @media (min-width: 860px) {
+      .card { grid-column: span 6; }
+      .card.wide { grid-column: span 12; }
+    }
+
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 1.25rem;
+      color: var(--text, #e7ecf5);
+      letter-spacing: -0.01em;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0 14px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border: 1px solid var(--border, rgba(231, 236, 245, 0.14));
+      color: var(--muted, rgba(231, 236, 245, 0.72));
+      background: rgba(255,255,255,0.04);
+    }
+
+    .desc {
+      margin: 0 0 16px;
+      color: var(--muted, rgba(231, 236, 245, 0.72));
+      line-height: 1.65;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: 800;
+      text-decoration: none;
+      border: 1px solid var(--border, rgba(231, 236, 245, 0.14));
+      transition: transform 0.15s ease, filter 0.15s ease;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--primary, #7aa7ff);
+      color: #0b0f1a;
+      border-color: transparent;
+    }
+    .btn-primary:hover { transform: translateY(-1px); filter: brightness(1.02); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text, #e7ecf5);
+    }
+    .btn-ghost:hover { transform: translateY(-1px); filter: brightness(1.05); }
+
+    .note {
+      margin-top: 22px;
+      color: var(--muted, rgba(231, 236, 245, 0.72));
+      font-size: 0.95rem;
+      line-height: 1.7;
+      max-width: 90ch;
+    }
+
+    .note code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.92em;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page-wrap">
+    <div class="crumbs">
+      <a href="/database.html">← Database</a>
+      <span>•</span>
+      <a href="/gallery/index.html">All Galleries (Hub)</a>
+      <span>•</span>
+      <a href="/gallery/human_breast/">Human Breast</a>
+      <span>•</span>
+      <span>Human Breast Biomarkers</span>
+    </div>
+
+    <h1 class="page-title">Human Breast Biomarkers</h1>
+    <p class="page-subtitle">
+      This gallery aggregates biomarker-focused breast sections as individual dataset pages.
+      Use the links below to browse each section. (We keep dataset pages under <code>/datasets/</code> for consistency.)
+    </p>
+
+    <section class="grid" aria-label="Human Breast Biomarkers sections">
+      <article class="card">
+        <h2>Section 1 — Top</h2>
+        <div class="meta">
+          <span class="pill">Organ: Breast</span>
+          <span class="pill">Type: Biomarkers</span>
+          <span class="pill">View: Top</span>
+        </div>
+        <p class="desc">
+          Biomarker panel — Section 1 (top view).
+        </p>
+        <div class="actions">
+          <a class="btn btn-primary" href="/datasets/human_breast_biomarkers_s1_top.html">Open dataset page</a>
+          <a class="btn btn-ghost" href="/gallery/human_breast/">Back to Human Breast</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>Section 1 — Bottom</h2>
+        <div class="meta">
+          <span class="pill">Organ: Breast</span>
+          <span class="pill">Type: Biomarkers</span>
+          <span class="pill">View: Bottom</span>
+        </div>
+        <p class="desc">
+          Biomarker panel — Section 1 (bottom view).
+        </p>
+        <div class="actions">
+          <a class="btn btn-primary" href="/datasets/human_breast_biomarkers_s1_bot.html">Open dataset page</a>
+          <a class="btn btn-ghost" href="/gallery/human_breast/">Back to Human Breast</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>Section 2 — Top</h2>
+        <div class="meta">
+          <span class="pill">Organ: Breast</span>
+          <span class="pill">Type: Biomarkers</span>
+          <span class="pill">View: Top</span>
+        </div>
+        <p class="desc">
+          Biomarker panel — Section 2 (top view).
+        </p>
+        <div class="actions">
+          <a class="btn btn-primary" href="/datasets/human_breast_biomarkers_s2_top.html">Open dataset page</a>
+          <a class="btn btn-ghost" href="/gallery/human_breast/">Back to Human Breast</a>
+        </div>
+      </article>
+
+      <article class="card wide">
+        <h2>Navigation</h2>
+        <div class="meta">
+          <span class="pill">Hub</span>
+          <span class="pill">Category: Human Breast</span>
+        </div>
+        <p class="desc">
+          Jump back to the category hub or the full galleries hub.
+        </p>
+        <div class="actions">
+          <a class="btn btn-primary" href="/gallery/human_breast/">Human Breast (Category Hub)</a>
+          <a class="btn btn-ghost" href="/gallery/index.html">All Galleries (Hub)</a>
+        </div>
+      </article>
+    </section>
+
+    <p class="note">
+      Note: if you later add more breast biomarker sections, keep the same naming convention and just add another card here.
+      (Example naming pattern is already documented in the repo conventions.) :contentReference[oaicite:1]{index=1}
+    </p>
+  </main>
+</body>
+</html>
