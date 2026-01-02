@@ -3,166 +3,262 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RNA-Pathology Database</title>
-  <!-- Embedded CSS Styles for the page -->
+
+  <title>Database | RNA-Pathology</title>
+  <meta
+    name="description"
+    content="RNA-Pathology database overview and dataset browser."
+  />
+
+  <!-- Global shared styles/scripts (site-wide header/footer injected by site.js) -->
+  <link rel="stylesheet" href="/assets/site.css" />
+  <script defer src="/assets/site.js"></script>
+
+  <!-- Page-specific styles (kept lightweight; relies on tokens from site.css) -->
   <style>
-    /* Basic reset & typography */
-    body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; color: #333; }
-    h1, h2, h3 { color: #2c3e50; }
-    h1 { font-size: 1.8em; margin-bottom: 0.5em; }
-    h2 { font-size: 1.4em; margin-top: 1.5em; margin-bottom: 0.5em; }
-    h3 { font-size: 1.2em; margin-top: 1em; margin-bottom: 0.3em; }
-    p { margin: 0.5em 0; }
-    /* Navigation links */
-    nav.top-nav { margin-bottom: 1em; }
-    nav.top-nav a { margin-right: 15px; text-decoration: none; color: #337ab7; }
-    nav.top-nav a:hover { text-decoration: underline; }
-    /* Container for filter controls */
-    .filter-bar { margin: 1em 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5em; }
-    .filter-bar label { font-weight: bold; margin-right: 5px; }
-    .filter-bar select, .filter-bar input[type="text"] {
-      padding: 5px 8px;
-      font-size: 1em;
+    /* Layout helpers (safe even if site.css already defines similar) */
+    .page {
+      padding: 28px 16px;
     }
-    /* Dataset table styling */
-    table.dataset-table { width: 100%; border-collapse: collapse; margin-bottom: 1em; }
-    table.dataset-table th, table.dataset-table td { 
-      border: 1px solid #ddd; padding: 8px 12px; text-align: left;
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
     }
-    table.dataset-table th { background-color: #f4f4f4; }
-    table.dataset-table tr:nth-child(even) td { background-color: #f9f9f9; }
-    table.dataset-table tr:hover td { background-color: #eef7ff; }  /* highlight on hover */
-    table.dataset-table td a.dataset-link { color: #337ab7; text-decoration: none; }
-    table.dataset-table td a.dataset-link:hover { text-decoration: underline; }
+    .lede {
+      margin-top: 6px;
+      color: var(--muted, #666);
+    }
+
+    /* Filter controls */
+    .filter-bar {
+      margin: 14px 0 10px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px 12px;
+    }
+    .filter-bar label {
+      font-weight: 600;
+    }
+    .filter-bar select,
+    .filter-bar input[type="text"] {
+      padding: 8px 10px;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border, #ddd);
+      background: var(--surface, #fff);
+      color: var(--text, #111);
+      outline: none;
+    }
+    .filter-bar input[type="text"] {
+      min-width: 220px;
+      flex: 1;
+    }
+
+    /* Tables */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 16px;
+      border: 1px solid var(--border, #ddd);
+      background: var(--surface, #fff);
+      box-shadow: 0 8px 22px rgba(0,0,0,0.12);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 780px; /* keeps columns readable on narrow screens */
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--border, #ddd);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    thead th {
+      position: sticky;
+      top: 0;
+      background: var(--surface-2, #f6f6f6);
+      z-index: 1;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    tbody tr:nth-child(even) td {
+      background: rgba(255,255,255,0.02);
+    }
+
+    tbody tr:hover td {
+      background: rgba(122, 167, 255, 0.10);
+    }
+
+    a.dataset-link {
+      color: var(--primary, #337ab7);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    a.dataset-link:hover {
+      text-decoration: underline;
+    }
+
     /* Status label styling */
-    .status-label { font-weight: bold; padding: 2px 6px; border-radius: 4px; color: #fff; }
-    .status-Available   { background-color: #5cb85c; }   /* green */
-    .status-ComingSoon  { background-color: #f0ad4e; }   /* orange */
-    .status-Controlled  { background-color: #337ab7; }   /* blue (example for controlled-access) */
-    .status-Planned     { background-color: #999; }      /* gray for planned/not available */
-    /* Message when no results */
-    #noResults { display: none; font-style: italic; margin: 0.5em 0; }
-    /* Data Layers table styling (reuse basic table styles) */
-    table.data-layers { width: 100%; border-collapse: collapse; margin: 0.5em 0 1em; }
-    table.data-layers th, table.data-layers td {
-      border: 1px solid #ddd; padding: 6px 10px;
+    .status-label {
+      display: inline-block;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+      color: #fff;
+      font-size: 0.92rem;
+      line-height: 1.2;
+      white-space: nowrap;
     }
-    table.data-layers th { background: #f4f4f4; text-align: left; }
-    /* Responsive: make tables horizontally scrollable on narrow screens */
-    .table-container { width: 100%; overflow-x: auto; }
+    .status-Available  { background: var(--success, #5cb85c); }
+    .status-ComingSoon { background: var(--warning, #f0ad4e); }
+    .status-Controlled { background: var(--primary, #337ab7); }
+    .status-Planned    { background: #7a859b; }
+
+    /* No-results message */
+    #noResults {
+      display: none;
+      margin: 10px 0 0;
+      color: var(--muted, #666);
+      font-style: italic;
+    }
+
+    /* Section spacing */
+    h1 { margin: 0 0 6px; }
+    h2 { margin-top: 22px; }
+    ul { margin: 10px 0 0 18px; }
+
+    /* Make header "Status" not sortable (no pointer vibe) */
+    th.no-sort { cursor: default; }
   </style>
 </head>
+
 <body>
+  <main class="page">
+    <div class="container">
+      <!-- Main Page Title -->
+      <h1>Database Overview</h1>
+      <p class="lede"><em>RNA-Pathology:</em> a schema-driven framework for spatial molecular pathology data.</p>
 
-  <!-- Top Navigation (consistent with site) -->
-  <nav class="top-nav">
-    <a href="index.html">Home</a>
-    <a href="schema.html">Schema</a>
-    <a href="docs/roadmap.html">Roadmap</a>
-    <a href="https://github.com/hutaobo/rna-pathology" target="_blank">GitHub &crarr;</a>
-  </nav>
+      <!-- Introduction/About Section -->
+      <h2>About RNA-Pathology</h2>
+      <p>
+        RNA-Pathology is an open research database designed to organize, standardize, and contextualize
+        spatially resolved molecular pathology data, with emphasis on RNA-based spatial technologies.
+      </p>
 
-  <!-- Main Page Title -->
-  <h1>Database Overview</h1>
-  <p><em>RNA-Pathology:</em> a schema-driven framework for spatial molecular pathology data.</p>
+      <!-- Dataset Browse & Filter Controls -->
+      <h2>Browse Datasets</h2>
+      <p>
+        Select an organ category to filter, or search for keywords in the dataset table.
+        You can also sort columns by clicking their headers.
+      </p>
 
-  <!-- Introduction/About Section -->
-  <h2>About RNA-Pathology</h2>
-  <p>RNA-Pathology is an open research database designed to organize, standardize, and contextualize spatially resolved molecular pathology data, with emphasis on RNA-based spatial technologies.</p>
+      <div class="filter-bar" aria-label="Dataset filters">
+        <label for="categoryFilter">Category:</label>
+        <select id="categoryFilter">
+          <option value="all">All</option>
+          <option value="Human Lung">Human Lung</option>
+          <option value="Human Breast">Human Breast</option>
+          <!-- Additional categories can be added here -->
+        </select>
 
-  <!-- Dataset Browse & Filter Controls -->
-  <h2>Browse Datasets</h2>
-  <p>Select an organ category to filter, or search for keywords in the dataset table. You can also sort columns by clicking their headers.</p>
-  <div class="filter-bar">
-    <label for="categoryFilter">Category:</label>
-    <select id="categoryFilter">
-      <option value="all">All</option>
-      <option value="Human Lung">Human Lung</option>
-      <option value="Human Breast">Human Breast</option>
-      <!-- Additional categories can be added here -->
-    </select>
+        <label for="searchInput">Search:</label>
+        <input type="text" id="searchInput" placeholder="Search datasets..." />
+      </div>
 
-    <label for="searchInput">Search:</label>
-    <input type="text" id="searchInput" placeholder="Search datasets..." />
-  </div>
+      <!-- Dataset Table -->
+      <div class="table-container">
+        <table class="dataset-table" id="datasetTable">
+          <thead>
+            <tr>
+              <th onclick="sortTable(0)">Category &#x25BE;</th>
+              <th onclick="sortTable(1)">Dataset &#x25BE;</th>
+              <th class="no-sort">Status</th>
+              <th class="no-sort">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-category="Human Lung">
+              <td>Human Lung</td>
+              <td><a href="/gallery/human_lung/normal_lung/" class="dataset-link">Normal Lung</a></td>
+              <td><span class="status-label status-Available">Available</span></td>
+              <td>Reference gallery for normal lung tissue (baseline morphology &amp; spatial patterns).</td>
+            </tr>
 
-  <!-- Dataset Table -->
-  <div class="table-container">
-    <table class="dataset-table" id="datasetTable">
-      <thead>
-        <tr>
-          <th onclick="sortTable(0)">Category &#x25BE;</th>
-          <th onclick="sortTable(1)">Dataset &#x25BE;</th>
-          <th>Status</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Example dataset rows (to be dynamically generated or manually updated) -->
-        <tr data-category="Human Lung">
-          <td>Human Lung</td>
-          <td><a href="gallery/human_lung/normal_lung/" class="dataset-link">Normal Lung</a></td>
-          <td><span class="status-label status-Available">Available</span></td>
-          <td>Reference gallery for normal lung tissue (baseline morphology & spatial patterns).</td>
-        </tr>
-        <tr data-category="Human Lung">
-          <td>Human Lung</td>
-          <td><a href="gallery/human_lung/lung_adenocarcinoma/" class="dataset-link">Lung Adenocarcinoma Spectrum</a></td>
-          <td><span class="status-label status-Available">Available</span></td>
-          <td>Gallery spanning lung adenocarcinoma regions to support comparative analysis and annotation.</td>
-        </tr>
-        <tr data-category="Human Breast">
-          <td>Human Breast</td>
-          <td><a href="gallery/human_breast/biomarkers/" class="dataset-link">Human Breast Biomarkers</a></td>
-          <td><span class="status-label status-Available">Available</span></td>
-          <td>Biomarker-focused breast gallery, organized into multiple dataset views.</td>
-        </tr>
-        <tr data-category="Human Breast">
-          <td>Human Breast</td>
-          <td><span class="dataset-link" style="color:gray; text-decoration:none;">More Breast Galleries</span></td>
-          <td><span class="status-label status-ComingSoon">Coming Soon</span></td>
-          <td>Additional breast tissue datasets (assorted conditions and assays) will appear here as they become available.</td>
-        </tr>
-        <!-- Future dataset entries would be added here -->
-      </tbody>
-    </table>
-  </div>
-  <!-- Message for no results (shown when filter/search yields nothing) -->
-  <p id="noResults">No matching datasets found.</p>
+            <tr data-category="Human Lung">
+              <td>Human Lung</td>
+              <td><a href="/gallery/human_lung/luad_spectrum/" class="dataset-link">Lung Adenocarcinoma Spectrum</a></td>
+              <td><span class="status-label status-Available">Available</span></td>
+              <td>Gallery spanning lung adenocarcinoma regions to support comparative analysis and annotation.</td>
+            </tr>
 
-  <!-- Core Design Principles Section -->
-  <h2>Core Design Principles</h2>
-  <ul>
-    <li>**Schema-first design:** data structures are defined before data ingestion.</li>
-    <li>**Spatial context as a first-class entity:** spatial information is not auxiliary metadata.</li>
-    <li>**Modality-agnostic, pathology-aware:** accommodate multiple technologies with consistent interpretation.</li>
-    <li>**Reproducibility over volume:** prioritize clarity, provenance, and reproducibility over sheer data volume.</li>
-  </ul>
+            <tr data-category="Human Breast">
+              <td>Human Breast</td>
+              <td><a href="/gallery/human_breast/biomarkers/" class="dataset-link">Human Breast Biomarkers</a></td>
+              <td><span class="status-label status-Available">Available</span></td>
+              <td>Biomarker-focused breast gallery, organized into multiple dataset views.</td>
+            </tr>
 
-  <!-- Data Layers Section (using a table for better structure) -->
-  <h2>Data Layers (Schema v0.2)</h2>
-  <div class="table-container">
-    <table class="data-layers">
-      <thead>
-        <tr><th>Layer</th><th>Description</th><th>Status</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>Sample</td><td>Biological origin, condition, acquisition metadata.</td><td>Available</td></tr>
-        <tr><td>Spatial</td><td>Coordinates, tissue geometry, regions of interest.</td><td>Partial</td></tr>
-        <tr><td>Molecular</td><td>RNA expression and other molecular measurements.</td><td>Planned</td></tr>
-        <tr><td>Annotation</td><td>Cell types, niches, pathological structures.</td><td>Planned</td></tr>
-        <tr><td>Derived</td><td>Computed spatial features and representations.</td><td>Planned</td></tr>
-      </tbody>
-    </table>
-  </div>
+            <tr data-category="Human Breast">
+              <td>Human Breast</td>
+              <td><span class="dataset-link" style="opacity:.7; font-weight:600;">More Breast Galleries</span></td>
+              <td><span class="status-label status-ComingSoon">Coming Soon</span></td>
+              <td>Additional breast tissue datasets (assorted conditions and assays) will appear here as they become available.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-  <!-- Access Model and Project Status Sections -->
-  <h2>Access Model (Planned)</h2>
-  <p>RNA-Pathology will support public datasets, controlled-access datasets, and programmatic access via APIs (planned for future releases).</p>
+      <p id="noResults">No matching datasets found.</p>
 
-  <h2>Project Status</h2>
-  <p>Early public architecture phase focused on schema definition and documentation. More datasets and features are being added continuously as the project evolves.</p>
-  <p><em>RNA-Pathology is an open research initiative. Usage of data, benchmarks, and materials is subject to defined terms.</em></p>
+      <!-- Core Design Principles Section -->
+      <h2>Core Design Principles</h2>
+      <ul>
+        <li><strong>Schema-first design:</strong> data structures are defined before data ingestion.</li>
+        <li><strong>Spatial context as a first-class entity:</strong> spatial information is not auxiliary metadata.</li>
+        <li><strong>Modality-agnostic, pathology-aware:</strong> accommodate multiple technologies with consistent interpretation.</li>
+        <li><strong>Reproducibility over volume:</strong> prioritize clarity, provenance, and reproducibility over sheer data volume.</li>
+      </ul>
+
+      <!-- Data Layers Section -->
+      <h2>Data Layers (Schema v0.2)</h2>
+      <div class="table-container">
+        <table class="data-layers">
+          <thead>
+            <tr><th>Layer</th><th>Description</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Sample</td><td>Biological origin, condition, acquisition metadata.</td><td>Available</td></tr>
+            <tr><td>Spatial</td><td>Coordinates, tissue geometry, regions of interest.</td><td>Partial</td></tr>
+            <tr><td>Molecular</td><td>RNA expression and other molecular measurements.</td><td>Planned</td></tr>
+            <tr><td>Annotation</td><td>Cell types, niches, pathological structures.</td><td>Planned</td></tr>
+            <tr><td>Derived</td><td>Computed spatial features and representations.</td><td>Planned</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Access Model and Project Status Sections -->
+      <h2>Access Model (Planned)</h2>
+      <p>
+        RNA-Pathology will support public datasets, controlled-access datasets, and programmatic access via APIs
+        (planned for future releases).
+      </p>
+
+      <h2>Project Status</h2>
+      <p>
+        Early public architecture phase focused on schema definition and documentation.
+        More datasets and features are being added continuously as the project evolves.
+      </p>
+      <p><em>RNA-Pathology is an open research initiative. Usage of data, benchmarks, and materials is subject to defined terms.</em></p>
+    </div>
+  </main>
 
   <!-- Interactive scripts for filtering and sorting -->
   <script>
@@ -177,27 +273,26 @@
       const categoryValue = categoryFilter.value;
       const searchValue = searchInput.value.trim().toLowerCase();
       let anyVisible = false;
-      // Loop through all dataset rows and toggle visibility based on filters
+
       for (let i = 0; i < tableRows.length; i++) {
         const row = tableRows[i];
         const category = row.getAttribute('data-category') || "";
         const text = row.textContent.toLowerCase();
-        // Check category filter (if "all", always true; otherwise match exact category)
+
         const categoryMatch = (categoryValue === "all") || (category === categoryValue);
-        // Check search filter (if search box is empty, always true; otherwise match text)
-        const searchMatch = searchValue === "" || text.indexOf(searchValue) !== -1;
+        const searchMatch = (searchValue === "") || (text.indexOf(searchValue) !== -1);
+
         if (categoryMatch && searchMatch) {
-          row.style.display = "";  // show row
+          row.style.display = "";
           anyVisible = true;
         } else {
-          row.style.display = "none";  // hide row
+          row.style.display = "none";
         }
       }
-      // Show or hide "no results" message
+
       noResultsMsg.style.display = anyVisible ? "none" : "block";
     }
 
-    // Attach event listeners for filters
     categoryFilter.addEventListener('change', filterTable);
     searchInput.addEventListener('input', filterTable);
 
@@ -205,38 +300,40 @@
     function sortTable(colIndex) {
       const tbody = datasetTable.getElementsByTagName('tbody')[0];
       const rowsArray = Array.from(tbody.rows);
-      const isNumericColumn = false;  // adjust if any numeric columns in future
+
       // Determine current sort direction (toggle if already sorted)
-      let asc = datasetTable.getAttribute('data-sort-col') != colIndex.toString();
-      if (datasetTable.getAttribute('data-sort-col') == colIndex.toString() && datasetTable.getAttribute('data-sort-dir') == 'asc') {
+      let asc = datasetTable.getAttribute('data-sort-col') != String(colIndex);
+      if (
+        datasetTable.getAttribute('data-sort-col') == String(colIndex) &&
+        datasetTable.getAttribute('data-sort-dir') == 'asc'
+      ) {
         asc = false;
       }
-      // Sort rows
+
       rowsArray.sort((a, b) => {
-        let aText = a.cells[colIndex].innerText.toLowerCase();
-        let bText = b.cells[colIndex].innerText.toLowerCase();
-        if (isNumericColumn) {
-          // parse as number if needed
-          aText = parseFloat(aText) || 0;
-          bText = parseFloat(bText) || 0;
-        }
+        const aText = (a.cells[colIndex]?.innerText || "").toLowerCase();
+        const bText = (b.cells[colIndex]?.innerText || "").toLowerCase();
         if (aText < bText) return asc ? -1 : 1;
         if (aText > bText) return asc ? 1 : -1;
         return 0;
       });
-      // Re-append sorted rows
+
       rowsArray.forEach(row => tbody.appendChild(row));
-      // Update sort indicators (arrow direction) in header
+
+      // Update sort indicators in header
       const thElems = datasetTable.getElementsByTagName('th');
       for (let i = 0; i < thElems.length; i++) {
         thElems[i].innerHTML = thElems[i].innerHTML.replace(' ▲', '').replace(' ▼', '');
       }
       thElems[colIndex].innerHTML += asc ? ' ▲' : ' ▼';
+
       // Store sort state
       datasetTable.setAttribute('data-sort-col', colIndex);
       datasetTable.setAttribute('data-sort-dir', asc ? 'asc' : 'desc');
     }
-  </script>
 
+    // Make sortTable available for inline onclick handlers
+    window.sortTable = sortTable;
+  </script>
 </body>
 </html>
