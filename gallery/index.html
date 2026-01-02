@@ -122,7 +122,6 @@
 
     @media (min-width: 900px) {
       .card { grid-column: span 6; }
-      .card.wide { grid-column: span 12; }
     }
 
     .card h3 {
@@ -200,10 +199,6 @@
       line-height: 1.7;
       max-width: 96ch;
     }
-    .footnote code {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 0.92em;
-    }
   </style>
 </head>
 
@@ -217,8 +212,7 @@
 
     <h1 class="title">All Galleries (Hub)</h1>
     <p class="subtitle">
-      This page is the complete index: it lists every category (e.g., Human Lung, Human Breast)
-      and all galleries under each category.
+      This page lists all galleries grouped by category. (Category hub buttons are intentionally removed here to keep this page clean.)
     </p>
 
     <ul class="jump" aria-label="Jump links">
@@ -233,27 +227,10 @@
     <section id="human-lung" class="section">
       <h2>Human Lung</h2>
       <p>
-        Lung-related galleries. Category hub provides a focused view; cards below list all lung galleries.
+        Lung-related galleries.
       </p>
 
-      <div class="grid" aria-label="Human Lung: category + galleries">
-        <!-- Category hub -->
-        <article class="card wide">
-          <h3>Human Lung (Category Hub)</h3>
-          <div class="meta">
-            <span class="pill">Category</span>
-            <span class="pill">Organ: Lung</span>
-          </div>
-          <p class="desc">
-            Browse lung galleries in one place.
-          </p>
-          <div class="actions">
-            <a class="btn btn-primary" href="/gallery/human_lung/">Open category hub</a>
-            <a class="btn btn-ghost" href="#human-breast">Jump to Human Breast</a>
-          </div>
-        </article>
-
-        <!-- Normal Lung -->
+      <div class="grid" aria-label="Human Lung galleries">
         <article class="card">
           <h3>Normal Lung</h3>
           <div class="meta">
@@ -265,11 +242,9 @@
           </p>
           <div class="actions">
             <a class="btn btn-primary" href="/gallery/human_lung/normal_lung/">Open gallery</a>
-            <a class="btn btn-ghost" href="/gallery/human_lung/">Category hub</a>
           </div>
         </article>
 
-        <!-- LUAD spectrum -->
         <article class="card">
           <h3>Lung Adenocarcinoma Spectrum</h3>
           <div class="meta">
@@ -281,7 +256,6 @@
           </p>
           <div class="actions">
             <a class="btn btn-primary" href="/gallery/human_lung/luad_spectrum/">Open gallery</a>
-            <a class="btn btn-ghost" href="/gallery/human_lung/">Category hub</a>
           </div>
         </article>
       </div>
@@ -293,27 +267,10 @@
     <section id="human-breast" class="section">
       <h2>Human Breast</h2>
       <p>
-        Breast-related galleries. Category hub provides a focused view; cards below list all breast galleries.
+        Breast-related galleries.
       </p>
 
-      <div class="grid" aria-label="Human Breast: category + galleries">
-        <!-- Category hub -->
-        <article class="card wide">
-          <h3>Human Breast (Category Hub)</h3>
-          <div class="meta">
-            <span class="pill">Category</span>
-            <span class="pill">Organ: Breast</span>
-          </div>
-          <p class="desc">
-            Browse breast galleries in one place.
-          </p>
-          <div class="actions">
-            <a class="btn btn-primary" href="/gallery/human_breast/">Open category hub</a>
-            <a class="btn btn-ghost" href="#human-lung">Back to Human Lung</a>
-          </div>
-        </article>
-
-        <!-- Biomarkers -->
+      <div class="grid" aria-label="Human Breast galleries">
         <article class="card">
           <h3>Human Breast Biomarkers</h3>
           <div class="meta">
@@ -325,11 +282,9 @@
           </p>
           <div class="actions">
             <a class="btn btn-primary" href="/gallery/human_breast/biomarkers/">Open gallery</a>
-            <a class="btn btn-ghost" href="/gallery/human_breast/">Category hub</a>
           </div>
         </article>
 
-        <!-- Placeholder for future Breast galleries -->
         <article class="card">
           <h3>More Breast Galleries</h3>
           <div class="meta">
@@ -340,16 +295,14 @@
             Additional breast conditions, regions, and assay-specific collections will appear here.
           </p>
           <div class="actions">
-            <a class="btn btn-ghost" href="/gallery/human_breast/">Category hub</a>
+            <a class="btn btn-ghost" href="#human-lung">Back to Human Lung</a>
           </div>
         </article>
       </div>
     </section>
 
     <p class="footnote">
-      Next: we can start adding real content (images + dataset cards) into
-      <code>/gallery/human_lung/normal_lung/</code> and <code>/gallery/human_lung/luad_spectrum/</code>.
-      The hub structure is now wired end-to-end, so you can iterate content without changing navigation again.
+      Tip: use the category hubs from the Database page for browsing by organ; use this page as a clean global index.
     </p>
   </main>
 </body>
