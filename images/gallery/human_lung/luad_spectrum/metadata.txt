@@ -1,0 +1,143 @@
+[LUAD-No14]
+Dataset: Lung adenocarcinoma spectrum
+Sample ID: LUAD-No14
+Species: Human
+Tissue: Lung
+Pathology annotation: Invasive
+Original Source: Takano, Yuma, et al. Nature Communications 15.1 (2024): 10637.
+Technology: H&E, Xenium customized 302 gene panel.
+
+[LUAD-No16]
+Dataset: Lung adenocarcinoma spectrum
+Sample ID: LUAD-No16
+Species: Human
+Tissue: Lung
+Pathology annotation: Invasive
+Original Source: Takano, Yuma, et al. Nature Communications 15.1 (2024): 10637.
+Technology: H&E, Xenium customized 302 gene panel.
+
+[LUAD-No17]
+Dataset: Lung adenocarcinoma spectrum
+Sample ID: LUAD-No17
+Species: Human
+Tissue: Lung
+Pathology annotation: Invasive
+Original Source: Takano, Yuma, et al. Nature Communications 15.1 (2024): 10637.
+Technology: H&E, Xenium customized 302 gene panel.
+
+[LUAD-No2]
+Dataset: Lung adenocarcinoma spectrum
+Sample ID: LUAD-No2
+Species: Human
+Tissue: Lung
+Pathology annotation: Invasive
+Original Source: Takano, Yuma, et al. Nature Communications 15.1 (2024): 10637.
+Technology: H&E, Xenium customized 302 gene panel.
+
+[LUAD-No3]
+Dataset: Lung adenocarcinoma spectrum
+Sample ID: LUAD-No3
+Species: Human
+Tissue: Lung
+Pathology annotation: Invasive
+Original Source: Takano, Yuma, et al. Nature Communications 15.1 (2024): 10637.
+Technology: H&E, Xenium customized 302 gene panel.
+
+[TSU-21]
+Dataset: Lung adenocarcinoma spectrum
+Sample ID: TSU-21
+Species: Human
+Tissue: Lung
+Pathology annotation: Noguchi typeB
+Original Source: Takano, Yuma, et al. Nature Communications 15.1 (2024): 10637.
+Technology: H&E, Xenium customized 302 gene panel.
+
+[TSU-23]
+Dataset: Lung adenocarcinoma spectrum
+Sample ID: TSU-23
+Species: Human
+Tissue: Lung
+Pathology annotation: Noguchi typeA
+Original Source: Takano, Yuma, et al. Nature Communications 15.1 (2024): 10637.
+Technology: H&E, Xenium customized 302 gene panel.
+
+[TSU-24]
+Dataset: Lung adenocarcinoma spectrum
+Sample ID: TSU-24
+Species: Human
+Tissue: Lung
+Pathology annotation: Noguchi typeB
+Original Source: Takano, Yuma, et al. Nature Communications 15.1 (2024): 10637.
+Technology: H&E, Xenium customized 302 gene panel.
+
+[TSU-25]
+Dataset: Lung adenocarcinoma spectrum
+Sample ID: TSU-25
+Species: Human
+Tissue: Lung
+Pathology annotation: Noguchi typeA
+Original Source: Takano, Yuma, et al. Nature Communications 15.1 (2024): 10637.
+Technology: H&E, Xenium customized 302 gene panel.
+
+[TSU-27]
+Dataset: Lung adenocarcinoma spectrum
+Sample ID: TSU-27
+Species: Human
+Tissue: Lung
+Pathology annotation: Noguchi typeC
+Original Source: Takano, Yuma, et al. Nature Communications 15.1 (2024): 10637.
+Technology: H&E, Xenium customized 302 gene panel.
+
+[TSU-28]
+Dataset: Lung adenocarcinoma spectrum
+Sample ID: TSU-28
+Species: Human
+Tissue: Lung
+Pathology annotation: Noguchi typeC
+Original Source: Takano, Yuma, et al. Nature Communications 15.1 (2024): 10637.
+Technology: H&E, Xenium customized 302 gene panel.
+
+[TSU-30]
+Dataset: Lung adenocarcinoma spectrum
+Sample ID: TSU-30
+Species: Human
+Tissue: Lung
+Pathology annotation: Noguchi typeC
+Original Source: Takano, Yuma, et al. Nature Communications 15.1 (2024): 10637.
+Technology: H&E, Xenium customized 302 gene panel.
+
+[TSU-33]
+Dataset: Lung adenocarcinoma spectrum
+Sample ID: TSU-33
+Species: Human
+Tissue: Lung
+Pathology annotation: Noguchi typeC
+Original Source: Takano, Yuma, et al. Nature Communications 15.1 (2024): 10637.
+Technology: H&E, Xenium customized 302 gene panel.
+
+[TSU-35]
+Dataset: Lung adenocarcinoma spectrum
+Sample ID: TSU-35
+Species: Human
+Tissue: Lung
+Pathology annotation: Noguchi typeB
+Original Source: Takano, Yuma, et al. Nature Communications 15.1 (2024): 10637.
+Technology: H&E, Xenium customized 302 gene panel.
+
+[TSU-36]
+Dataset: Lung adenocarcinoma spectrum
+Sample ID: TSU-36
+Species: Human
+Tissue: Lung
+Pathology annotation: Noguchi typeC
+Original Source: Takano, Yuma, et al. Nature Communications 15.1 (2024): 10637.
+Technology: H&E, Xenium customized 302 gene panel.
+
+[TSU-41]
+Dataset: Lung adenocarcinoma spectrum
+Sample ID: TSU-41
+Species: Human
+Tissue: Lung
+Pathology annotation: Noguchi typeC
+Original Source: Takano, Yuma, et al. Nature Communications 15.1 (2024): 10637.
+Technology: H&E, Xenium customized 302 gene panel.
