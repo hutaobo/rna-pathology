@@ -9,159 +9,299 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta
     name="description"
-    content="Normal Lung gallery (coming soon) in the RNA-Pathology database."
+    content="Normal Lung gallery in the RNA-Pathology database."
   />
 
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-B2L5CDD57"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-B2L5CDD57');
+  </script>
+
   <style>
-    /* Page-scoped styling only (won't affect global header/footer) */
-    .page-wrap {
-      max-width: 1100px;
+    body {
+      background: var(--bg, #0b0f1a);
+      color: var(--text, #e7ecf5);
+    }
+
+    .page-wrap{
+      max-width: 1160px;
       margin: 0 auto;
       padding: 44px 20px 90px;
     }
 
-    .crumbs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      margin: 0 0 22px;
-      font-size: 0.95rem;
-      color: var(--muted, rgba(231, 236, 245, 0.72));
+    .crumbs{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      margin:0 0 18px;
+      font-size:.95rem;
+      color: var(--muted, rgba(231,236,245,.72));
     }
-    .crumbs a {
+    .crumbs a{
       color: var(--primary, #7aa7ff);
-      text-decoration: none;
-      font-weight: 800;
+      text-decoration:none;
+      font-weight:800;
     }
-    .crumbs a:hover { text-decoration: underline; }
+    .crumbs a:hover{ text-decoration:underline; }
 
-    .title {
-      margin: 0 0 10px;
-      font-size: 2.35rem;
-      line-height: 1.12;
-      letter-spacing: -0.02em;
+    .title{
+      margin:0 0 10px;
+      font-size:2.35rem;
+      line-height:1.12;
+      letter-spacing:-0.02em;
       color: var(--text, #e7ecf5);
     }
-
-    .subtitle {
-      margin: 0 0 18px;
-      color: var(--muted, rgba(231, 236, 245, 0.72));
-      line-height: 1.75;
+    .subtitle{
+      margin:0 0 16px;
+      color: var(--muted, rgba(231,236,245,.72));
+      line-height:1.75;
       max-width: 92ch;
     }
 
-    .grid {
-      display: grid;
+    .controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      align-items:center;
+      margin: 18px 0 22px;
+      padding: 14px;
+      border-radius: 14px;
+      background: var(--surface, #11182a);
+      border: 1px solid var(--border, rgba(231,236,245,.14));
+      box-shadow: 0 14px 40px rgba(0,0,0,.28);
+    }
+
+    .search{
+      flex: 1 1 260px;
+      min-width: 240px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    .search input{
+      width:100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border, rgba(231,236,245,.14));
+      background: rgba(255,255,255,0.04);
+      color: var(--text, #e7ecf5);
+      outline: none;
+    }
+    .search input::placeholder{
+      color: rgba(231,236,245,.55);
+    }
+
+    .toggles{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+    }
+
+    .toggle{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border, rgba(231,236,245,.14));
+      background: rgba(255,255,255,0.04);
+      color: var(--text, #e7ecf5);
+      font-weight: 800;
+      font-size: .9rem;
+      user-select:none;
+    }
+    .toggle input{ accent-color: var(--primary, #7aa7ff); }
+
+    .grid{
+      display:grid;
       grid-template-columns: repeat(12, 1fr);
       gap: 16px;
       margin-top: 18px;
     }
 
-    .card {
+    .sample{
       grid-column: span 12;
       background: var(--surface, #11182a);
-      border: 1px solid var(--border, rgba(231, 236, 245, 0.14));
+      border: 1px solid var(--border, rgba(231,236,245,.14));
       border-radius: 14px;
-      padding: 18px 18px 16px;
-      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+      padding: 16px 16px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,.28);
     }
 
-    @media (min-width: 900px) {
-      .card.half { grid-column: span 6; }
+    .sample-head{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:baseline;
+      justify-content:space-between;
+      margin-bottom: 10px;
     }
 
-    .card h2 {
-      margin: 0 0 8px;
-      font-size: 1.18rem;
-      color: var(--text, #e7ecf5);
+    .sample h2{
+      margin:0;
+      font-size: 1.25rem;
       letter-spacing: -0.01em;
     }
 
-    .meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 10px 0 14px;
+    .pills{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      margin: 6px 0 0;
     }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
       padding: 6px 10px;
       border-radius: 999px;
-      font-size: 0.85rem;
-      font-weight: 850;
-      border: 1px solid var(--border, rgba(231, 236, 245, 0.14));
-      color: var(--muted, rgba(231, 236, 245, 0.72));
+      font-size: .85rem;
+      font-weight: 800;
+      border: 1px solid var(--border, rgba(231,236,245,.14));
+      color: var(--muted, rgba(231,236,245,.72));
       background: rgba(255,255,255,0.04);
       white-space: nowrap;
     }
 
-    .desc {
-      margin: 0 0 16px;
-      color: var(--muted, rgba(231, 236, 245, 0.72));
-      line-height: 1.7;
-      max-width: 95ch;
+    .img-grid{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 12px;
+      margin-top: 12px;
     }
 
-    .callout {
-      margin: 0;
-      padding: 14px 14px;
+    .panel{
+      grid-column: span 12;
       border-radius: 12px;
-      border: 1px dashed var(--border, rgba(231, 236, 245, 0.14));
+      overflow:hidden;
+      border: 1px solid var(--border, rgba(231,236,245,.14));
+      background: rgba(255,255,255,0.02);
+    }
+    @media (min-width: 820px){
+      .panel{ grid-column: span 6; }
+    }
+
+    .panel .label{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding: 10px 12px;
+      font-weight: 900;
+      color: var(--text, #e7ecf5);
+      border-bottom: 1px solid var(--border, rgba(231,236,245,.14));
       background: rgba(255,255,255,0.03);
-      color: var(--muted, rgba(231, 236, 245, 0.72));
+    }
+    .panel .label small{
+      font-weight: 800;
+      color: var(--muted, rgba(231,236,245,.72));
+    }
+
+    .panel button{
+      all: unset;
+      display:block;
+      cursor: zoom-in;
+    }
+
+    .panel img{
+      width:100%;
+      height:auto;
+      display:block;
+    }
+
+    .missing{
+      padding: 18px 12px 20px;
+      color: var(--muted, rgba(231,236,245,.72));
+      font-size: .95rem;
+    }
+
+    .empty{
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 14px;
+      border: 1px dashed var(--border, rgba(231,236,245,.14));
+      background: rgba(255,255,255,0.03);
+      color: var(--muted, rgba(231,236,245,.72));
       line-height: 1.7;
     }
 
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      margin-top: 6px;
-    }
-
-    .btn {
-      display: inline-flex;
+    /* Lightbox */
+    .lightbox{
+      position: fixed;
+      inset: 0;
+      display: none;
       align-items: center;
       justify-content: center;
-      padding: 10px 14px;
-      border-radius: 10px;
+      padding: 18px;
+      background: rgba(0,0,0,0.78);
+      z-index: 9999;
+    }
+    .lightbox.open{ display:flex; }
+
+    .lightbox-card{
+      width: min(1180px, 100%);
+      max-height: 92vh;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: #0b0f1a;
+      box-shadow: 0 30px 90px rgba(0,0,0,0.55);
+      display:flex;
+      flex-direction: column;
+    }
+
+    .lightbox-bar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      color: rgba(255,255,255,0.9);
       font-weight: 900;
-      text-decoration: none;
-      border: 1px solid var(--border, rgba(231, 236, 245, 0.14));
-      transition: transform 0.15s ease, filter 0.15s ease;
-      user-select: none;
-      white-space: nowrap;
     }
 
-    .btn-primary {
-      background: var(--primary, #7aa7ff);
-      color: #0b0f1a;
-      border-color: transparent;
-    }
-    .btn-primary:hover { transform: translateY(-1px); filter: brightness(1.02); }
-
-    .btn-ghost {
-      background: transparent;
-      color: var(--text, #e7ecf5);
-    }
-    .btn-ghost:hover { transform: translateY(-1px); filter: brightness(1.05); }
-
-    .note {
-      margin-top: 22px;
-      color: var(--muted, rgba(231, 236, 245, 0.72));
-      font-size: 0.95rem;
-      line-height: 1.7;
-      max-width: 96ch;
+    .lightbox-bar .meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      font-weight: 900;
     }
 
-    .note code {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 0.92em;
+    .lightbox-close{
+      all: unset;
+      cursor: pointer;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+      font-weight: 900;
+    }
+    .lightbox-close:hover{ filter: brightness(1.08); }
+
+    .lightbox-body{
+      overflow:auto;
+      padding: 10px;
+    }
+    .lightbox-body img{
+      width: 100%;
+      height: auto;
+      display:block;
+      border-radius: 10px;
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      *{ scroll-behavior: auto !important; transition: none !important; }
     }
   </style>
 </head>
@@ -180,49 +320,235 @@
 
     <h1 class="title">Normal Lung</h1>
     <p class="subtitle">
-      Reference gallery for normal lung tissue. This page is live as a placeholder now,
-      and will be populated with images + structured metadata as the gallery is released.
+      Each sample is displayed with four image types: <strong>HE</strong>, <strong>Epithelial</strong>,
+      <strong>Stromal</strong>, and <strong>Immune</strong>.<br/>
+      Files follow <code>&lt;Sample&gt;_&lt;Type&gt;.png</code>. Samples may appear in any order.
     </p>
 
-    <section class="grid" aria-label="Normal Lung gallery status">
-      <article class="card half">
-        <h2>Status</h2>
-        <div class="meta">
-          <span class="pill">Organ: Lung</span>
-          <span class="pill">Category: Human Lung</span>
-          <span class="pill">Status: Coming soon</span>
-        </div>
-        <p class="desc">
-          The gallery structure is ready; content will be added next.
-        </p>
-        <div class="actions">
-          <a class="btn btn-primary" href="/gallery/human_lung/">Back to Human Lung</a>
-          <a class="btn btn-ghost" href="/gallery/index.html">All Galleries</a>
-        </div>
-      </article>
+    <div class="controls" aria-label="Gallery controls">
+      <div class="search">
+        <input id="searchBox" type="text" placeholder="Search sample (e.g., THD0008, VUHD116A)..." autocomplete="off" />
+      </div>
 
-      <article class="card half">
-        <h2>What will appear here</h2>
-        <p class="callout">
-          • Representative lung regions and cell-type-rich areas<br/>
-          • One-page “dataset cards” (like your Breast Biomarkers pages)<br/>
-          • Optional: annotation tasks / quiz hooks later
-        </p>
-      </article>
+      <div class="toggles" aria-label="Type filters">
+        <label class="toggle"><input type="checkbox" data-type="HE" checked /> HE</label>
+        <label class="toggle"><input type="checkbox" data-type="Epithelial" checked /> Epithelial</label>
+        <label class="toggle"><input type="checkbox" data-type="Stromal" checked /> Stromal</label>
+        <label class="toggle"><input type="checkbox" data-type="Immune" checked /> Immune</label>
+      </div>
+    </div>
 
-      <article class="card">
-        <h2>Implementation note</h2>
-        <p class="desc">
-          When you upload the actual gallery content (images + any dataset pages), we’ll:
-          (1) add real cards/links here, and (2) remove the <code>disabled</code> state in the hub pages.
-        </p>
-      </article>
-    </section>
+    <section id="galleryGrid" class="grid" aria-label="Normal Lung samples"></section>
 
-    <p class="note">
-      Next step after you upload this file: I’ll give you the complete code for
-      <code>gallery/human_lung/luad_spectrum/index.html</code>.
-    </p>
+    <div id="emptyState" class="empty" style="display:none;">
+      No samples match your filters. Try clearing the search box or re-enabling image types.
+    </div>
   </main>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
+    <div class="lightbox-card">
+      <div class="lightbox-bar">
+        <div class="meta" id="lightboxTitle">Preview</div>
+        <button class="lightbox-close" id="lightboxClose" type="button">Close ✕</button>
+      </div>
+      <div class="lightbox-body">
+        <img id="lightboxImg" alt="" />
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      // IMPORTANT:
+      // GitHub Pages won't auto-list files in a folder, so we explicitly list sample IDs here. :contentReference[oaicite:3]{index=3}
+      const BASE = "/images/gallery/human_lung/normal_lung/";
+
+      // From your screenshot: THD0008, THD0011, VUHD069, VUHD095, VUHD113, VUHD116A, VUHD116B
+      const SAMPLES = [
+        "THD0008",
+        "THD0011",
+        "VUHD069",
+        "VUHD095",
+        "VUHD113",
+        "VUHD116A",
+        "VUHD116B"
+      ];
+
+      const TYPES = [
+        { key: "HE", label: "HE", hint: "H&E" },
+        { key: "Epithelial", label: "Epithelial", hint: "Epithelial" },
+        { key: "Stromal", label: "Stromal", hint: "Stromal" },
+        { key: "Immune", label: "Immune", hint: "Immune" }
+      ];
+
+      const grid = document.getElementById("galleryGrid");
+      const emptyState = document.getElementById("emptyState");
+      const searchBox = document.getElementById("searchBox");
+      const toggleInputs = Array.from(document.querySelectorAll('.toggle input'));
+
+      // Lightbox
+      const lightbox = document.getElementById("lightbox");
+      const lightboxImg = document.getElementById("lightboxImg");
+      const lightboxTitle = document.getElementById("lightboxTitle");
+      const lightboxClose = document.getElementById("lightboxClose");
+
+      function buildImageSrc(sample, typeKey) {
+        // Root-relative paths keep links stable even if you move the HTML file. :contentReference[oaicite:4]{index=4}
+        return `${BASE}${sample}_${typeKey}.png`;
+      }
+
+      function getEnabledTypes() {
+        const enabled = new Set();
+        for (const input of toggleInputs) {
+          if (input.checked) enabled.add(input.getAttribute("data-type"));
+        }
+        return enabled;
+      }
+
+      function matchesSearch(sample, q) {
+        if (!q) return true;
+        return sample.toLowerCase().includes(q.toLowerCase().trim());
+      }
+
+      function openLightbox(src, title, alt) {
+        lightboxTitle.textContent = title;
+        lightboxImg.src = src;
+        lightboxImg.alt = alt || title;
+        lightbox.classList.add("open");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeLightbox() {
+        lightbox.classList.remove("open");
+        lightboxImg.src = "";
+        document.body.style.overflow = "";
+      }
+
+      lightboxClose.addEventListener("click", closeLightbox);
+      lightbox.addEventListener("click", (e) => {
+        if (e.target === lightbox) closeLightbox();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && lightbox.classList.contains("open")) closeLightbox();
+      });
+
+      function render() {
+        const q = searchBox.value || "";
+        const enabledTypes = getEnabledTypes();
+
+        grid.innerHTML = "";
+
+        let shownSamples = 0;
+
+        for (const sample of SAMPLES) {
+          if (!matchesSearch(sample, q)) continue;
+
+          // Build sample card
+          const card = document.createElement("article");
+          card.className = "sample";
+
+          const head = document.createElement("div");
+          head.className = "sample-head";
+
+          const h2 = document.createElement("h2");
+          h2.textContent = sample;
+
+          const pills = document.createElement("div");
+          pills.className = "pills";
+
+          const p1 = document.createElement("span");
+          p1.className = "pill";
+          p1.textContent = "Organ: Lung";
+          const p2 = document.createElement("span");
+          p2.className = "pill";
+          p2.textContent = "Gallery: Normal Lung";
+
+          pills.appendChild(p1);
+          pills.appendChild(p2);
+
+          head.appendChild(h2);
+          head.appendChild(pills);
+
+          const imgGrid = document.createElement("div");
+          imgGrid.className = "img-grid";
+
+          let anyPanel = false;
+
+          for (const t of TYPES) {
+            if (!enabledTypes.has(t.key)) continue;
+
+            anyPanel = true;
+
+            const panel = document.createElement("div");
+            panel.className = "panel";
+            panel.setAttribute("data-type", t.key);
+
+            const label = document.createElement("div");
+            label.className = "label";
+            const left = document.createElement("span");
+            left.textContent = t.label;
+            const right = document.createElement("small");
+            right.textContent = t.hint || "";
+            label.appendChild(left);
+            label.appendChild(right);
+
+            const btn = document.createElement("button");
+            btn.type = "button";
+
+            const img = document.createElement("img");
+            const src = buildImageSrc(sample, t.key);
+
+            img.loading = "lazy";
+            img.decoding = "async";
+            img.src = src;
+            img.alt = `${sample} — ${t.label}`;
+
+            // If file missing / typo, show a friendly message
+            img.onerror = function () {
+              panel.innerHTML = "";
+              panel.appendChild(label);
+              const miss = document.createElement("div");
+              miss.className = "missing";
+              miss.textContent = `Missing file: ${sample}_${t.key}.png (check filename casing & path).`;
+              panel.appendChild(miss);
+            };
+
+            btn.addEventListener("click", () => {
+              openLightbox(src, `${sample} • ${t.label}`, `${sample} ${t.label}`);
+            });
+
+            btn.appendChild(img);
+            panel.appendChild(label);
+            panel.appendChild(btn);
+            imgGrid.appendChild(panel);
+          }
+
+          if (!anyPanel) {
+            const note = document.createElement("div");
+            note.className = "empty";
+            note.textContent = "All image types are currently hidden. Enable at least one type above.";
+            card.appendChild(head);
+            card.appendChild(note);
+          } else {
+            card.appendChild(head);
+            card.appendChild(imgGrid);
+          }
+
+          grid.appendChild(card);
+          shownSamples += 1;
+        }
+
+        emptyState.style.display = shownSamples === 0 ? "block" : "none";
+      }
+
+      searchBox.addEventListener("input", render);
+      for (const input of toggleInputs) input.addEventListener("change", render);
+
+      render();
+    })();
+  </script>
 </body>
 </html>
