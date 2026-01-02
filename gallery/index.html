@@ -1,7 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="/assets/site.css" />
+  <script defer src="/assets/site.js"></script>
+
+  <title>All Galleries (Hub) | RNA-Pathology</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="description"
+    content="Browse all image galleries available in the RNA-Pathology database."
+  />
+
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-B2L5CDD57"></script>
   <script>
@@ -10,133 +20,343 @@
     gtag('js', new Date());
     gtag('config', 'G-B2L5CDD57');
   </script>
-  <title>Gallery Hub — RNA-Pathology</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f6f8fb;
-      color: #222;
+    /* Page-scoped styling only (won't affect global header/footer) */
+    .page-wrap {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 44px 20px 90px;
+    }
+
+    .crumbs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin: 0 0 18px;
+      font-size: 0.95rem;
+      color: var(--muted, rgba(231, 236, 245, 0.72));
+    }
+    .crumbs a {
+      color: var(--primary, #7aa7ff);
+      text-decoration: none;
+      font-weight: 800;
+    }
+    .crumbs a:hover { text-decoration: underline; }
+
+    .title {
+      margin: 0 0 10px;
+      font-size: 2.35rem;
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+      color: var(--text, #e7ecf5);
+    }
+    .subtitle {
+      margin: 0 0 18px;
+      color: var(--muted, rgba(231, 236, 245, 0.72));
+      line-height: 1.75;
+      max-width: 92ch;
+    }
+
+    .jump {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 16px 0 22px;
+      padding: 0;
+      list-style: none;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.92rem;
+      font-weight: 850;
+      text-decoration: none;
+      border: 1px solid var(--border, rgba(231, 236, 245, 0.14));
+      color: var(--text, #e7ecf5);
+      background: rgba(255,255,255,0.04);
+      transition: transform 0.15s ease, filter 0.15s ease;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .chip:hover { transform: translateY(-1px); filter: brightness(1.05); }
+
+    .section {
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border, rgba(231, 236, 245, 0.14));
+    }
+
+    .section h2 {
+      margin: 0 0 10px;
+      font-size: 1.45rem;
+      letter-spacing: -0.01em;
+      color: var(--text, #e7ecf5);
+    }
+    .section p {
+      margin: 0 0 16px;
+      color: var(--muted, rgba(231, 236, 245, 0.72));
+      line-height: 1.7;
+      max-width: 92ch;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+      margin-top: 14px;
+    }
+
+    .card {
+      grid-column: span 12;
+      background: var(--surface, #11182a);
+      border: 1px solid var(--border, rgba(231, 236, 245, 0.14));
+      border-radius: 14px;
+      padding: 18px 18px 16px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+
+    @media (min-width: 900px) {
+      .card { grid-column: span 6; }
+      .card.wide { grid-column: span 12; }
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 1.18rem;
+      color: var(--text, #e7ecf5);
+      letter-spacing: -0.01em;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0 14px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      border: 1px solid var(--border, rgba(231, 236, 245, 0.14));
+      color: var(--muted, rgba(231, 236, 245, 0.72));
+      background: rgba(255,255,255,0.04);
+      white-space: nowrap;
+    }
+
+    .desc {
+      margin: 0 0 16px;
+      color: var(--muted, rgba(231, 236, 245, 0.72));
       line-height: 1.65;
     }
-    .container {
-      max-width: 1020px;
-      margin: 40px auto;
-      padding: 0 20px 80px;
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
     }
-    h1 {
-      text-align: center;
-      font-size: 2.4rem;
-      margin-bottom: 10px;
-    }
-    p.subtitle {
-      text-align: center;
-      color: #475569;
-      font-size: 1.05rem;
-      margin-bottom: 32px;
-    }
-    .nav-top {
-      text-align: center;
-      margin-bottom: 28px;
-    }
-    .nav-top a {
-      margin: 0 14px;
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: 900;
       text-decoration: none;
-      color: #1d4ed8;
-      font-weight: 600;
-      padding: 6px 8px;
+      border: 1px solid var(--border, rgba(231, 236, 245, 0.14));
+      transition: transform 0.15s ease, filter 0.15s ease;
+      user-select: none;
+      white-space: nowrap;
     }
-    .nav-top a:hover {
-      text-decoration: underline;
+
+    .btn-primary {
+      background: var(--primary, #7aa7ff);
+      color: #0b0f1a;
+      border-color: transparent;
     }
-    .gallery-hub {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 22px;
-      margin-top: 18px;
+    .btn-primary:hover { transform: translateY(-1px); filter: brightness(1.02); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text, #e7ecf5);
     }
-    .hub-card {
-      background: white;
-      border-radius: 12px;
-      border: 1px solid rgba(15,23,42,0.14);
-      box-shadow: 0 8px 22px rgba(15,23,42,0.08);
-      overflow: hidden;
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    .btn-ghost:hover { transform: translateY(-1px); filter: brightness(1.05); }
+
+    .disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      pointer-events: none;
     }
-    .hub-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 14px 32px rgba(15,23,42,0.12);
+
+    .footnote {
+      margin-top: 26px;
+      color: var(--muted, rgba(231, 236, 245, 0.72));
+      font-size: 0.95rem;
+      line-height: 1.7;
+      max-width: 96ch;
     }
-    .hub-card img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-    }
-    .hub-card-content {
-      padding: 14px 16px;
-    }
-    .hub-card-title {
-      font-size: 1.18rem;
-      font-weight: 650;
-      margin: 6px 0;
-    }
-    .hub-card-desc {
-      font-size: 0.92rem;
-      color: #475569;
-      margin-top: 4px;
-    }
-    footer {
-      text-align: center;
-      color: #666;
-      margin-top: 42px;
-      font-size: 0.9em;
+    .footnote code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.92em;
     }
   </style>
 </head>
+
 <body>
+  <main class="page-wrap">
+    <div class="crumbs">
+      <a href="/database.html">← Database</a>
+      <span>•</span>
+      <span>All Galleries (Hub)</span>
+    </div>
 
-  <div class="container">
-
-    <h1>Gallery Hub</h1>
+    <h1 class="title">All Galleries (Hub)</h1>
     <p class="subtitle">
-      Browse all image galleries available in the RNA-Pathology database.
+      This page is the complete index: it lists every category (e.g., Human Lung, Human Breast)
+      and all galleries under each category.
     </p>
 
-    <nav class="nav-top">
-      <a href="../database.html">← Back to Database Overview</a>
-      <a href="../index.html">Home</a>
-      <a href="../docs/schema_v0.2.md">Schema</a>
-    </nav>
+    <ul class="jump" aria-label="Jump links">
+      <li><a class="chip" href="#human-lung">Human Lung</a></li>
+      <li><a class="chip" href="#human-breast">Human Breast</a></li>
+      <li><a class="chip" href="/database.html">Database Overview</a></li>
+    </ul>
 
-    <div class="gallery-hub" id="galleryHub"></div>
+    <!-- =========================
+         Human Lung
+         ========================= -->
+    <section id="human-lung" class="section">
+      <h2>Human Lung</h2>
+      <p>
+        Lung-related galleries. Category hub provides a focused view; cards below list all lung galleries (including coming soon).
+      </p>
 
-    <footer>
-      <p>RNA-Pathology Gallery Hub — Built on GitHub Pages</p>
-    </footer>
+      <div class="grid" aria-label="Human Lung: category + galleries">
+        <!-- Category hub -->
+        <article class="card wide">
+          <h3>Human Lung (Category Hub)</h3>
+          <div class="meta">
+            <span class="pill">Category</span>
+            <span class="pill">Organ: Lung</span>
+          </div>
+          <p class="desc">
+            Browse lung galleries in one place.
+          </p>
+          <div class="actions">
+            <a class="btn btn-primary" href="/gallery/human_lung/">Open category hub</a>
+            <a class="btn btn-ghost" href="#human-breast">Jump to Human Breast</a>
+          </div>
+        </article>
 
-  </div>
+        <!-- Normal Lung -->
+        <article class="card">
+          <h3>Normal Lung</h3>
+          <div class="meta">
+            <span class="pill">Organ: Lung</span>
+            <span class="pill">Status: Coming soon</span>
+          </div>
+          <p class="desc">
+            Reference gallery for normal lung tissue (baseline morphology & spatial patterns).
+          </p>
+          <div class="actions">
+            <a class="btn btn-primary disabled" href="/gallery/human_lung/normal_lung/" aria-disabled="true">Open gallery</a>
+            <a class="btn btn-ghost" href="/gallery/human_lung/">Category hub</a>
+          </div>
+        </article>
 
-  <script>
-    (async function() {
-      const response = await fetch("hub-metadata.json");
-      const data = await response.json();
+        <!-- LUAD spectrum -->
+        <article class="card">
+          <h3>Lung Adenocarcinoma Spectrum</h3>
+          <div class="meta">
+            <span class="pill">Organ: Lung</span>
+            <span class="pill">Status: Coming soon</span>
+          </div>
+          <p class="desc">
+            A gallery spanning lung adenocarcinoma states/regions to support comparative learning and annotation.
+          </p>
+          <div class="actions">
+            <a class="btn btn-primary disabled" href="/gallery/human_lung/luad_spectrum/" aria-disabled="true">Open gallery</a>
+            <a class="btn btn-ghost" href="/gallery/human_lung/">Category hub</a>
+          </div>
+        </article>
+      </div>
+    </section>
 
-      const container = document.getElementById("galleryHub");
-      container.innerHTML = data.map(item => `
-        <div class="hub-card">
-          <a href="${item.link}">
-            <img src="${item.thumbnail}" alt="${item.title} Preview">
-            <div class="hub-card-content">
-              <div class="hub-card-title">${item.title}</div>
-              <div class="hub-card-desc">${item.description}</div>
-            </div>
-          </a>
-        </div>
-      `).join("");
-    })();
-  </script>
+    <!-- =========================
+         Human Breast
+         ========================= -->
+    <section id="human-breast" class="section">
+      <h2>Human Breast</h2>
+      <p>
+        Breast-related galleries. Category hub provides a focused view; cards below list all breast galleries.
+      </p>
 
+      <div class="grid" aria-label="Human Breast: category + galleries">
+        <!-- Category hub -->
+        <article class="card wide">
+          <h3>Human Breast (Category Hub)</h3>
+          <div class="meta">
+            <span class="pill">Category</span>
+            <span class="pill">Organ: Breast</span>
+          </div>
+          <p class="desc">
+            Browse breast galleries in one place.
+          </p>
+          <div class="actions">
+            <a class="btn btn-primary" href="/gallery/human_breast/">Open category hub</a>
+            <a class="btn btn-ghost" href="#human-lung">Back to Human Lung</a>
+          </div>
+        </article>
+
+        <!-- Biomarkers -->
+        <article class="card">
+          <h3>Human Breast Biomarkers</h3>
+          <div class="meta">
+            <span class="pill">Organ: Breast</span>
+            <span class="pill">Status: Available</span>
+          </div>
+          <p class="desc">
+            Biomarker-focused breast gallery, organized into dataset pages (sections/views).
+          </p>
+          <div class="actions">
+            <a class="btn btn-primary" href="/gallery/human_breast/biomarkers/">Open gallery</a>
+            <a class="btn btn-ghost" href="/gallery/human_breast/">Category hub</a>
+          </div>
+        </article>
+
+        <!-- Placeholder for future Breast galleries -->
+        <article class="card">
+          <h3>More Breast Galleries</h3>
+          <div class="meta">
+            <span class="pill">Organ: Breast</span>
+            <span class="pill">Status: Coming soon</span>
+          </div>
+          <p class="desc">
+            Additional breast conditions, regions, and assay-specific collections will appear here.
+          </p>
+          <div class="actions">
+            <a class="btn btn-ghost" href="/gallery/human_breast/">Category hub</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <p class="footnote">
+      Implementation note: for “Coming soon” lung galleries, once you add the folders
+      <code>/gallery/human_lung/normal_lung/</code> and <code>/gallery/human_lung/luad_spectrum/</code>,
+      remove the <code>disabled</code> class in this file and in the lung category hub to activate the buttons.
+    </p>
+  </main>
 </body>
 </html>
