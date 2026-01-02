@@ -171,6 +171,67 @@
       white-space: nowrap;
     }
 
+    /* --- Metadata block --- */
+    details.meta {
+      margin-top: 10px;
+      border-radius: 12px;
+      border: 1px solid var(--border, rgba(231,236,245,.14));
+      background: rgba(255,255,255,0.03);
+      overflow: hidden;
+    }
+    details.meta > summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 10px 12px;
+      font-weight: 900;
+      color: var(--text, #e7ecf5);
+      user-select: none;
+      border-bottom: 1px solid var(--border, rgba(231,236,245,.14));
+      background: rgba(255,255,255,0.03);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    details.meta > summary::-webkit-details-marker { display: none; }
+    .meta-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: .82rem;
+      font-weight: 900;
+      border: 1px solid var(--border, rgba(231,236,245,.14));
+      color: var(--muted, rgba(231,236,245,.72));
+      background: rgba(255,255,255,0.04);
+      white-space: nowrap;
+    }
+    .meta-body{
+      padding: 12px;
+      color: var(--muted, rgba(231,236,245,.72));
+      line-height: 1.7;
+    }
+    .meta-dl{
+      margin: 0;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 8px 12px;
+    }
+    .meta-dl dt{
+      margin: 0;
+      font-weight: 900;
+      color: rgba(231,236,245,.9);
+    }
+    .meta-dl dd{
+      margin: 0;
+      color: var(--muted, rgba(231,236,245,.72));
+    }
+    @media (max-width: 720px){
+      .meta-dl{ grid-template-columns: 1fr; }
+      .meta-dl dt{ margin-top: 6px; }
+    }
+
     .img-grid{
       display:grid;
       grid-template-columns: repeat(12, 1fr);
@@ -270,14 +331,6 @@
       font-weight: 900;
     }
 
-    .lightbox-bar .meta{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      align-items:center;
-      font-weight: 900;
-    }
-
     .lightbox-close{
       all: unset;
       cursor: pointer;
@@ -362,11 +415,9 @@
     (function () {
       "use strict";
 
-      // IMPORTANT:
-      // GitHub Pages won't auto-list files in a folder, so we explicitly list sample IDs here. :contentReference[oaicite:3]{index=3}
       const BASE = "/images/gallery/human_lung/normal_lung/";
+      const META_URL = BASE + "metadata.txt";
 
-      // From your screenshot: THD0008, THD0011, VUHD069, VUHD095, VUHD113, VUHD116A, VUHD116B
       const SAMPLES = [
         "THD0008",
         "THD0011",
@@ -395,8 +446,11 @@
       const lightboxTitle = document.getElementById("lightboxTitle");
       const lightboxClose = document.getElementById("lightboxClose");
 
+      // Parsed metadata: Map<sampleId, Array<[key, value]>>
+      let META = new Map();
+      let META_STATUS = "loading"; // loading | ok | error
+
       function buildImageSrc(sample, typeKey) {
-        // Root-relative paths keep links stable even if you move the HTML file. :contentReference[oaicite:4]{index=4}
         return `${BASE}${sample}_${typeKey}.png`;
       }
 
@@ -435,18 +489,126 @@
         if (e.key === "Escape" && lightbox.classList.contains("open")) closeLightbox();
       });
 
+      function parseMetadataTxt(txt) {
+        // Format:
+        // [SAMPLE]
+        // Key: Value
+        // ...
+        const lines = txt.split(/\r?\n/);
+        const map = new Map();
+
+        let currentId = null;
+        let currentPairs = [];
+
+        function commit() {
+          if (currentId) map.set(currentId, currentPairs);
+          currentId = null;
+          currentPairs = [];
+        }
+
+        for (let raw of lines) {
+          const line = raw.trim();
+          if (!line) continue;
+
+          const header = line.match(/^\[(.+?)\]$/);
+          if (header) {
+            commit();
+            currentId = header[1].trim();
+            continue;
+          }
+
+          // Key: Value
+          const idx = line.indexOf(":");
+          if (idx > 0) {
+            const k = line.slice(0, idx).trim();
+            const v = line.slice(idx + 1).trim();
+            currentPairs.push([k, v]);
+          }
+        }
+        commit();
+        return map;
+      }
+
+      async function loadMetadata() {
+        try {
+          const res = await fetch(META_URL, { cache: "no-store" });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const txt = await res.text();
+          META = parseMetadataTxt(txt);
+          META_STATUS = "ok";
+        } catch (e) {
+          META_STATUS = "error";
+          META = new Map();
+          // still render; we’ll show an error badge in metadata panels
+          console.warn("Failed to load metadata:", e);
+        }
+      }
+
+      function buildMetadataDetails(sample) {
+        const details = document.createElement("details");
+        details.className = "meta";
+        details.open = false;
+
+        const summary = document.createElement("summary");
+        summary.innerHTML = `
+          <span>Metadata</span>
+          <span class="meta-badge">${
+            META_STATUS === "loading" ? "Loading…" :
+            META_STATUS === "error" ? "Unavailable" :
+            (META.has(sample) ? "Available" : "Missing")
+          }</span>
+        `;
+        details.appendChild(summary);
+
+        const body = document.createElement("div");
+        body.className = "meta-body";
+
+        if (META_STATUS === "loading") {
+          body.textContent = "Loading metadata…";
+          details.appendChild(body);
+          return details;
+        }
+
+        if (META_STATUS === "error") {
+          body.textContent = `Failed to load ${META_URL}. Check the path and filename casing.`;
+          details.appendChild(body);
+          return details;
+        }
+
+        const pairs = META.get(sample);
+        if (!pairs || pairs.length === 0) {
+          body.textContent = "No metadata found for this sample.";
+          details.appendChild(body);
+          return details;
+        }
+
+        const dl = document.createElement("dl");
+        dl.className = "meta-dl";
+
+        for (const [k, v] of pairs) {
+          const dt = document.createElement("dt");
+          dt.textContent = k;
+          const dd = document.createElement("dd");
+          dd.textContent = v;
+          dl.appendChild(dt);
+          dl.appendChild(dd);
+        }
+
+        body.appendChild(dl);
+        details.appendChild(body);
+        return details;
+      }
+
       function render() {
         const q = searchBox.value || "";
         const enabledTypes = getEnabledTypes();
 
         grid.innerHTML = "";
-
         let shownSamples = 0;
 
         for (const sample of SAMPLES) {
           if (!matchesSearch(sample, q)) continue;
 
-          // Build sample card
           const card = document.createElement("article");
           card.className = "sample";
 
@@ -471,6 +633,11 @@
 
           head.appendChild(h2);
           head.appendChild(pills);
+
+          card.appendChild(head);
+
+          // NEW: metadata panel per sample
+          card.appendChild(buildMetadataDetails(sample));
 
           const imgGrid = document.createElement("div");
           imgGrid.className = "img-grid";
@@ -506,7 +673,6 @@
             img.src = src;
             img.alt = `${sample} — ${t.label}`;
 
-            // If file missing / typo, show a friendly message
             img.onerror = function () {
               panel.innerHTML = "";
               panel.appendChild(label);
@@ -530,10 +696,8 @@
             const note = document.createElement("div");
             note.className = "empty";
             note.textContent = "All image types are currently hidden. Enable at least one type above.";
-            card.appendChild(head);
             card.appendChild(note);
           } else {
-            card.appendChild(head);
             card.appendChild(imgGrid);
           }
 
@@ -547,7 +711,12 @@
       searchBox.addEventListener("input", render);
       for (const input of toggleInputs) input.addEventListener("change", render);
 
-      render();
+      // Load metadata first, then render once (and render again on completion)
+      (async function init(){
+        render();         // quick first render (shows metadata "Loading…")
+        await loadMetadata();
+        render();         // second render with metadata filled
+      })();
     })();
   </script>
 </body>
