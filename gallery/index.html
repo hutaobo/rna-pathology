@@ -193,12 +193,6 @@
     }
     .btn-ghost:hover { transform: translateY(-1px); filter: brightness(1.05); }
 
-    .disabled {
-      opacity: 0.55;
-      cursor: not-allowed;
-      pointer-events: none;
-    }
-
     .footnote {
       margin-top: 26px;
       color: var(--muted, rgba(231, 236, 245, 0.72));
@@ -239,7 +233,7 @@
     <section id="human-lung" class="section">
       <h2>Human Lung</h2>
       <p>
-        Lung-related galleries. Category hub provides a focused view; cards below list all lung galleries (including coming soon).
+        Lung-related galleries. Category hub provides a focused view; cards below list all lung galleries.
       </p>
 
       <div class="grid" aria-label="Human Lung: category + galleries">
@@ -264,13 +258,13 @@
           <h3>Normal Lung</h3>
           <div class="meta">
             <span class="pill">Organ: Lung</span>
-            <span class="pill">Status: Coming soon</span>
+            <span class="pill">Status: Available</span>
           </div>
           <p class="desc">
             Reference gallery for normal lung tissue (baseline morphology & spatial patterns).
           </p>
           <div class="actions">
-            <a class="btn btn-primary disabled" href="/gallery/human_lung/normal_lung/" aria-disabled="true">Open gallery</a>
+            <a class="btn btn-primary" href="/gallery/human_lung/normal_lung/">Open gallery</a>
             <a class="btn btn-ghost" href="/gallery/human_lung/">Category hub</a>
           </div>
         </article>
@@ -280,13 +274,13 @@
           <h3>Lung Adenocarcinoma Spectrum</h3>
           <div class="meta">
             <span class="pill">Organ: Lung</span>
-            <span class="pill">Status: Coming soon</span>
+            <span class="pill">Status: Available</span>
           </div>
           <p class="desc">
             A gallery spanning lung adenocarcinoma states/regions to support comparative learning and annotation.
           </p>
           <div class="actions">
-            <a class="btn btn-primary disabled" href="/gallery/human_lung/luad_spectrum/" aria-disabled="true">Open gallery</a>
+            <a class="btn btn-primary" href="/gallery/human_lung/luad_spectrum/">Open gallery</a>
             <a class="btn btn-ghost" href="/gallery/human_lung/">Category hub</a>
           </div>
         </article>
@@ -353,9 +347,9 @@
     </section>
 
     <p class="footnote">
-      Implementation note: for “Coming soon” lung galleries, once you add the folders
-      <code>/gallery/human_lung/normal_lung/</code> and <code>/gallery/human_lung/luad_spectrum/</code>,
-      remove the <code>disabled</code> class in this file and in the lung category hub to activate the buttons.
+      Next: we can start adding real content (images + dataset cards) into
+      <code>/gallery/human_lung/normal_lung/</code> and <code>/gallery/human_lung/luad_spectrum/</code>.
+      The hub structure is now wired end-to-end, so you can iterate content without changing navigation again.
     </p>
   </main>
 </body>
