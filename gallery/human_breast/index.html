@@ -1,242 +1,215 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Gallery — Human Breast Biomarkers</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="/assets/site.css" />
+  <script defer src="/assets/site.js"></script>
 
-  <!-- Google Analytics (GA4) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-B2L5CDD57"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-B2L5CDD57');
-  </script>
+  <title>Human Breast Galleries | RNA-Pathology</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="description"
+    content="Human Breast galleries in the RNA-Pathology database."
+  />
 
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f6f8fb;
-      color: #222;
-    }
-    .container {
-      max-width: 980px;
-      margin: 32px auto;
-      padding: 0 20px;
-    }
-    .nav-back a {
-      color: #1d4ed8;
-      text-decoration: none;
-    }
-    .nav-back a:hover {
-      text-decoration: underline;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 18px;
-      font-size: 1.8rem;
+    /* Page-scoped styling only (won't affect global header/footer) */
+    .page-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 44px 20px 80px;
     }
 
-    .controls {
-      text-align: center;
-      margin-bottom: 16px;
-    }
-    select {
-      padding: 6px 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+    .page-title {
+      margin: 0 0 8px;
+      font-size: 2.2rem;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
     }
 
-    .gallery {
-      display: grid;
-      gap: 14px;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      margin-top: 12px;
+    .page-subtitle {
+      margin: 0 0 18px;
+      color: var(--muted, rgba(231, 236, 245, 0.72));
+      line-height: 1.6;
     }
 
-    .gallery-item {
-      background: #fff;
-      border: 1px solid #e6e8ef;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-    }
-
-    .gallery-item figcaption {
-      text-align: center;
+    .crumbs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin: 0 0 22px;
       font-size: 0.95rem;
-      font-weight: 600;
-      padding: 8px 10px;
-      border-bottom: 1px solid #e8ebf0;
-      background: #fff;
+      color: var(--muted, rgba(231, 236, 245, 0.72));
     }
-
-    .gallery-link {
-      color: #1d4ed8;
+    .crumbs a {
+      color: var(--primary, #7aa7ff);
       text-decoration: none;
+      font-weight: 700;
     }
-    .gallery-link:hover {
-      text-decoration: underline;
+    .crumbs a:hover { text-decoration: underline; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+      margin-top: 18px;
     }
 
-    .gallery-item img {
-      width: 100%;
-      display: block;
-      cursor: pointer;
+    .card {
+      grid-column: span 12;
+      background: var(--surface, #11182a);
+      border: 1px solid var(--border, rgba(231, 236, 245, 0.14));
+      border-radius: 14px;
+      padding: 18px 18px 16px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
     }
 
-    .pagination {
-      text-align: center;
-      margin-top: 22px;
-    }
-    .pagination button {
-      padding: 6px 14px;
-      border: 1px solid #1d4ed8;
-      background: #fff;
-      color: #1d4ed8;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .pagination button:disabled {
-      border-color: #aaa;
-      color: #aaa;
-      cursor: not-allowed;
+    @media (min-width: 860px) {
+      .card { grid-column: span 6; }
     }
 
-    .lightbox {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.88);
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 1.25rem;
+      color: var(--text, #e7ecf5);
+      letter-spacing: -0.01em;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0 14px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border: 1px solid var(--border, rgba(231, 236, 245, 0.14));
+      color: var(--muted, rgba(231, 236, 245, 0.72));
+      background: rgba(255,255,255,0.04);
+    }
+
+    .desc {
+      margin: 0 0 16px;
+      color: var(--muted, rgba(231, 236, 245, 0.72));
+      line-height: 1.65;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 26px;
-      z-index: 999;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: 800;
+      text-decoration: none;
+      border: 1px solid var(--border, rgba(231, 236, 245, 0.14));
+      transition: transform 0.15s ease, filter 0.15s ease;
+      user-select: none;
     }
-    .lightbox.is-open {
-      display: flex;
+
+    .btn-primary {
+      background: var(--primary, #7aa7ff);
+      color: #0b0f1a;
+      border-color: transparent;
     }
-    .lightbox img {
-      max-width: 90%;
-      max-height: 85vh;
+    .btn-primary:hover { transform: translateY(-1px); filter: brightness(1.02); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text, #e7ecf5);
     }
-    .lightbox-close {
-      position: absolute;
-      top: 14px;
-      right: 18px;
-      font-size: 26px;
-      color: #fff;
-      cursor: pointer;
-      font-weight: bold;
+    .btn-ghost:hover { transform: translateY(-1px); filter: brightness(1.05); }
+
+    .disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .note {
+      margin-top: 22px;
+      color: var(--muted, rgba(231, 236, 245, 0.72));
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .note code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.92em;
     }
   </style>
-
 </head>
+
 <body>
+  <main class="page-wrap">
+    <div class="crumbs">
+      <a href="/database.html">← Database</a>
+      <span>•</span>
+      <a href="/gallery/index.html">All Galleries (Hub)</a>
+      <span>•</span>
+      <span>Human Breast</span>
+    </div>
 
-<div class="container">
-  <div class="nav-back">
-    <a href="../../database.html">← Database Overview</a>
-    &nbsp;|&nbsp;
-    <!-- ✅ FIX #1: this should go to the gallery overview page -->
-    <a href="../../gallery/index.html">← Gallery Overview</a>
-  </div>
+    <h1 class="page-title">Human Breast</h1>
+    <p class="page-subtitle">
+      Browse breast-related galleries in RNA-Pathology. (This category will expand over time.)
+    </p>
 
-  <h1>Gallery — Human Breast Biomarkers</h1>
+    <section class="grid" aria-label="Human Breast galleries">
+      <!-- Human Breast Biomarkers -->
+      <article class="card">
+        <h2>Human Breast Biomarkers</h2>
+        <div class="meta">
+          <span class="pill">Organ: Breast</span>
+          <span class="pill">Status: Migrating</span>
+        </div>
+        <p class="desc">
+          Biomarker-focused breast gallery. This entry is being moved under the Human Breast category
+          as a dedicated sub-gallery.
+        </p>
+        <div class="actions">
+          <!-- We will activate this in the NEXT step after creating /biomarkers/ -->
+          <a class="btn btn-primary disabled" href="/gallery/human_breast/biomarkers/" aria-disabled="true">
+            Open gallery
+          </a>
+          <a class="btn btn-ghost" href="/gallery/index.html">Back to hub</a>
+        </div>
+      </article>
 
-  <div class="controls">
-    <select id="filterSection"></select>
-  </div>
+      <!-- Placeholder for future Breast galleries -->
+      <article class="card">
+        <h2>More Breast Galleries</h2>
+        <div class="meta">
+          <span class="pill">Organ: Breast</span>
+          <span class="pill">Status: Coming soon</span>
+        </div>
+        <p class="desc">
+          Additional breast conditions, regions, and assay-specific collections will appear here.
+        </p>
+        <div class="actions">
+          <a class="btn btn-ghost" href="/gallery/index.html">Back to hub</a>
+        </div>
+      </article>
+    </section>
 
-  <div class="gallery" id="galleryGrid"></div>
-
-  <div class="pagination">
-    <button id="prevPage">Previous</button>
-    <span id="pageInfo"></span>
-    <button id="nextPage">Next</button>
-  </div>
-</div>
-
-<div class="lightbox" id="lightbox">
-  <span class="lightbox-close" id="closeBtn">×</span>
-  <img id="lightboxImg" src="" alt="">
-</div>
-
-<script>
-  const metadataJson = "metadata.json";
-
-  /**
-   * Build dataset-card URL from captions like:
-   * "S1 Top", "S2 Mid", "S3 Bottom", "S4 Bot"
-   *
-   * ✅ FIX #2: always map S1 Top -> ..._s1_top.html (etc.)
-   */
-  function datasetUrlFromCaption(captionRaw) {
-    const caption = String(captionRaw || "").trim();
-    const m = caption.match(/^S(\d+)\s+(Top|Mid|Bottom|Bot)$/i);
-    if (!m) return null;
-
-    const sNum = m[1];
-    let pos = m[2].toLowerCase();
-    if (pos === "bottom") pos = "bot";
-
-    return `../../datasets/human_breast_biomarkers_s${sNum}_${pos}.html`;
-  }
-
-  /**
-   * After gallery-utils renders cards, convert each figcaption into a dataset link.
-   * Keep image click for lightbox (no navigation on image click).
-   */
-  function postProcessGalleryCards() {
-    const grid = document.getElementById("galleryGrid");
-    if (!grid) return;
-
-    grid.querySelectorAll(".gallery-item").forEach(card => {
-      const img = card.querySelector("img");
-      const cap = card.querySelector("figcaption");
-      if (!img || !cap) return;
-
-      // run-once safety
-      if (cap.dataset.linked === "1") return;
-
-      const captionText = (cap.textContent || "").trim();
-      const datasetUrl = datasetUrlFromCaption(captionText);
-      if (!datasetUrl) return;
-
-      cap.innerHTML = `<a class="gallery-link" href="${datasetUrl}">${captionText}</a>`;
-      cap.dataset.linked = "1";
-
-      // Prevent any accidental navigation if the image is ever wrapped or overlaid
-      img.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      }, { capture: true });
-    });
-  }
-
-  function installPostProcessHooks() {
-    // Try multiple times to cover async fetch + rerenders
-    postProcessGalleryCards();
-    setTimeout(postProcessGalleryCards, 200);
-    setTimeout(postProcessGalleryCards, 600);
-    setTimeout(postProcessGalleryCards, 1200);
-
-    // Re-run on filter/pagination events
-    const filter = document.getElementById("filterSection");
-    const prev = document.getElementById("prevPage");
-    const next = document.getElementById("nextPage");
-
-    if (filter) filter.addEventListener("change", () => setTimeout(postProcessGalleryCards, 50));
-    if (prev) prev.addEventListener("click", () => setTimeout(postProcessGalleryCards, 50));
-    if (next) next.addEventListener("click", () => setTimeout(postProcessGalleryCards, 50));
-  }
-
-  document.addEventListener("DOMContentLoaded", installPostProcessHooks);
-</script>
-
-<script src="gallery-utils.js"></script>
-
+    <p class="note">
+      Implementation note: after we create <code>/gallery/human_breast/biomarkers/</code>,
+      we’ll remove the <code>disabled</code> class above to activate “Open gallery”.
+    </p>
+  </main>
 </body>
 </html>
