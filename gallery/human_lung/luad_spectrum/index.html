@@ -383,9 +383,9 @@
       display:block;
       border-radius: 10px;
 
-      transform: scale(1);
+      /* ✅ 修复：不要默认 transform: scale(1)，也不要常驻 will-change */
+      transform: none;
       transform-origin: center top;
-      will-change: transform;
     }
 
     @media (prefers-reduced-motion: reduce){
@@ -830,7 +830,10 @@
       // Lightbox + Zoom
       function applyZoom(scale) {
         const s = Math.max(0.5, Math.min(2, Number(scale) || 1));
-        lbImg.style.transform = `scale(${s})`;
+
+        // ✅ 修复关键点：当缩放为 1 时不要使用 transform: scale(1)，用 none 让浏览器以“正常布局像素”渲染，避免模糊
+        lbImg.style.transform = (s === 1) ? "none" : `scale(${s})`;
+
         zoomRange.value = String(s);
         zoomVal.textContent = `${Math.round(s * 100)}%`;
       }
@@ -852,7 +855,7 @@
       function closeLightbox() {
         lightbox.classList.remove("open");
         lbImg.src = "";
-        lbImg.style.transform = "scale(1)";
+        lbImg.style.transform = "none";
         document.body.style.overflow = "";
       }
 
