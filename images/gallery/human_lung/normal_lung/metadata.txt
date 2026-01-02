@@ -1,0 +1,62 @@
+[THD0008]
+Dataset: Normal Lung
+Sample ID: THD0008
+Species: Human
+Tissue: Lung
+Pathology annotation: Non-fibrosis, Non-tumor Lung
+Original Source: Vannan, Annika, et al. Nature Genetics 57.3 (2025): 647-658.
+Technology: H&E, Xenium 302 customized panel.
+
+[THD0011]
+Dataset: Normal Lung
+Sample ID: THD0011
+Species: Human
+Tissue: Lung
+Pathology annotation: Non-fibrosis, Non-tumor Lung
+Original Source: Vannan, Annika, et al. Nature Genetics 57.3 (2025): 647-658.
+Technology: H&E, Xenium 302 customized panel.
+
+[VUHD069]
+Dataset: Normal Lung
+Sample ID: VUHD069
+Species: Human
+Tissue: Lung
+Pathology annotation: Non-fibrosis, Non-tumor Lung
+Original Source: Vannan, Annika, et al. Nature Genetics 57.3 (2025): 647-658.
+Technology: H&E, Xenium 302 customized panel.
+
+[VUHD095]
+Dataset: Normal Lung
+Sample ID: VUHD095
+Species: Human
+Tissue: Lung
+Pathology annotation: Non-fibrosis, Non-tumor Lung
+Original Source: Vannan, Annika, et al. Nature Genetics 57.3 (2025): 647-658.
+Technology: H&E, Xenium 302 customized panel.
+
+[VUHD113]
+Dataset: Normal Lung
+Sample ID: VUHD113
+Species: Human
+Tissue: Lung
+Pathology annotation: Non-fibrosis, Non-tumor Lung
+Original Source: Vannan, Annika, et al. Nature Genetics 57.3 (2025): 647-658.
+Technology: H&E, Xenium 302 customized panel.
+
+[VUHD116A]
+Dataset: Normal Lung
+Sample ID: VUHD116A
+Species: Human
+Tissue: Lung
+Pathology annotation: Non-fibrosis, Non-tumor Lung
+Original Source: Vannan, Annika, et al. Nature Genetics 57.3 (2025): 647-658.
+Technology: H&E, Xenium 302 customized panel.
+
+[VUHD116B]
+Dataset: Normal Lung
+Sample ID: VUHD116B
+Species: Human
+Tissue: Lung
+Pathology annotation: Non-fibrosis, Non-tumor Lung
+Original Source: Vannan, Annika, et al. Nature Genetics 57.3 (2025): 647-658.
+Technology: H&E, Xenium 302 customized panel.
