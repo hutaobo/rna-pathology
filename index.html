@@ -129,6 +129,77 @@
       -webkit-backdrop-filter: blur(6px);
     }
 
+    /* Newsletter (home hero) */
+    .newsletter{
+      margin-top: 18px;
+      padding: 14px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.20);
+      background: rgba(255,255,255,0.10);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      position: relative;
+      z-index: 1;
+    }
+
+    .newsletter .nl-title{
+      margin: 0 0 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.2px;
+    }
+
+    .newsletter .nl-sub{
+      margin: 0 0 10px;
+      font-size: 13px;
+      color: rgba(219,231,240,0.95);
+    }
+
+    .newsletter form{
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .newsletter input[type="email"]{
+      flex: 1 1 260px;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.25);
+      background: rgba(255,255,255,0.92);
+      color: #0b3c5d;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .newsletter button{
+      flex: 0 0 auto;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: #ffffff;
+      color: #0b3c5d;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.14);
+      user-select: none;
+    }
+
+    .newsletter button:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 12px 22px rgba(0,0,0,0.18);
+    }
+
+    .newsletter .nl-msg{
+      margin-top: 10px;
+      font-size: 13px;
+      color: #ffffff;
+      opacity: 0.95;
+      display: none;
+    }
+
     .cta-row{
       display: flex;
       gap: 14px;
@@ -278,6 +349,19 @@
 
       <div id="notice" class="notice" role="status"></div>
 
+      <!-- Newsletter signup (home hero) -->
+      <div class="newsletter" aria-label="Newsletter signup">
+        <p class="nl-title">Get dataset updates</p>
+        <p class="nl-sub">Be notified when new spatial pathology datasets &amp; benchmarks drop. No spam.</p>
+
+        <form id="nl-form">
+          <input id="nl-email" type="email" autocomplete="email" placeholder="you@institute.edu" required />
+          <button id="nl-btn" type="submit">Notify me</button>
+        </form>
+
+        <div id="nl-msg" class="nl-msg" role="status"></div>
+      </div>
+
       <div class="cta-row">
         <a class="cta cta-primary" href="database.html">
           🗃️ Database <small>Curated datasets</small>
@@ -389,6 +473,70 @@
     } else if (u.searchParams.get("signed_out") === "1") {
       showNotice("Signed out.");
     }
+  })();
+</script>
+
+<!-- Home-only: newsletter signup (backend wiring comes next) -->
+<script>
+  (function () {
+    const form = document.getElementById("nl-form");
+    const emailEl = document.getElementById("nl-email");
+    const btn = document.getElementById("nl-btn");
+    const msg = document.getElementById("nl-msg");
+    if (!form || !emailEl || !btn || !msg) return;
+
+    function show(text) {
+      msg.textContent = text;
+      msg.style.display = "block";
+    }
+
+    // Next step: set these in /assets/site.js (or here) after you create the Edge Function:
+    // window.RP_SUBSCRIBE_ENDPOINT = "https://<project-ref>.supabase.co/functions/v1/subscribe"
+    // window.RP_SUPABASE_ANON_KEY = "<your anon key>"
+    const endpoint = window.RP_SUBSCRIBE_ENDPOINT || "";
+    const anonKey = window.RP_SUPABASE_ANON_KEY || "";
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = (emailEl.value || "").trim();
+      if (!email) return;
+
+      // Placeholder behavior until backend is connected
+      if (!endpoint || !anonKey) {
+        show("Subscribed (setup pending). Next step: connect Supabase Edge Function.");
+        form.reset();
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Submitting...";
+
+      try {
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + anonKey,
+            "apikey": anonKey
+          },
+          body: JSON.stringify({ email, source: "homepage" })
+        });
+
+        if (!res.ok) {
+          const t = await res.text();
+          throw new Error(t || ("HTTP " + res.status));
+        }
+
+        show("You're on the list. Check your inbox soon.");
+        form.reset();
+      } catch (err) {
+        show("Subscribe failed. Please try again later.");
+        console.error(err);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Notify me";
+      }
+    });
   })();
 </script>
 
