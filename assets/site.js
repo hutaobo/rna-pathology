@@ -37,6 +37,16 @@
   const SUPABASE_JS_CDN =
     "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
+  // ---- Newsletter subscribe (Edge Function) ----
+  // IMPORTANT:
+  // - anon/publishable key can be used in browser IF RLS is enabled properly. :contentReference[oaicite:1]{index=1}
+  // - service_role/secret keys must NEVER be exposed in browser. :contentReference[oaicite:2]{index=2}
+  const RP_SUBSCRIBE_ENDPOINT = `${SUPABASE_URL}/functions/v1/subscribe`;
+
+  // Expose to pages (e.g., index.html newsletter widget)
+  window.RP_SUBSCRIBE_ENDPOINT = RP_SUBSCRIBE_ENDPOINT;
+  window.RP_SUPABASE_ANON_KEY = SUPABASE_ANON_KEY;
+
   // ---- QR (Step 2: footer HTML only; styling comes in Step 3) ----
   const FOOTER_QR_IMG_PATH = "/images/qr/rna-pathology-home.png";
 
@@ -228,6 +238,75 @@
     });
   }
 
+  // ---------- Newsletter (home hero) ----------
+  // Why here?
+  // Your index.html currently has an inline newsletter script near the end of body.
+  // Because site.js is loaded with "defer", that inline script runs BEFORE this file executes,
+  // so it may see empty window.RP_* values.
+  // We intercept submit in CAPTURE phase to ensure real subscription works once Edge Function is deployed.
+  function wireNewsletterSubscribe() {
+    const form = document.getElementById("nl-form");
+    const emailEl = document.getElementById("nl-email");
+    const btn = document.getElementById("nl-btn");
+    const msg = document.getElementById("nl-msg");
+    if (!form || !emailEl || !btn || !msg) return;
+
+    function show(text) {
+      msg.textContent = text;
+      msg.style.display = "block";
+    }
+
+    // Capture listener runs before bubble listeners; stopImmediatePropagation blocks the inline handler.
+    form.addEventListener(
+      "submit",
+      async (e) => {
+        const endpoint = window.RP_SUBSCRIBE_ENDPOINT || "";
+        const anonKey = window.RP_SUPABASE_ANON_KEY || "";
+
+        // If not configured, let existing page handler run (fallback / placeholder)
+        if (!endpoint || !anonKey) return;
+
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        const email = String(emailEl.value || "").trim();
+        if (!email) return;
+
+        btn.disabled = true;
+        const prevText = btn.textContent;
+        btn.textContent = "Submitting...";
+
+        try {
+          const res = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              // Supabase gateway expects Authorization Bearer and usually apikey header. :contentReference[oaicite:3]{index=3}
+              "Authorization": "Bearer " + anonKey,
+              "apikey": anonKey,
+            },
+            body: JSON.stringify({ email, source: "homepage" }),
+          });
+
+          if (!res.ok) {
+            const t = await res.text();
+            throw new Error(t || ("HTTP " + res.status));
+          }
+
+          show("You're on the list. Check your inbox soon.");
+          form.reset();
+        } catch (err) {
+          show("Subscribe failed. Please try again later.");
+          console.error(err);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = prevText || "Notify me";
+        }
+      },
+      true // capture
+    );
+  }
+
   // ---------- Auth-aware nav ----------
   let _supabaseClientPromise = null;
   let _authSub = null;
@@ -408,6 +487,7 @@
     highlightActiveNav();
     wireMobileToggle();
     wireAuthNav();
+    wireNewsletterSubscribe();
   }
 
   if (document.readyState === "loading") {
