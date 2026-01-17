@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Verify Subscription</title>
+</head>
+<body>
+  <div id="status">Verifying...</div>
+  <script>
+    (async () => {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token');
+      const statusEl = document.getElementById('status');
+
+      if (!token) {
+        statusEl.textContent = 'Invalid verification link.';
+        return;
+      }
+
+      try {
+        const res = await fetch('https://xxlkxorwprtynemmbeya.supabase.co/functions/v1/verify?token=' + encodeURIComponent(token));
+        const json = await res.json();
+        if (res.ok && json.ok) {
+          statusEl.textContent = 'Verification successful! You can now sign in.';
+        } else {
+          statusEl.textContent = json.error || 'Verification failed.';
+        }
+      } catch (err) {
+        statusEl.textContent = 'An error occurred. Please try again later.';
+      }
+    })();
+  </script>
+</body>
+</html>
