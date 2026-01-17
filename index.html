@@ -2,11 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>RNA-Pathology</title>
+  <meta name="description" content="RNA-Pathology™ — schema-first database & benchmarks for spatial molecular pathology. Built for reproducibility, interoperability, and cross-study comparison." />
+  <meta name="theme-color" content="#060812" />
+  <link rel="canonical" href="https://www.rna-pathology.com/" />
+
+  <!-- Site-wide styles + behavior -->
   <link rel="stylesheet" href="/assets/site.css" />
   <script defer src="/assets/site.js"></script>
 
-  <!-- Favicon (Google/Browser) -->
+  <!-- Favicon -->
   <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+
+  <!-- Social preview (use an existing image path to avoid broken previews) -->
+  <meta property="og:title" content="RNA-Pathology™" />
+  <meta property="og:description" content="Schema-first database & benchmarks for spatial molecular pathology." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.rna-pathology.com/" />
+  <meta property="og:image" content="https://www.rna-pathology.com/images/qr/rna-pathology-home.png" />
 
   <!-- Google Ads / Analytics -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5694698849392213"
@@ -18,527 +34,272 @@
     gtag('js', new Date());
     gtag('config', 'G-B2L5CDD57');
   </script>
-
-  <title>RNA-Pathology</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="RNA-Pathology™: a schema-driven framework and database for spatial molecular pathology." />
-
-  <style>
-    :root{
-      --ink: #111827;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --primary: #0b3c5d;
-      --primary2: #0a3552;
-      --link: #1c4d78;
-      --link-muted: #bcd3e6;
-      --danger: #b91c1c;
-    }
-
-    *{ box-sizing: border-box; }
-
-    body{
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont,
-                   "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      color: var(--ink);
-      background: radial-gradient(1200px 600px at 20% -10%, #e8f1f8 0%, rgba(232,241,248,0) 60%),
-                  radial-gradient(1000px 500px at 90% 10%, #eef2ff 0%, rgba(238,242,255,0) 55%),
-                  var(--bg);
-      line-height: 1.7;
-    }
-
-    .container{
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    /* Home hero section (NOT <header>) */
-    .home-hero-wrap{
-      padding: 26px 0 20px;
-    }
-
-    .hero{
-      background: linear-gradient(180deg, rgba(11,60,93,1) 0%, rgba(10,53,82,1) 100%);
-      color: #fff;
-      border-radius: 18px;
-      padding: 44px 40px;
-      box-shadow: 0 12px 30px rgba(2, 6, 23, 0.18);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero::before{
-      content:"";
-      position:absolute;
-      inset:-80px -120px auto auto;
-      width: 380px;
-      height: 380px;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.18), rgba(255,255,255,0));
-      transform: rotate(15deg);
-      pointer-events:none;
-    }
-
-    /* ✅ rename to avoid clobbering header .brand injected by site.js */
-    .hero-brand{
-      display:flex;
-      align-items: baseline;
-      gap: 10px;
-      margin: 0 0 10px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero-brand h1{
-      margin: 0;
-      font-size: 44px;
-      letter-spacing: -0.6px;
-      line-height: 1.1;
-    }
-
-    .hero-brand .tm{
-      font-size: 0.55em;
-      vertical-align: super;
-      opacity: 0.9;
-    }
-
-    .tagline{
-      margin: 10px 0 0;
-      color: #dbe7f0;
-      font-size: 18px;
-      max-width: 820px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .notice{
-      display: none;
-      margin-top: 14px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.22);
-      background: rgba(255,255,255,0.08);
-      color: #ffffff;
-      font-size: 14px;
-      position: relative;
-      z-index: 1;
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-    }
-
-    /* Newsletter (home hero) */
-    .newsletter{
-      margin-top: 18px;
-      padding: 14px 14px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.20);
-      background: rgba(255,255,255,0.10);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      position: relative;
-      z-index: 1;
-    }
-
-    .newsletter .nl-title{
-      margin: 0 0 8px;
-      font-size: 14px;
-      font-weight: 700;
-      color: #ffffff;
-      letter-spacing: 0.2px;
-    }
-
-    .newsletter .nl-sub{
-      margin: 0 0 10px;
-      font-size: 13px;
-      color: rgba(219,231,240,0.95);
-    }
-
-    .newsletter form{
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .newsletter input[type="email"]{
-      flex: 1 1 260px;
-      padding: 12px 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.25);
-      background: rgba(255,255,255,0.92);
-      color: #0b3c5d;
-      outline: none;
-      font-size: 14px;
-    }
-
-    .newsletter button{
-      flex: 0 0 auto;
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.18);
-      background: #ffffff;
-      color: #0b3c5d;
-      font-weight: 800;
-      cursor: pointer;
-      transition: transform 0.12s ease, box-shadow 0.12s ease;
-      box-shadow: 0 8px 18px rgba(0,0,0,0.14);
-      user-select: none;
-    }
-
-    .newsletter button:hover{
-      transform: translateY(-1px);
-      box-shadow: 0 12px 22px rgba(0,0,0,0.18);
-    }
-
-    .newsletter .nl-msg{
-      margin-top: 10px;
-      font-size: 13px;
-      color: #ffffff;
-      opacity: 0.95;
-      display: none;
-    }
-
-    .cta-row{
-      display: flex;
-      gap: 14px;
-      margin-top: 26px;
-      flex-wrap: wrap;
-      position: relative;
-      z-index: 1;
-    }
-
-    .cta{
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      padding: 12px 18px;
-      border-radius: 12px;
-      text-decoration: none;
-      font-weight: 700;
-      letter-spacing: 0.2px;
-      border: 1px solid rgba(255,255,255,0.15);
-      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
-      user-select: none;
-    }
-
-    .cta-primary{
-      background: #ffffff;
-      color: #0b3c5d;
-      min-width: 220px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    }
-
-    .cta-primary:hover{
-      transform: translateY(-1px);
-      box-shadow: 0 12px 28px rgba(0,0,0,0.18);
-    }
-
-    .cta-secondary{
-      background: rgba(255,255,255,0.10);
-      color: #ffffff;
-      min-width: 220px;
-    }
-
-    .cta-secondary:hover{
-      transform: translateY(-1px);
-      background: rgba(255,255,255,0.14);
-    }
-
-    .cta small{
-      font-weight: 600;
-      opacity: 0.75;
-      letter-spacing: 0;
-    }
-
-    .subnav{
-      margin-top: 14px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px 18px;
-      font-size: 14px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .subnav a{
-      color: var(--link-muted);
-      text-decoration: none;
-      border-bottom: 1px solid rgba(188,211,230,0.25);
-      padding-bottom: 1px;
-    }
-
-    .subnav a:hover{
-      color: #ffffff;
-      border-bottom-color: rgba(255,255,255,0.5);
-    }
-
-    main{
-      padding: 22px 0 80px;
-    }
-
-    .grid{
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 18px;
-    }
-
-    .card{
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 28px 28px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-    }
-
-    .card h2{
-      margin: 0 0 10px;
-      font-size: 22px;
-      letter-spacing: -0.3px;
-    }
-
-    .card p{
-      margin: 10px 0;
-      color: #1f2933;
-      max-width: 880px;
-    }
-
-    .meta-note{
-      color: var(--muted);
-      font-size: 14px;
-      margin-top: 10px;
-    }
-
-    ul{
-      margin: 10px 0 0;
-      padding-left: 20px;
-    }
-
-    li{ margin: 6px 0; }
-
-    @media (max-width: 560px){
-      .hero{
-        padding: 34px 18px;
-      }
-      .hero-brand h1{
-        font-size: 34px;
-      }
-      .cta-primary, .cta-secondary{
-        min-width: 100%;
-      }
-    }
-  </style>
 </head>
 
-<body>
+<body class="home">
 
-<!-- Home hero (site.js will inject the global header ABOVE this) -->
-<section class="home-hero-wrap">
-  <div class="container">
-    <div class="hero">
-      <div class="hero-brand">
-        <h1>RNA-Pathology<span class="tm">™</span></h1>
-      </div>
+  <!-- Home hero (global header is injected ABOVE by /assets/site.js) -->
+  <section class="home-hero">
+    <div class="container">
+      <div class="hero-surface">
+        <div class="hero-grid">
 
-      <p class="tagline">
-        A schema-driven framework and database for spatial molecular pathology —
-        designed for reproducibility, interoperability, and cross-study comparison.
-      </p>
+          <!-- Left: positioning + primary actions -->
+          <div class="hero-left">
+            <div class="hero-kicker">
+              Schema-first • Spatial molecular pathology
+            </div>
 
-      <div id="notice" class="notice" role="status"></div>
+            <h1 class="hero-title">
+              RNA-Pathology<span class="tm">™</span>
+            </h1>
 
-      <!-- Newsletter signup (home hero) -->
-      <div class="newsletter" aria-label="Newsletter signup">
-        <p class="nl-title">Get dataset updates</p>
-        <p class="nl-sub">Be notified when new spatial pathology datasets &amp; benchmarks drop. No spam.</p>
+            <p class="hero-sub">
+              A schema-driven framework, database, and benchmarking suite for spatial molecular pathology —
+              built for reproducibility, interoperability, and cross-study comparison.
+            </p>
 
-        <form id="nl-form">
-          <input id="nl-email" type="email" autocomplete="email" placeholder="you@institute.edu" required />
-          <button id="nl-btn" type="submit">Notify me</button>
-        </form>
+            <div id="notice" class="hero-notice" role="status" aria-live="polite"></div>
 
-        <div id="nl-msg" class="nl-msg" role="status"></div>
-      </div>
+            <ul class="hero-points" aria-label="Key benefits">
+              <li><strong>Curated datasets</strong> with consistent metadata, provenance, and access terms.</li>
+              <li><strong>Benchmark tasks</strong> designed for controlled, reproducible method comparison.</li>
+              <li><strong>Extensible schema</strong> that stays stable while technologies evolve.</li>
+            </ul>
 
-      <div class="cta-row">
-        <a class="cta cta-primary" href="database.html">
-          🗃️ Database <small>Curated datasets</small>
-        </a>
-        <a class="cta cta-secondary" href="challenge.html">
-          🧬 Challenge <small>Benchmark tasks</small>
-        </a>
-      </div>
+            <div class="hero-actions" aria-label="Primary actions">
+              <a class="btn primary lg" href="database.html">Explore Database</a>
+              <a class="btn lg" href="challenge.html">View Benchmarks</a>
+            </div>
 
-      <div class="subnav" aria-label="Secondary navigation">
-        <a href="/schema/">Schema</a>
-        <a href="/roadmap/">Roadmap</a>
-        <a href="/access/">Legal / Usage</a>
-        <a href="https://github.com/hutaobo/rna-pathology" target="_blank">GitHub</a>
+            <div class="hero-links" aria-label="Quick links">
+              <a href="docs/schema.html">Schema</a>
+              <a href="docs/roadmap.html">Roadmap</a>
+              <a href="access/">Access / Legal</a>
+              <a href="https://github.com/hutaobo/rna-pathology" target="_blank" rel="noopener">GitHub</a>
+            </div>
+          </div>
+
+          <!-- Right: newsletter + tech hint -->
+          <aside class="hero-right" aria-label="Updates and technical snapshot">
+
+            <div class="nl-card" aria-label="Newsletter signup">
+              <div class="nl-head">
+                <div class="nl-title">Dataset & Benchmark Updates</div>
+                <div class="nl-sub muted">
+                  One email when something new ships. No spam.
+                </div>
+              </div>
+
+              <form id="nl-form" class="nl-form">
+                <label class="sr-only" for="nl-email">Email</label>
+                <input id="nl-email" type="email" autocomplete="email" placeholder="you@institute.edu" required />
+                <button id="nl-btn" class="btn primary" type="submit">Notify me</button>
+              </form>
+
+              <div id="nl-msg" class="nl-msg" role="status" aria-live="polite"></div>
+
+              <div class="nl-foot muted">
+                You can unsubscribe anytime.
+              </div>
+            </div>
+
+            <div class="tech-card" aria-label="Schema-first snapshot">
+              <div class="tech-title">Schema-first snapshot</div>
+              <pre class="tech-pre"><code>dataset
+  ├─ specimen / slide / region
+  ├─ spatial geometry + imaging
+  └─ molecular matrices + annotations</code></pre>
+              <div class="tech-foot muted">
+                Designed for interoperability across studies and modalities.
+              </div>
+            </div>
+
+          </aside>
+
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<main>
-  <div class="container">
-    <div class="grid">
+  <main class="home-main">
+    <div class="container">
 
-      <section class="card">
-        <h2>Overview</h2>
-        <p>
-          RNA-Pathology™ is an open research initiative aiming to organize and standardize
-          spatially resolved molecular pathology data, with a particular focus on RNA-based spatial technologies.
-        </p>
-        <p>
-          The project adopts a <strong>schema-first philosophy</strong>, treating spatial structure,
-          biological annotation, and molecular measurements as first-class entities.
-        </p>
+      <!-- Value props -->
+      <section class="section">
+        <div class="section-head">
+          <h2>Built for reproducible spatial pathology</h2>
+          <p class="muted">
+            Standardize how datasets and benchmarks are described, shared, and compared —
+            without locking into a single technology.
+          </p>
+        </div>
+
+        <div class="grid cols-3">
+          <div class="card feature-card">
+            <div class="badge accent">Schema</div>
+            <h3>Interoperable by design</h3>
+            <p class="muted">
+              Spatial structure, biological annotation, and molecular measurements treated as first-class entities.
+            </p>
+          </div>
+
+          <div class="card feature-card">
+            <div class="badge">Database</div>
+            <h3>Curated & consistent</h3>
+            <p class="muted">
+              Schema-compliant packaging with clear provenance, access terms, and documentation.
+            </p>
+          </div>
+
+          <div class="card feature-card">
+            <div class="badge">Benchmarks</div>
+            <h3>Comparable results</h3>
+            <p class="muted">
+              Controlled benchmark tasks to evaluate computational methods under reproducible conditions.
+            </p>
+          </div>
+        </div>
       </section>
 
-      <section class="card">
-        <h2>Why RNA-Pathology?</h2>
-        <p>
-          Spatial molecular datasets are rapidly increasing in complexity and volume, yet remain fragmented
-          across formats, technologies, and analytical assumptions.
-        </p>
-        <p>
-          RNA-Pathology™ addresses this by providing a principled, extensible schema and database architecture
-          that enables reproducibility, interoperability, and cross-study comparison.
-        </p>
+      <!-- Two core products -->
+      <section class="section">
+        <div class="section-head">
+          <h2>Database & Benchmarks</h2>
+          <p class="muted">
+            Two pillars: high-quality datasets and fair evaluation tasks.
+          </p>
+        </div>
+
+        <div class="grid cols-2">
+          <a class="card action-card" href="database.html" aria-label="Go to Database">
+            <div class="action-top">
+              <div class="action-title-row">
+                <h3>Database</h3>
+                <span class="action-arrow">→</span>
+              </div>
+              <p class="muted">
+                Curated spatial molecular pathology datasets organized under a principled schema.
+              </p>
+            </div>
+            <div class="action-meta">
+              <span class="pill">Schema-compliant</span>
+              <span class="pill">Provenance</span>
+              <span class="pill">Usage terms</span>
+            </div>
+          </a>
+
+          <a class="card action-card" href="challenge.html" aria-label="Go to Benchmarks">
+            <div class="action-top">
+              <div class="action-title-row">
+                <h3>Benchmarks</h3>
+                <span class="action-arrow">→</span>
+              </div>
+              <p class="muted">
+                Benchmark tasks for method development and head-to-head comparison under controlled settings.
+              </p>
+            </div>
+            <div class="action-meta">
+              <span class="pill">Controlled splits</span>
+              <span class="pill">Reproducible</span>
+              <span class="pill">Clear terms</span>
+            </div>
+          </a>
+        </div>
       </section>
 
-      <section class="card">
-        <h2>Database &amp; Benchmarking</h2>
-        <p>
-          The Database component provides curated, schema-compliant spatial molecular datasets for research and method development.
-        </p>
-        <p>
-          The Challenge component hosts benchmark tasks designed to evaluate computational methods under controlled and reproducible conditions.
-        </p>
-        <p class="meta-note">
-          <em>Benchmark tasks are provided under defined usage terms.</em>
-        </p>
+      <!-- Status -->
+      <section class="section">
+        <div class="card">
+          <div class="section-head compact">
+            <h2>Current status</h2>
+            <p class="muted">
+              Transparent snapshot of where things stand today.
+            </p>
+          </div>
+
+          <div class="status-grid" role="list">
+            <div class="status-chip ok" role="listitem">
+              <span class="status-key">Schema</span>
+              <span class="status-val">Active</span>
+            </div>
+            <div class="status-chip ok" role="listitem">
+              <span class="status-key">Documentation</span>
+              <span class="status-val">Available</span>
+            </div>
+            <div class="status-chip warn" role="listitem">
+              <span class="status-key">Data ingestion</span>
+              <span class="status-val">Pilot</span>
+            </div>
+            <div class="status-chip" role="listitem">
+              <span class="status-key">Programmatic access</span>
+              <span class="status-val">Planned</span>
+            </div>
+          </div>
+
+          <div class="muted small" style="margin-top:12px;">
+            See <a href="docs/roadmap.html">Roadmap</a> for planned work and milestones.
+          </div>
+        </div>
       </section>
 
-      <section class="card">
-        <h2>Current Status</h2>
-        <ul>
-          <li>Schema definition: active</li>
-          <li>Documentation: available</li>
-          <li>Data ingestion: limited pilot datasets</li>
-          <li>Programmatic access: planned</li>
-        </ul>
-      </section>
+      <!-- Get involved -->
+      <section class="section">
+        <div class="card callout">
+          <div class="section-head compact">
+            <h2>Get involved</h2>
+            <p class="muted">
+              Contributions, feedback, and scientific discussions are welcome.
+            </p>
+          </div>
 
-      <section class="card">
-        <h2>Get Involved</h2>
-        <p>
-          Contributions, feedback, and scientific discussions are welcome.
-          For academic inquiries, data access requests, or collaboration proposals,
-          please contact the project maintainer directly at
-          <a href="mailto:taobo.hu@scilifelab.se">taobo.hu@scilifelab.se</a>.
-        </p>
-        <p>
-          Source code, documentation, and issue tracking are available via the
-          <a href="https://github.com/hutaobo/rna-pathology" target="_blank">GitHub repository</a>.
-        </p>
+          <div class="callout-actions" aria-label="Contact and contribution actions">
+            <a class="btn primary" href="https://github.com/hutaobo/rna-pathology" target="_blank" rel="noopener">
+              Open GitHub
+            </a>
+            <a class="btn" href="mailto:taobo.hu@scilifelab.se">
+              Contact maintainer
+            </a>
+            <a class="btn" href="access/">
+              Access / Legal
+            </a>
+          </div>
+
+          <div class="muted small" style="margin-top:10px;">
+            For data access requests or collaboration proposals, email
+            <a href="mailto:taobo.hu@scilifelab.se">taobo.hu@scilifelab.se</a>.
+          </div>
+        </div>
       </section>
 
     </div>
-  </div>
-</main>
+  </main>
 
-<!-- Home-only: URL param notice (auth UI is handled by /assets/site.js) -->
-<script>
-  (function () {
-    const notice = document.getElementById("notice");
-    if (!notice) return;
+  <!-- Home-only: URL param notice -->
+  <script>
+    (function () {
+      const notice = document.getElementById("notice");
+      if (!notice) return;
 
-    function showNotice(text) {
-      notice.textContent = text;
-      notice.style.display = "block";
+      function showNotice(text) {
+        notice.textContent = text;
+        notice.style.display = "block";
+
+        const u = new URL(window.location.href);
+        ["signed_in", "signed_out", "confirmed"].forEach(k => u.searchParams.delete(k));
+        window.history.replaceState({}, "", u.toString());
+      }
 
       const u = new URL(window.location.href);
-      ["signed_in", "signed_out", "confirmed"].forEach(k => u.searchParams.delete(k));
-      window.history.replaceState({}, "", u.toString());
-    }
-
-    const u = new URL(window.location.href);
-    if (u.searchParams.get("confirmed") === "1") {
-      showNotice("Email confirmed. You can now sign in.");
-    } else if (u.searchParams.get("signed_in") === "1") {
-      showNotice("Welcome back — signed in successfully.");
-    } else if (u.searchParams.get("signed_out") === "1") {
-      showNotice("Signed out.");
-    }
-  })();
-</script>
-
-<!-- Home-only: newsletter signup (backend wiring comes next) -->
-<script>
-  (function () {
-    const form = document.getElementById("nl-form");
-    const emailEl = document.getElementById("nl-email");
-    const btn = document.getElementById("nl-btn");
-    const msg = document.getElementById("nl-msg");
-    if (!form || !emailEl || !btn || !msg) return;
-
-    function show(text) {
-      msg.textContent = text;
-      msg.style.display = "block";
-    }
-
-    // Next step: set these in /assets/site.js (or here) after you create the Edge Function:
-    // window.RP_SUBSCRIBE_ENDPOINT = "https://<project-ref>.supabase.co/functions/v1/subscribe"
-    // window.RP_SUPABASE_ANON_KEY = "<your anon key>"
-    const endpoint = window.RP_SUBSCRIBE_ENDPOINT || "";
-    const anonKey = window.RP_SUPABASE_ANON_KEY || "";
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = (emailEl.value || "").trim();
-      if (!email) return;
-
-      // Placeholder behavior until backend is connected
-      if (!endpoint || !anonKey) {
-        show("Subscribed (setup pending). Next step: connect Supabase Edge Function.");
-        form.reset();
-        return;
+      if (u.searchParams.get("confirmed") === "1") {
+        showNotice("Email confirmed. You can now sign in.");
+      } else if (u.searchParams.get("signed_in") === "1") {
+        showNotice("Welcome back — signed in successfully.");
+      } else if (u.searchParams.get("signed_out") === "1") {
+        showNotice("Signed out.");
       }
-
-      btn.disabled = true;
-      btn.textContent = "Submitting...";
-
-      try {
-        const res = await fetch(endpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + anonKey,
-            "apikey": anonKey
-          },
-          body: JSON.stringify({ email, source: "homepage" })
-        });
-
-        if (!res.ok) {
-          const t = await res.text();
-          throw new Error(t || ("HTTP " + res.status));
-        }
-
-        show("You're on the list. Check your inbox soon.");
-        form.reset();
-      } catch (err) {
-        show("Subscribe failed. Please try again later.");
-        console.error(err);
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "Notify me";
-      }
-    });
-  })();
-</script>
+    })();
+  </script>
 
 </body>
 </html>
