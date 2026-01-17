@@ -2,14 +2,14 @@
    Shared behavior for RNA-Pathology.com:
    - Inject a consistent header/nav + footer across pages (when not already present)
    - Highlight current nav item
-   - Mobile nav toggle
+   - Mobile nav toggle (close on link click + Esc)
    - Auth-aware nav (Supabase): show email when signed in, hide Sign In/Up, provide Sign Out
-
-   ✅ Global auth bridge (for Challenge unlock + other pages):
-   - window.__supabaseClient   (Supabase client object; existence != signed-in)
-   - window.__memberEmail      ("" when signed out)
-   - window.__isSignedIn       (true only when a valid session exists)
-   - dispatch CustomEvent "rp:auth" on auth changes
+   - Newsletter subscribe wiring (home hero)
+   - Global auth bridge:
+     - window.__supabaseClient   (Supabase client object; existence != signed-in)
+     - window.__memberEmail      ("" when signed out)
+     - window.__isSignedIn       (true only when a valid session exists)
+     - dispatch CustomEvent "rp:auth" on auth changes
 */
 
 (function () {
@@ -20,10 +20,12 @@
   const basePath =
     document.documentElement.getAttribute("data-base-path") || "/";
 
+  // Keep nav minimal + product-like
   const NAV_ITEMS = [
     { href: "/", label: "Home" },
     { href: "/database.html", label: "Database" },
-    { href: "/challenge.html", label: "Challenge" },
+    { href: "/challenge.html", label: "Benchmarks" },
+    { href: "/docs/", label: "Docs" },
     { href: "/access/", label: "Access" },
   ];
 
@@ -48,7 +50,7 @@
   window.RP_SUBSCRIBE_ENDPOINT = RP_SUBSCRIBE_ENDPOINT;
   window.RP_SUPABASE_ANON_KEY = SUPABASE_ANON_KEY;
 
-  // ---- QR (Step 2: footer HTML only; styling comes in Step 3) ----
+  // ---- QR ----
   const FOOTER_QR_IMG_PATH = "/images/qr/rna-pathology-home.png";
 
   // ---------- small helpers ----------
@@ -100,14 +102,6 @@
     return el;
   }
 
-  function ensureStyle(id, cssText) {
-    if (document.getElementById(id)) return;
-    const style = document.createElement("style");
-    style.id = id;
-    style.textContent = cssText;
-    document.head.appendChild(style);
-  }
-
   // ---------- Global auth bridge ----------
   // IMPORTANT: __supabaseClient existing does NOT mean the user is signed in.
   // The only authoritative signed-in flag is window.__isSignedIn (and/or non-empty __memberEmail).
@@ -146,9 +140,9 @@
 <header class="site-header" role="banner">
   <div class="container">
     <nav class="site-nav" aria-label="Main navigation">
-      <a class="brand" href="${joinUrl(basePath, "/")}">
+      <a class="brand" href="${joinUrl(basePath, "/")}" aria-label="RNA-Pathology home">
         <span class="logo" aria-hidden="true"></span>
-        <span>RNA-Pathology.com</span>
+        <span>RNA-Pathology</span>
       </a>
 
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navLinks">
@@ -198,7 +192,6 @@
         <a href="${joinUrl(basePath, "/")}">Home</a>
       </div>
 
-      <!-- Step 2: QR in footer (styling comes in Step 3 via site.css) -->
       <div class="footer-qr" aria-label="QR code to share RNA-Pathology.com">
         <div class="footer-qr-title muted">Scan to share</div>
         <img
@@ -234,18 +227,29 @@
     const links = document.getElementById("navLinks");
     if (!btn || !links) return;
 
+    function close() {
+      links.classList.remove("open");
+      btn.setAttribute("aria-expanded", "false");
+    }
+
     btn.addEventListener("click", () => {
       const isOpen = links.classList.toggle("open");
       btn.setAttribute("aria-expanded", String(isOpen));
     });
+
+    // Close menu after clicking a link (mobile UX)
+    links.addEventListener("click", (e) => {
+      const a = e.target && e.target.closest ? e.target.closest("a") : null;
+      if (a) close();
+    });
+
+    // Close on Esc
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") close();
+    });
   }
 
   // ---------- Newsletter (home hero) ----------
-  // Why here?
-  // Your index.html currently has an inline newsletter script near the end of body.
-  // Because site.js is loaded with "defer", that inline script runs BEFORE this file executes,
-  // so it may see empty window.RP_* values.
-  // We intercept submit in CAPTURE phase to ensure real subscription works once Edge Function is deployed.
   function wireNewsletterSubscribe() {
     const form = document.getElementById("nl-form");
     const emailEl = document.getElementById("nl-email");
@@ -253,26 +257,45 @@
     const msg = document.getElementById("nl-msg");
     if (!form || !emailEl || !btn || !msg) return;
 
-    function show(text) {
+    // Avoid double wiring
+    if (form.dataset.wired === "1") return;
+    form.dataset.wired = "1";
+
+    function show(text, type /* "success" | "error" | "" */) {
       msg.textContent = text;
       msg.style.display = "block";
+      msg.classList.remove("success", "error");
+      if (type === "success") msg.classList.add("success");
+      if (type === "error") msg.classList.add("error");
     }
 
-    // Capture listener runs before bubble listeners; stopImmediatePropagation blocks the inline handler.
+    // Capture listener: stable even if other scripts exist
     form.addEventListener(
       "submit",
       async (e) => {
-        const endpoint = window.RP_SUBSCRIBE_ENDPOINT || "";
-        const anonKey = window.RP_SUPABASE_ANON_KEY || "";
-
-        // If not configured, let existing page handler run (fallback / placeholder)
-        if (!endpoint || !anonKey) return;
-
         e.preventDefault();
         e.stopImmediatePropagation();
 
+        const endpoint = window.RP_SUBSCRIBE_ENDPOINT || "";
+        const anonKey = window.RP_SUPABASE_ANON_KEY || "";
+
         const email = String(emailEl.value || "").trim();
-        if (!email) return;
+        if (!email) {
+          show("Please enter a valid email.", "error");
+          return;
+        }
+
+        // If not configured, fail gracefully (no page refresh)
+        if (!endpoint || !anonKey) {
+          show("Subscriptions are temporarily unavailable.", "error");
+          return;
+        }
+
+        // Respect native validity if available
+        if (emailEl.checkValidity && !emailEl.checkValidity()) {
+          show("Please enter a valid email address.", "error");
+          return;
+        }
 
         btn.disabled = true;
         const prevText = btn.textContent;
@@ -294,17 +317,17 @@
             throw new Error(t || ("HTTP " + res.status));
           }
 
-          show("You're on the list. Check your inbox soon.");
+          show("You're on the list. Check your inbox soon.", "success");
           form.reset();
         } catch (err) {
-          show("Subscribe failed. Please try again later.");
+          show("Subscribe failed. Please try again later.", "error");
           console.error(err);
         } finally {
           btn.disabled = false;
           btn.textContent = prevText || "Notify me";
         }
       },
-      true // capture
+      true
     );
   }
 
@@ -370,8 +393,6 @@
     try {
       const supabase = await getSupabaseClient();
 
-      // Always expose the client, but don't confuse that with signed-in.
-      // Signed-in is determined ONLY by session existence.
       const {
         data: { session },
         error,
@@ -387,7 +408,6 @@
         setGlobalAuth(false, "", supabase);
       }
     } catch (_) {
-      // Fail open: keep public actions visible
       const els2 = findAuthEls();
       setAuthUiSignedOut(els2);
       setGlobalAuth(false, "", null);
@@ -399,46 +419,6 @@
     if (!els.navSignOutBtn && !els.navAuthed && !els.navSignIn && !els.navSignUp)
       return;
 
-    // Auth styles (only once)
-    ensureStyle(
-      "siteAuthNavStyles",
-      `
-      .nav-auth{ display:flex; align-items:center; gap:10px; margin-left: 12px; flex-wrap:wrap; justify-content:flex-end; }
-      .nav-auth-btn{
-        display:inline-flex; align-items:center; justify-content:center;
-        padding: 8px 10px; border-radius: 10px;
-        text-decoration:none; font-weight:700; letter-spacing:0.2px;
-        border: 1px solid rgba(17,24,39,0.12);
-        background: rgba(255,255,255,0.9);
-        color: #0b3c5d;
-        cursor:pointer;
-        user-select:none;
-      }
-      .nav-auth-btn:hover{ filter: brightness(0.98); }
-      .nav-auth-danger{
-        border-color: rgba(185,28,28,0.22);
-        background: rgba(185,28,28,0.08);
-        color: #7f1d1d;
-      }
-      .nav-auth-pill{
-        display:none;
-        align-items:center;
-        padding: 8px 10px;
-        border-radius: 10px;
-        border: 1px solid rgba(17,24,39,0.12);
-        background: rgba(255,255,255,0.85);
-        max-width: 320px;
-      }
-      .nav-auth-email{
-        font-weight:800;
-        overflow:hidden;
-        text-overflow:ellipsis;
-        white-space:nowrap;
-        max-width: 260px;
-      }
-    `
-    );
-
     try {
       const supabase = await getSupabaseClient();
 
@@ -448,7 +428,6 @@
       // Avoid double subscriptions
       if (!_authSub) {
         const { data } = supabase.auth.onAuthStateChange(() => {
-          // Re-check session on every auth change; this keeps __isSignedIn authoritative.
           refreshAuthNav();
         });
         _authSub = data?.subscription || null;
@@ -481,7 +460,6 @@
   // ---------- main init ----------
   function init() {
     // Avoid injecting a second header/footer if the page already has its own nav UI.
-    // Presence of auth ids means "custom header exists" to prevent duplicate IDs.
     const hasCustomAuthNav =
       elExists("#navSignIn") ||
       elExists("#navSignUp") ||
