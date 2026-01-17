@@ -29,7 +29,8 @@
 
   // ---- Supabase Auth (shared) ----
   const SUPABASE_URL = "https://xxlkxorwprtynemmbeya.supabase.co";
-  const SUPABASE_ANON_KEY = "sb_publishable_ZzCo8J6b6y0xVkExiOtHyg_gOpGEJFv";
+  const SUPABASE_ANON_KEY =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4bGt4b3J3cHJ0eW5lbW1iZXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY4NjE3NDEsImV4cCI6MjA4MjQzNzc0MX0.4Whq6bGF6cmYUgS6octe3daSyHVx9peh6rObz8kP2UM";
 
   const LOGIN_PATH = "/login.html";
   const SIGNUP_PATH = "/login.html?signup=1";
@@ -39,8 +40,8 @@
 
   // ---- Newsletter subscribe (Edge Function) ----
   // IMPORTANT:
-  // - anon/publishable key can be used in browser IF RLS is enabled properly. :contentReference[oaicite:1]{index=1}
-  // - service_role/secret keys must NEVER be exposed in browser. :contentReference[oaicite:2]{index=2}
+  // - anon key can be used in browser IF RLS is enabled properly.
+  // - service_role/secret keys must NEVER be exposed in browser.
   const RP_SUBSCRIBE_ENDPOINT = `${SUPABASE_URL}/functions/v1/subscribe`;
 
   // Expose to pages (e.g., index.html newsletter widget)
@@ -71,7 +72,8 @@
     if (itemHref.endsWith(".html")) return cur === itemHref;
 
     // Folder-like routes: /docs/, /access/
-    if (itemHref.endsWith("/")) return cur === itemHref || cur.startsWith(itemHref);
+    if (itemHref.endsWith("/"))
+      return cur === itemHref || cur.startsWith(itemHref);
 
     // Root
     if (itemHref === "/") return cur === "/";
@@ -281,7 +283,6 @@
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              // Supabase gateway expects Authorization Bearer and usually apikey header. :contentReference[oaicite:3]{index=3}
               "Authorization": "Bearer " + anonKey,
               "apikey": anonKey,
             },
@@ -333,7 +334,8 @@
   }
 
   function setAuthUiSignedOut(els) {
-    if (!els.navSignUp || !els.navSignIn || !els.navSignOutBtn || !els.navAuthed) return;
+    if (!els.navSignUp || !els.navSignIn || !els.navSignOutBtn || !els.navAuthed)
+      return;
 
     els.navAuthed.style.display = "none";
     els.navSignOutBtn.style.display = "none";
@@ -343,7 +345,14 @@
   }
 
   function setAuthUiSignedIn(els, emailText) {
-    if (!els.navSignUp || !els.navSignIn || !els.navSignOutBtn || !els.navAuthed || !els.navEmail) return;
+    if (
+      !els.navSignUp ||
+      !els.navSignIn ||
+      !els.navSignOutBtn ||
+      !els.navAuthed ||
+      !els.navEmail
+    )
+      return;
 
     els.navAuthed.style.display = "inline-flex";
     els.navEmail.textContent = emailText || "Signed in";
@@ -355,14 +364,18 @@
 
   async function refreshAuthNav() {
     const els = findAuthEls();
-    if (!els.navSignIn && !els.navSignUp && !els.navSignOutBtn && !els.navAuthed) return;
+    if (!els.navSignIn && !els.navSignUp && !els.navSignOutBtn && !els.navAuthed)
+      return;
 
     try {
       const supabase = await getSupabaseClient();
 
       // Always expose the client, but don't confuse that with signed-in.
       // Signed-in is determined ONLY by session existence.
-      const { data: { session }, error } = await supabase.auth.getSession();
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
       if (error) throw error;
 
       if (session && session.user) {
@@ -383,10 +396,13 @@
 
   async function wireAuthNav() {
     const els = findAuthEls();
-    if (!els.navSignOutBtn && !els.navAuthed && !els.navSignIn && !els.navSignUp) return;
+    if (!els.navSignOutBtn && !els.navAuthed && !els.navSignIn && !els.navSignUp)
+      return;
 
     // Auth styles (only once)
-    ensureStyle("siteAuthNavStyles", `
+    ensureStyle(
+      "siteAuthNavStyles",
+      `
       .nav-auth{ display:flex; align-items:center; gap:10px; margin-left: 12px; flex-wrap:wrap; justify-content:flex-end; }
       .nav-auth-btn{
         display:inline-flex; align-items:center; justify-content:center;
@@ -420,7 +436,8 @@
         white-space:nowrap;
         max-width: 260px;
       }
-    `);
+    `
+    );
 
     try {
       const supabase = await getSupabaseClient();
