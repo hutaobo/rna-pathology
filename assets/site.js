@@ -2,9 +2,9 @@
    Shared behavior for RNA-Pathology.com:
    - Inject a consistent header/nav + footer across pages (when not already present)
    - Highlight current nav item
-   - Mobile nav toggle (close on link click + Esc)
-   - Auth-aware nav (Supabase): show email when signed in, hide Sign In/Up, provide Sign Out
-   - Newsletter subscribe wiring (home hero)
+   - Mobile nav toggle (close on link click + outside click + Esc)
+   - Auth-aware nav (Supabase): hide Sign In/Up when signed in, provide Sign Out
+   - Newsletter subscribe wiring (home + footer updates card)
    - Global auth bridge:
      - window.__supabaseClient   (Supabase client object; existence != signed-in)
      - window.__memberEmail      ("" when signed out)
@@ -20,13 +20,13 @@
   const basePath =
     document.documentElement.getAttribute("data-base-path") || "/";
 
-  // Keep nav minimal + product-like
+  // Primary nav: clinician-first + minimal.
+  // Brand already links to Home, so we omit a separate "Home" item.
   const NAV_ITEMS = [
-    { href: "/", label: "Home" },
     { href: "/database.html", label: "Database" },
-    { href: "/challenge.html", label: "Benchmarks" },
-    { href: "/docs/", label: "Docs" },
-    { href: "/access/", label: "Access" },
+    { href: "/challenge.html", label: "Challenge" },
+    { href: "/#start-here", label: "Start here" },
+    { href: "/access/", label: "Access / Legal" },
   ];
 
   // ---- Supabase Auth (shared) ----
@@ -60,6 +60,11 @@
     return (b || "") + p;
   }
 
+  function stripHashAndQuery(s) {
+    const str = String(s || "");
+    return str.split("#")[0].split("?")[0];
+  }
+
   function normalizePath(pathname) {
     if (!pathname) return "/";
     // Treat /index.html as /
@@ -67,18 +72,32 @@
     return pathname;
   }
 
+  function stripBasePath(pathname) {
+    const p = pathname || "/";
+    if (!basePath || basePath === "/") return p;
+
+    const b = basePath.endsWith("/") ? basePath.slice(0, -1) : basePath;
+
+    if (p === b) return "/";
+    if (p.startsWith(b + "/")) return p.slice(b.length) || "/";
+
+    // If somehow not under basePath, return as-is
+    return p;
+  }
+
   function isActive(currentPath, itemHref) {
     const cur = normalizePath(currentPath);
+    const hrefPath = normalizePath(stripHashAndQuery(itemHref));
+
+    // Root (covers "/" and "/#start-here")
+    if (hrefPath === "/") return cur === "/";
 
     // Exact match for file pages
-    if (itemHref.endsWith(".html")) return cur === itemHref;
+    if (hrefPath.endsWith(".html")) return cur === hrefPath;
 
     // Folder-like routes: /docs/, /access/
-    if (itemHref.endsWith("/"))
-      return cur === itemHref || cur.startsWith(itemHref);
-
-    // Root
-    if (itemHref === "/") return cur === "/";
+    if (hrefPath.endsWith("/"))
+      return cur === hrefPath || cur.startsWith(hrefPath);
 
     return false;
   }
@@ -145,8 +164,8 @@
         <span>RNA-Pathology</span>
       </a>
 
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navLinks">
-        ☰ Menu
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navLinks" aria-label="Open menu">
+        <span aria-hidden="true">☰</span> Menu
       </button>
 
       <div id="navLinks" class="nav-links">
@@ -155,15 +174,15 @@
 
       <!-- Auth cluster (shared across pages) -->
       <div class="nav-auth" aria-label="Account actions">
-        <a id="navSignUp" class="nav-auth-btn" href="${signUpUrl}">Sign Up</a>
-        <a id="navSignIn" class="nav-auth-btn" href="${signInUrl}">Sign In</a>
+        <a id="navSignUp" class="nav-auth-btn" href="${signUpUrl}">Sign up</a>
+        <a id="navSignIn" class="nav-auth-btn" href="${signInUrl}">Sign in</a>
 
         <button id="navSignOutBtn" class="nav-auth-btn nav-auth-danger" type="button" style="display:none;">
-          Sign Out
+          Sign out
         </button>
 
         <div id="navAuthed" class="nav-auth-pill" style="display:none;">
-          <span class="nav-auth-email" id="navEmail">Signed in</span>
+          <span class="nav-auth-email" id="navEmail">Account</span>
         </div>
       </div>
     </nav>
@@ -176,6 +195,7 @@
     const year = new Date().getFullYear();
     const qrImgUrl = joinUrl(basePath, FOOTER_QR_IMG_PATH);
 
+    // Footer: keep clinician-first + utility links.
     return `
 <footer class="site-footer" role="contentinfo">
   <div class="container">
@@ -183,12 +203,11 @@
       <div class="muted">© <span id="siteYear">${year}</span> RNA-Pathology.com</div>
 
       <div class="footer-links">
-        <a href="${joinUrl(basePath, "/docs/")}">Docs</a>
+        <a href="${joinUrl(basePath, "/database.html")}">Database</a>
+        <a href="${joinUrl(basePath, "/challenge.html")}">Challenge</a>
         <a href="${joinUrl(basePath, "/docs/roadmap.html")}">Roadmap</a>
-        <a href="${joinUrl(basePath, "/docs/schema.html")}">Schema</a>
-        <a href="${joinUrl(basePath, "/legal/")}">Legal</a>
+        <a href="${joinUrl(basePath, "/access/")}">Access / Legal</a>
         <a href="${joinUrl(basePath, "/legal/privacy.html")}">Privacy</a>
-        <a href="${joinUrl(basePath, "/share/")}">Share</a>
         <a href="${joinUrl(basePath, "/")}">Home</a>
       </div>
 
@@ -213,28 +232,54 @@
 
   // ---------- behaviors ----------
   function highlightActiveNav() {
-    const current = normalizePath(window.location.pathname);
+    const current = normalizePath(stripBasePath(window.location.pathname));
     const navLinks = document.querySelectorAll(".nav-links a[data-href]");
 
     navLinks.forEach((a) => {
       const rawHref = a.getAttribute("data-href") || "";
-      if (isActive(current, rawHref)) a.classList.add("active");
+      if (isActive(current, rawHref)) {
+        a.classList.add("active");
+        a.setAttribute("aria-current", "page");
+      }
     });
   }
 
   function wireMobileToggle() {
     const btn = document.querySelector(".nav-toggle");
     const links = document.getElementById("navLinks");
-    if (!btn || !links) return;
+    const nav = document.querySelector(".site-nav");
+    if (!btn || !links || !nav) return;
 
-    function close() {
+    function close(opts) {
+      const hadOpen = links.classList.contains("open");
       links.classList.remove("open");
       btn.setAttribute("aria-expanded", "false");
+
+      // On keyboard close (Esc), return focus to button for a clean loop.
+      if (hadOpen && opts && opts.returnFocus) {
+        try { btn.focus(); } catch (_) {}
+      }
+    }
+
+    function open() {
+      links.classList.add("open");
+      btn.setAttribute("aria-expanded", "true");
+      // Move focus to the first link for keyboard users.
+      const first = links.querySelector("a");
+      if (first) {
+        try { first.focus(); } catch (_) {}
+      }
     }
 
     btn.addEventListener("click", () => {
       const isOpen = links.classList.toggle("open");
       btn.setAttribute("aria-expanded", String(isOpen));
+      if (isOpen) {
+        const first = links.querySelector("a");
+        if (first) {
+          try { first.focus(); } catch (_) {}
+        }
+      }
     });
 
     // Close menu after clicking a link (mobile UX)
@@ -243,13 +288,24 @@
       if (a) close();
     });
 
+    // Close when clicking outside the nav (mobile polish)
+    document.addEventListener("click", (e) => {
+      if (!links.classList.contains("open")) return;
+      const target = e.target;
+      const inside = target && target.closest ? target.closest(".site-nav") : null;
+      if (!inside) close();
+    });
+
     // Close on Esc
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") close();
+      if (e.key === "Escape") close({ returnFocus: true });
     });
+
+    // Defensive: if viewport changes, close the overlay menu
+    window.addEventListener("resize", () => close());
   }
 
-  // ---------- Newsletter (home hero) ----------
+  // ---------- Newsletter (home + footer) ----------
   function wireNewsletterSubscribe() {
     const form = document.getElementById("nl-form");
     const emailEl = document.getElementById("nl-email");
@@ -321,6 +377,7 @@
           form.reset();
         } catch (err) {
           show("Subscribe failed. Please try again later.", "error");
+          // Keep console for debugging, but don't leak details into UI.
           console.error(err);
         } finally {
           btn.disabled = false;
@@ -377,10 +434,19 @@
     )
       return;
 
+    // Privacy + aesthetics: don't print the email as visible nav text.
+    // Keep it available via title for the signed-in user.
     els.navAuthed.style.display = "inline-flex";
-    els.navEmail.textContent = emailText || "Signed in";
-    els.navSignOutBtn.style.display = "inline-flex";
+    els.navEmail.textContent = "Account";
+    if (emailText) {
+      els.navAuthed.setAttribute("title", emailText);
+      els.navAuthed.setAttribute("aria-label", "Signed in as " + emailText);
+    } else {
+      els.navAuthed.removeAttribute("title");
+      els.navAuthed.setAttribute("aria-label", "Signed in");
+    }
 
+    els.navSignOutBtn.style.display = "inline-flex";
     els.navSignUp.style.display = "none";
     els.navSignIn.style.display = "none";
   }
@@ -400,7 +466,7 @@
       if (error) throw error;
 
       if (session && session.user) {
-        const email = session.user.email || "Signed in";
+        const email = session.user.email || "";
         setAuthUiSignedIn(els, email);
         setGlobalAuth(true, email, supabase);
       } else {
@@ -430,7 +496,7 @@
         const { data } = supabase.auth.onAuthStateChange(() => {
           refreshAuthNav();
         });
-        _authSub = data?.subscription || null;
+        _authSub = data && data.subscription ? data.subscription : null;
       }
 
       // Sign out button
