@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>RNA-Pathology</title>
-  <meta name="description" content="RNA-Pathology™ — schema-first database & benchmarks for spatial molecular pathology. Built for reproducibility, interoperability, and cross-study comparison." />
+  <meta name="description" content="RNA-Pathology™ — A focused learning database for RNA-based pathology—built for pathologists. Learn in the Database. Prove it in the Challenge." />
   <meta name="theme-color" content="#060812" />
   <link rel="canonical" href="https://www.rna-pathology.com/" />
 
@@ -19,7 +19,7 @@
 
   <!-- Social preview (use an existing image path to avoid broken previews) -->
   <meta property="og:title" content="RNA-Pathology™" />
-  <meta property="og:description" content="Schema-first database & benchmarks for spatial molecular pathology." />
+  <meta property="og:description" content="A focused learning database for RNA-based pathology—built for pathologists. Learn in the Database. Prove it in the Challenge." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.rna-pathology.com/" />
   <meta property="og:image" content="https://www.rna-pathology.com/images/qr/rna-pathology-home.png" />
@@ -47,7 +47,7 @@
           <!-- Left: positioning + primary actions -->
           <div class="hero-left">
             <div class="hero-kicker">
-              Schema-first • Spatial molecular pathology
+              Database • Challenge • Built for pathologists
             </div>
 
             <h1 class="hero-title">
@@ -55,63 +55,59 @@
             </h1>
 
             <p class="hero-sub">
-              A schema-driven framework, database, and benchmarking suite for spatial molecular pathology —
-              built for reproducibility, interoperability, and cross-study comparison.
+              RNA-based pathology, explained for practicing pathologists.
+            </p>
+
+            <p class="muted" style="margin-top:10px;">
+              A focused learning database for RNA-based pathology—built for pathologists.
+              Learn in the Database. Prove it in the Challenge.
             </p>
 
             <div id="notice" class="hero-notice" role="status" aria-live="polite"></div>
 
             <ul class="hero-points" aria-label="Key benefits">
-              <li><strong>Curated datasets</strong> with consistent metadata, provenance, and access terms.</li>
-              <li><strong>Benchmark tasks</strong> designed for controlled, reproducible method comparison.</li>
-              <li><strong>Extensible schema</strong> that stays stable while technologies evolve.</li>
+              <li><strong>Learn</strong> with curated cases, workflows, and interpretation notes.</li>
+              <li><strong>Practice</strong> with case-based Challenges and immediate feedback.</li>
+              <li><strong>Review</strong> key takeaways and common pitfalls for routine practice.</li>
             </ul>
 
             <div class="hero-actions" aria-label="Primary actions">
               <a class="btn primary lg" href="database.html">Explore Database</a>
-              <a class="btn lg" href="challenge.html">View Benchmarks</a>
+              <a class="btn lg" href="challenge.html">Take the Challenge</a>
             </div>
 
             <div class="hero-links" aria-label="Quick links">
-              <a href="docs/schema.html">Schema</a>
-              <a href="docs/roadmap.html">Roadmap</a>
+              <a href="#start-here">Start here</a>
               <a href="access/">Access / Legal</a>
-              <a href="https://github.com/hutaobo/rna-pathology" target="_blank" rel="noopener">GitHub</a>
+              <a href="docs/roadmap.html">Roadmap</a>
             </div>
           </div>
 
-          <!-- Right: newsletter + tech hint -->
-          <aside class="hero-right" aria-label="Updates and technical snapshot">
+          <!-- Right: quick start + learning loop -->
+          <aside class="hero-right" aria-label="Quick start and learning loop">
 
-            <div class="nl-card" aria-label="Newsletter signup">
+            <div class="nl-card" aria-label="Quickstart">
               <div class="nl-head">
-                <div class="nl-title">Dataset & Benchmark Updates</div>
+                <div class="nl-title">Start here (10 min)</div>
                 <div class="nl-sub muted">
-                  One email when something new ships. No spam.
+                  Three quick steps for your first visit.
                 </div>
               </div>
 
-              <form id="nl-form" class="nl-form">
-                <label class="sr-only" for="nl-email">Email</label>
-                <input id="nl-email" type="email" autocomplete="email" placeholder="you@institute.edu" required />
-                <button id="nl-btn" class="btn primary" type="submit">Notify me</button>
-              </form>
-
-              <div id="nl-msg" class="nl-msg" role="status" aria-live="polite"></div>
-
-              <div class="nl-foot muted">
-                You can unsubscribe anytime.
+              <div class="nl-foot muted" style="margin-top:10px;">
+                <a href="#start-here">1) Read the quickstart</a><br />
+                <a href="database.html">2) Learn in the Database</a><br />
+                <a href="challenge.html">3) Take the Challenge</a>
               </div>
             </div>
 
-            <div class="tech-card" aria-label="Schema-first snapshot">
-              <div class="tech-title">Schema-first snapshot</div>
-              <pre class="tech-pre"><code>dataset
-  ├─ specimen / slide / region
-  ├─ spatial geometry + imaging
-  └─ molecular matrices + annotations</code></pre>
+            <div class="tech-card" aria-label="The learning loop">
+              <div class="tech-title">The learning loop</div>
+              <pre class="tech-pre"><code>1 Learn  → Database
+2 Practice → Challenge
+3 Review → Key takeaways</code></pre>
               <div class="tech-foot muted">
-                Designed for interoperability across studies and modalities.
+                Short, case-based learning with feedback.
               </div>
             </div>
 
@@ -125,38 +121,37 @@
   <main class="home-main">
     <div class="container">
 
-      <!-- Value props -->
+      <!-- The learning loop -->
       <section class="section">
         <div class="section-head">
-          <h2>Built for reproducible spatial pathology</h2>
+          <h2>The learning loop</h2>
           <p class="muted">
-            Standardize how datasets and benchmarks are described, shared, and compared —
-            without locking into a single technology.
+            Learn the essentials in the Database, then test yourself in the Challenge and review key takeaways.
           </p>
         </div>
 
         <div class="grid cols-3">
           <div class="card feature-card">
-            <div class="badge accent">Schema</div>
-            <h3>Interoperable by design</h3>
+            <div class="badge accent">1) Learn</div>
+            <h3>Database</h3>
             <p class="muted">
-              Spatial structure, biological annotation, and molecular measurements treated as first-class entities.
+              Curated cases, workflows, and interpretation notes for RNA-based pathology.
             </p>
           </div>
 
           <div class="card feature-card">
-            <div class="badge">Database</div>
-            <h3>Curated & consistent</h3>
+            <div class="badge">2) Practice</div>
+            <h3>Challenge</h3>
             <p class="muted">
-              Schema-compliant packaging with clear provenance, access terms, and documentation.
+              Case-based questions with immediate feedback to build reliable recall.
             </p>
           </div>
 
           <div class="card feature-card">
-            <div class="badge">Benchmarks</div>
-            <h3>Comparable results</h3>
+            <div class="badge">3) Review</div>
+            <h3>Key takeaways</h3>
             <p class="muted">
-              Controlled benchmark tasks to evaluate computational methods under reproducible conditions.
+              QC checkpoints, common pitfalls, and what each result can (and cannot) support.
             </p>
           </div>
         </div>
@@ -165,9 +160,9 @@
       <!-- Two core products -->
       <section class="section">
         <div class="section-head">
-          <h2>Database & Benchmarks</h2>
+          <h2>Database & Challenge</h2>
           <p class="muted">
-            Two pillars: high-quality datasets and fair evaluation tasks.
+            Two pillars: learn with curated cases, then verify your understanding with case-based challenges.
           </p>
         </div>
 
@@ -179,30 +174,93 @@
                 <span class="action-arrow">→</span>
               </div>
               <p class="muted">
-                Curated spatial molecular pathology datasets organized under a principled schema.
+                Curated learning cases for RNA-based pathology—methods, interpretation, and pitfalls.
               </p>
             </div>
             <div class="action-meta">
-              <span class="pill">Schema-compliant</span>
-              <span class="pill">Provenance</span>
-              <span class="pill">Usage terms</span>
+              <span class="pill">Workflows</span>
+              <span class="pill">Interpretation</span>
+              <span class="pill">Pitfalls</span>
             </div>
           </a>
 
-          <a class="card action-card" href="challenge.html" aria-label="Go to Benchmarks">
+          <a class="card action-card" href="challenge.html" aria-label="Go to Challenge">
             <div class="action-top">
               <div class="action-title-row">
-                <h3>Benchmarks</h3>
+                <h3>Challenge</h3>
                 <span class="action-arrow">→</span>
               </div>
               <p class="muted">
-                Benchmark tasks for method development and head-to-head comparison under controlled settings.
+                Case-based questions to check your understanding and strengthen recall.
               </p>
             </div>
             <div class="action-meta">
-              <span class="pill">Controlled splits</span>
-              <span class="pill">Reproducible</span>
-              <span class="pill">Clear terms</span>
+              <span class="pill">Quizzes</span>
+              <span class="pill">Feedback</span>
+              <span class="pill">Progress</span>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- Start here -->
+      <section class="section" id="start-here">
+        <div class="section-head">
+          <h2>Start here</h2>
+          <p class="muted">
+            A 10-minute quickstart to orient your first visit.
+          </p>
+        </div>
+
+        <div class="grid cols-3">
+          <a class="card action-card" href="database.html" aria-label="What is RNA-based pathology">
+            <div class="action-top">
+              <div class="action-title-row">
+                <h3>What is RNA-based pathology?</h3>
+                <span class="action-arrow">→</span>
+              </div>
+              <p class="muted">
+                A practical overview of assays, outputs, and how to think about RNA signals in tissue.
+              </p>
+            </div>
+            <div class="action-meta">
+              <span class="pill">Overview</span>
+              <span class="pill">Terminology</span>
+              <span class="pill">Examples</span>
+            </div>
+          </a>
+
+          <a class="card action-card" href="database.html" aria-label="Assay selection">
+            <div class="action-top">
+              <div class="action-title-row">
+                <h3>Assay selection</h3>
+                <span class="action-arrow">→</span>
+              </div>
+              <p class="muted">
+                When to use RNAscope, spatial transcriptomics, or RNA-seq—and what each can and cannot answer.
+              </p>
+            </div>
+            <div class="action-meta">
+              <span class="pill">RNAscope</span>
+              <span class="pill">Spatial</span>
+              <span class="pill">RNA-seq</span>
+            </div>
+          </a>
+
+          <a class="card action-card" href="challenge.html" aria-label="Try the Challenge">
+            <div class="action-top">
+              <div class="action-title-row">
+                <h3>Try the Challenge</h3>
+                <span class="action-arrow">→</span>
+              </div>
+              <p class="muted">
+                Practice interpretation with case-based questions and instant feedback.
+              </p>
+            </div>
+            <div class="action-meta">
+              <span class="pill">Quiz</span>
+              <span class="pill">Feedback</span>
+              <span class="pill">Progress</span>
             </div>
           </a>
         </div>
@@ -214,26 +272,26 @@
           <div class="section-head compact">
             <h2>Current status</h2>
             <p class="muted">
-              Transparent snapshot of where things stand today.
+              A transparent snapshot of what's available today.
             </p>
           </div>
 
           <div class="status-grid" role="list">
             <div class="status-chip ok" role="listitem">
-              <span class="status-key">Schema</span>
+              <span class="status-key">Database</span>
               <span class="status-val">Active</span>
+            </div>
+            <div class="status-chip warn" role="listitem">
+              <span class="status-key">Challenge</span>
+              <span class="status-val">Beta</span>
             </div>
             <div class="status-chip ok" role="listitem">
               <span class="status-key">Documentation</span>
               <span class="status-val">Available</span>
             </div>
-            <div class="status-chip warn" role="listitem">
-              <span class="status-key">Data ingestion</span>
-              <span class="status-val">Pilot</span>
-            </div>
             <div class="status-chip" role="listitem">
-              <span class="status-key">Programmatic access</span>
-              <span class="status-val">Planned</span>
+              <span class="status-key">New content</span>
+              <span class="status-val">Ongoing</span>
             </div>
           </div>
 
@@ -243,32 +301,52 @@
         </div>
       </section>
 
-      <!-- Get involved -->
+      <!-- Access & contact + updates -->
       <section class="section">
-        <div class="card callout">
-          <div class="section-head compact">
-            <h2>Get involved</h2>
-            <p class="muted">
-              Contributions, feedback, and scientific discussions are welcome.
-            </p>
+        <div class="grid cols-2">
+
+          <div class="card callout">
+            <div class="section-head compact">
+              <h2>Access & contact</h2>
+              <p class="muted">
+                Maintained by SPATHO AB. For questions, collaboration proposals, or access requests, email
+                <a href="mailto:connect@rna-pathology.com">connect@rna-pathology.com</a>.
+              </p>
+            </div>
+
+            <div class="callout-actions" aria-label="Access and contact actions">
+              <a class="btn primary" href="database.html">Explore Database</a>
+              <a class="btn" href="challenge.html">Take the Challenge</a>
+              <a class="btn" href="access/">Access / Legal</a>
+              <a class="btn" href="mailto:connect@rna-pathology.com">Contact</a>
+            </div>
+
+            <div class="muted small" style="margin-top:10px;">
+              Educational resource only — not clinical advice.
+            </div>
           </div>
 
-          <div class="callout-actions" aria-label="Contact and contribution actions">
-            <a class="btn primary" href="https://github.com/hutaobo/rna-pathology" target="_blank" rel="noopener">
-              Open GitHub
-            </a>
-            <a class="btn" href="mailto:taobo.hu@scilifelab.se">
-              Contact maintainer
-            </a>
-            <a class="btn" href="access/">
-              Access / Legal
-            </a>
+          <div class="nl-card" aria-label="Newsletter signup">
+            <div class="nl-head">
+              <div class="nl-title">Updates</div>
+              <div class="nl-sub muted">
+                One email when something new ships. No spam.
+              </div>
+            </div>
+
+            <form id="nl-form" class="nl-form">
+              <label class="sr-only" for="nl-email">Email</label>
+              <input id="nl-email" type="email" autocomplete="email" placeholder="you@institute.edu" required />
+              <button id="nl-btn" class="btn primary" type="submit">Notify me</button>
+            </form>
+
+            <div id="nl-msg" class="nl-msg" role="status" aria-live="polite"></div>
+
+            <div class="nl-foot muted">
+              You can unsubscribe anytime.
+            </div>
           </div>
 
-          <div class="muted small" style="margin-top:10px;">
-            For data access requests or collaboration proposals, email
-            <a href="mailto:connect@rna-pathology.com">connect@rna-pathology.com</a>.
-          </div>
         </div>
       </section>
 
