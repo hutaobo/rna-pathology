@@ -334,14 +334,9 @@
     let btnUpdatePassword = null;
     let inRecovery = false;
 
-    // ---- URL helpers (avoid hard-coded domains; optionally force www) ----
-    const CANONICAL_ORIGIN =
-      (location.hostname === "rna-pathology.com")
-        ? "https://www.rna-pathology.com"
-        : location.origin;
-
+    // Absolute URL builder for Supabase redirectTo/emailRedirectTo (must be absolute)
     function appUrl(path = "/login.html") {
-      return `${CANONICAL_ORIGIN}${path}`;
+      return new URL(path, location.origin).toString();
     }
 
     function setStatus(text, level = "info") {
@@ -360,21 +355,7 @@
     }
 
     function getQueryFlag(name) {
-      const u = new URL(window.location.href);
-      return u.searchParams.get(name);
-    }
-
-    function getNextPath() {
-      const u = new URL(window.location.href);
-      return u.searchParams.get("next") || "/?signed_in=1";
-    }
-
-    function disableAuthButtons(disabled) {
-      btnSignUp.disabled = disabled;
-      btnSignIn.disabled = disabled;
-      btnSignOut.disabled = disabled;
-      btnForgot.disabled = disabled;
-      if (btnUpdatePassword) btnUpdatePassword.disabled = disabled;
+      return new URL(window.location.href).searchParams.get(name);
     }
 
     function parseParamsFromHash() {
@@ -389,9 +370,65 @@
       return (qType === "recovery" || hType === "recovery");
     }
 
-    // Read query flags (e.g., login.html?signup=1)
+    // Only allow same-origin next, and avoid redirecting back to login itself
+    function getSafeNextPath() {
+      const u = new URL(window.location.href);
+      const raw = u.searchParams.get("next");
+      if (!raw) return null;
+
+      try {
+        const dest = new URL(raw, location.origin); // resolves relative paths against same origin
+        if (dest.origin !== location.origin) return null;
+
+        if (dest.pathname === "/login.html") return null; // prevent loops
+
+        return dest.pathname + dest.search + dest.hash;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function buildLoginReturnUrl(extraParams = {}) {
+      const u = new URL("/login.html", location.origin);
+      const next = getSafeNextPath();
+      if (next) u.searchParams.set("next", next);
+
+      for (const [k, v] of Object.entries(extraParams)) {
+        if (v === undefined || v === null) continue;
+        u.searchParams.set(k, String(v));
+      }
+      return u.toString();
+    }
+
+    function redirectTo(path, { replace = true } = {}) {
+      if (replace) {
+        // replace avoids back-button loops :contentReference[oaicite:4]{index=4}
+        window.location.replace(path);
+      } else {
+        window.location.href = path;
+      }
+    }
+
+    function disableAuthButtons(disabled) {
+      btnSignUp.disabled = disabled;
+      btnSignIn.disabled = disabled;
+      btnSignOut.disabled = disabled;
+      btnForgot.disabled = disabled;
+      if (btnUpdatePassword) btnUpdatePassword.disabled = disabled;
+    }
+
+    // ---- Initial mode & status ----
     const signupFlag = getQueryFlag("signup");
-    if (signupFlag === "1" || signupFlag === "true") {
+    const signedOutFlag = getQueryFlag("signed_out");
+    const passwordResetFlag = getQueryFlag("password_reset");
+
+    if (passwordResetFlag === "1" || passwordResetFlag === "true") {
+      setMode("signin");
+      setStatus("Password updated. Please sign in with your new password.", "ok");
+    } else if (signedOutFlag === "1" || signedOutFlag === "true") {
+      setMode("signin");
+      setStatus("Signed out. You can sign in again.", "ok");
+    } else if (signupFlag === "1" || signupFlag === "true") {
       setMode("signup");
       setStatus("Ready to sign up. Enter your email + password, then click “Sign Up”.", "warn");
       setTimeout(() => $("password").focus(), 50);
@@ -402,17 +439,36 @@
 
     try {
       const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
-      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
+        }
+      });
 
       async function refreshUI() {
         try {
-          const { data: { session }, error } = await supabase.auth.getSession();
+          // getUser() is network-validated and authentic :contentReference[oaicite:5]{index=5}
+          const { data, error } = await supabase.auth.getUser();
+
+          // If there's simply no session, treat as signed out (don't show as an error)
+          const missing =
+            error &&
+            (error.name === "AuthSessionMissingError" ||
+             /auth session missing/i.test(error.message || ""));
+
+          if (missing) {
+            btnSignOut.style.display = "none";
+            return;
+          }
           if (error) throw error;
 
-          if (session) {
+          const user = data?.user;
+          if (user) {
             btnSignOut.style.display = "inline-flex";
             setStatus(
-              "Signed in as: " + session.user.email + "\nuser_id: " + session.user.id,
+              "Signed in as: " + (user.email || "(no email)") + "\nuser_id: " + user.id,
               "ok"
             );
           } else {
@@ -424,20 +480,24 @@
         }
       }
 
-      // ---- PKCE support: if we land here with ?code=..., exchange it for a session ----
-      // (This happens in PKCE flow, including some email link redirects.)
+      // ---- If we land here with ?code=..., exchange it for a session (PKCE) ----
+      // exchangeCodeForSession is used in PKCE flows :contentReference[oaicite:6]{index=6}
       try {
         const u = new URL(window.location.href);
         const code = u.searchParams.get("code");
         if (code) {
-          const { error } = await supabase.auth.exchangeCodeForSession(code);
-          // Clean URL (remove ?code=...) regardless of exchange result
+          // Avoid exchanging twice if a session already exists
+          const { data: sessData } = await supabase.auth.getSession();
+          if (!sessData?.session) {
+            const { error } = await supabase.auth.exchangeCodeForSession(code);
+            if (error) {
+              setStatus("Auth code exchange warning:\n" + (error?.message || String(error)), "warn");
+            }
+          }
+
+          // Clean URL (remove ?code=...)
           u.searchParams.delete("code");
           window.history.replaceState({}, document.title, u.toString());
-          if (error) {
-            // Not fatal; continue (could be non-PKCE, already-exchanged, etc.)
-            setStatus("Auth code exchange warning:\n" + (error?.message || String(error)), "warn");
-          }
         }
       } catch (_) {}
 
@@ -450,18 +510,15 @@
         modeHintEl.textContent = "Password recovery mode.";
         setStatus("Password recovery detected. Please set a new password below.", "warn");
 
-        // Hide normal auth buttons / forgot link while resetting
         authButtonsRow.style.display = "none";
         forgotRow.style.display = "none";
         btnSignOut.style.display = "none";
 
-        // Re-purpose the existing password field as "new password"
         const pw = $("password");
         pw.value = "";
         pw.placeholder = "New password (at least 6 characters)";
         pw.autocomplete = "new-password";
 
-        // Add confirm + update button if not present
         if (!$("password2")) {
           const lab2 = document.createElement("label");
           lab2.setAttribute("for", "password2");
@@ -503,12 +560,14 @@
             setStatus("Updating password…", "warn");
 
             try {
-              // This is the actual "reset" step after user returns via the email link
               const { error } = await supabase.auth.updateUser({ password: newPass });
               if (error) throw error;
 
+              // Optional but helps avoid weird states: sign out after password change
+              try { await supabase.auth.signOut(); } catch (_) {}
+
               setStatus("Password updated successfully. Please sign in with your new password.", "ok");
-              window.location.href = appUrl("/login.html?password_reset=1");
+              redirectTo("/login.html?password_reset=1", { replace: true });
             } catch (e) {
               setStatus("Password update failed:\n" + (e?.message || String(e)), "err");
             } finally {
@@ -518,12 +577,11 @@
         }
       }
 
-      // Trigger recovery mode if URL explicitly indicates it
       if (isRecoveryIntentFromUrl()) {
         ensureRecoveryUI();
       }
 
-      // Listen for auth state changes (Supabase emits PASSWORD_RECOVERY on recovery links) :contentReference[oaicite:3]{index=3}
+      // Listen to auth events :contentReference[oaicite:7]{index=7}
       supabase.auth.onAuthStateChange((event) => {
         if (event === "PASSWORD_RECOVERY") {
           ensureRecoveryUI();
@@ -532,12 +590,15 @@
         refreshUI();
       });
 
-      // If already signed in, go to next directly — but NOT if we are in recovery flow
+      // If already signed in and there is an explicit safe `next`, go there (but not in recovery flow)
       try {
         const recoveryIntent = isRecoveryIntentFromUrl();
+        const next = getSafeNextPath();
         const { data: { session } } = await supabase.auth.getSession();
-        if (session && !recoveryIntent && !inRecovery) {
-          window.location.href = getNextPath();
+
+        if (session && next && !recoveryIntent && !inRecovery) {
+          redirectTo(next, { replace: true });
+          return;
         }
       } catch (_) {}
 
@@ -559,8 +620,8 @@
             email,
             password,
             options: {
-              // Send user back to this page after confirming email
-              emailRedirectTo: appUrl("/login.html")
+              // Keep user on same origin; include `next` if present
+              emailRedirectTo: buildLoginReturnUrl()
             }
           });
           if (error) throw error;
@@ -595,7 +656,8 @@
           const { error } = await supabase.auth.signInWithPassword({ email, password });
           if (error) throw error;
 
-          window.location.href = getNextPath();
+          const next = getSafeNextPath();
+          redirectTo(next || "/?signed_in=1", { replace: true });
         } catch (e) {
           setStatus("Sign in failed:\n" + (e?.message || String(e)), "err");
         } finally {
@@ -603,7 +665,7 @@
         }
       });
 
-      // Forgot password (sends email; actual reset happens after user returns and we call updateUser) :contentReference[oaicite:4]{index=4}
+      // Forgot password: sends email; actual reset happens after return + updateUser :contentReference[oaicite:8]{index=8}
       btnForgot.addEventListener("click", async () => {
         if (inRecovery) return;
 
@@ -615,7 +677,7 @@
 
         try {
           const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: appUrl("/login.html")
+            redirectTo: buildLoginReturnUrl()
           });
           if (error) throw error;
 
@@ -639,7 +701,7 @@
           if (error) throw error;
 
           setStatus("Signed out.", "ok");
-          window.location.href = appUrl("/login.html?signed_out=1");
+          redirectTo("/login.html?signed_out=1", { replace: true });
         } catch (e) {
           setStatus("Sign out failed:\n" + (e?.message || String(e)), "err");
         } finally {
