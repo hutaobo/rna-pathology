@@ -26,6 +26,10 @@
     { href: "/database.html", label: "Database" },
     { href: "/challenge.html", label: "Challenge" },
     { href: "/#start-here", label: "Start here" },
+
+    // NEW: Open Submissions
+    { href: "/open/", label: "Open Submissions" },
+
     { href: "/access/", label: "Access / Legal" },
   ];
 
@@ -95,7 +99,7 @@
     // Exact match for file pages
     if (hrefPath.endsWith(".html")) return cur === hrefPath;
 
-    // Folder-like routes: /docs/, /access/
+    // Folder-like routes: /docs/, /access/, /open/
     if (hrefPath.endsWith("/"))
       return cur === hrefPath || cur.startsWith(hrefPath);
 
@@ -205,6 +209,10 @@
       <div class="footer-links">
         <a href="${joinUrl(basePath, "/database.html")}">Database</a>
         <a href="${joinUrl(basePath, "/challenge.html")}">Challenge</a>
+
+        <!-- NEW: Open Submissions -->
+        <a href="${joinUrl(basePath, "/open/")}">Open Submissions</a>
+
         <a href="${joinUrl(basePath, "/docs/roadmap.html")}">Roadmap</a>
         <a href="${joinUrl(basePath, "/access/")}">Access / Legal</a>
         <a href="${joinUrl(basePath, "/legal/privacy.html")}">Privacy</a>
@@ -258,16 +266,6 @@
       // On keyboard close (Esc), return focus to button for a clean loop.
       if (hadOpen && opts && opts.returnFocus) {
         try { btn.focus(); } catch (_) {}
-      }
-    }
-
-    function open() {
-      links.classList.add("open");
-      btn.setAttribute("aria-expanded", "true");
-      // Move focus to the first link for keyboard users.
-      const first = links.querySelector("a");
-      if (first) {
-        try { first.focus(); } catch (_) {}
       }
     }
 
