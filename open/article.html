@@ -1,1 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Article | Open Submissions | RNA-Pathology</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Read a community-submitted article and join the discussion." />
+  <link rel="stylesheet" href="/assets/site.css" />
 
+  <!-- DOMPurify -->
+  <script src="https://unpkg.com/dompurify@3.3.1/dist/purify.min.js"></script>
+
+  <script defer src="/assets/site.js"></script>
+  <script defer src="/assets/open_article.js"></script>
+</head>
+<body>
+  <main class="container">
+    <a href="/open/">← Back to Submissions</a>
+
+    <h1 id="articleTitle">Loading...</h1>
+    <div id="articleMeta" class="muted"></div>
+
+    <article id="articleContent" class="prose"></article>
+
+    <hr />
+
+    <h2>Comments</h2>
+    <div id="commentsList" class="stack"></div>
+
+    <div id="commentBox" class="stack" style="margin-top:16px;">
+      <textarea id="commentText" rows="4" placeholder="Write a comment (login required)"></textarea>
+      <button id="commentSubmit" class="btn">Post Comment</button>
+      <div id="commentMsg" class="muted"></div>
+    </div>
+  </main>
+</body>
+</html>
