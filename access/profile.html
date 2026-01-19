@@ -1,1 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Profile | RNA-Pathology</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/assets/site.css" />
+  <script defer src="/assets/site.js"></script>
+  <script defer src="/assets/profile.js"></script>
+</head>
+<body>
+  <main class="container">
+    <h1>Your Profile</h1>
+    <p class="muted">Set your public display name (shown on articles and comments).</p>
 
+    <div class="stack">
+      <div><strong>Email:</strong> <span id="profEmail"></span></div>
+      <label>
+        <div class="label">Display name</div>
+        <input id="nameInput" type="text" maxlength="100" placeholder="e.g., Taobo Hu" />
+      </label>
+      <button id="saveNameBtn" class="btn">Save</button>
+      <div id="nameMsg" class="muted"></div>
+    </div>
+
+    <hr />
+
+    <h2>Your Articles</h2>
+    <div id="myArticlesList" class="stack"></div>
+  </main>
+</body>
+</html>
