@@ -1,29 +1,48 @@
 (function () {
-  async function waitForAuthReady() {
+  async function waitForSupabaseClient() {
     await new Promise((resolve) => {
       if (window.__supabaseClient) return resolve();
       const t = setTimeout(resolve, 4000);
-      window.addEventListener("rp:auth", () => {
-        clearTimeout(t);
-        resolve();
-      }, { once: true });
+      window.addEventListener(
+        "rp:auth",
+        () => {
+          clearTimeout(t);
+          resolve();
+        },
+        { once: true }
+      );
     });
   }
 
+  async function requireLoginOrRedirect(supabase) {
+    // Prefer getUser() (validated) for login gating
+    const { data, error } = await supabase.auth.getUser();
+    const user = data?.user;
+
+    if (error) console.warn("getUser error:", error);
+
+    if (user) return user;
+
+    const next = encodeURIComponent(location.pathname + location.search);
+    // use replace to avoid back-button loops
+    location.replace(`/login.html?next=${next}`);
+    return null;
+  }
+
   window.addEventListener("DOMContentLoaded", async () => {
-    await waitForAuthReady();
+    await waitForSupabaseClient();
 
     const supabase = window.__supabaseClient;
-    const isSignedIn = !!window.__isSignedIn;
+    const msg = document.getElementById("formMsg");
 
-    if (!isSignedIn) {
-      window.location.href = "/login.html?next=/open/new.html";
-      return;
-    }
     if (!supabase) {
-      document.getElementById("formMsg").textContent = "Supabase client not ready. Check assets/site.js.";
+      if (msg) msg.textContent = "Supabase client not ready. Check assets/site.js.";
       return;
     }
+
+    // Gate BEFORE initializing editor / binding handlers
+    const user = await requireLoginOrRedirect(supabase);
+    if (!user) return;
 
     // Quill init (toolbar)
     const quill = new Quill("#editor", {
@@ -40,27 +59,22 @@
       }
     });
 
-    // Use trusted user data (client-side is ok; RLS enforces)
-    const { data: userRes } = await supabase.auth.getUser();
-    const user = userRes?.user;
-
     const form = document.getElementById("articleForm");
     const titleInput = document.getElementById("articleTitleInput");
-    const msg = document.getElementById("formMsg");
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      msg.textContent = "";
+      if (msg) msg.textContent = "";
 
       const title = (titleInput.value || "").trim();
       const rawHtml = (quill.root.innerHTML || "").trim();
 
       if (!title) {
-        msg.textContent = "Title is required.";
+        if (msg) msg.textContent = "Title is required.";
         return;
       }
       if (!rawHtml || rawHtml === "<p><br></p>") {
-        msg.textContent = "Content is required.";
+        if (msg) msg.textContent = "Content is required.";
         return;
       }
 
@@ -79,12 +93,12 @@
 
       if (error) {
         console.error(error);
-        msg.textContent = "Publish failed. Please try again.";
+        if (msg) msg.textContent = "Publish failed. Please try again.";
         return;
       }
 
-      msg.textContent = "Published! Redirecting…";
-      window.location.href = `/open/article.html?id=${data.id}`;
+      if (msg) msg.textContent = "Published! Redirecting…";
+      location.href = `/open/article.html?id=${data.id}`;
     });
   });
 })();
