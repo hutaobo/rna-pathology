@@ -28,11 +28,11 @@
       if (!isSignedIn) {
         btn.textContent = "Log in to submit";
         btn.addEventListener("click", () => {
-          window.location.href = "/login.html?next=/open/new.html";
+          window.location.href = "https://www.rna-pathology.com/login.html?next=/open/new.html";
         });
       } else {
         btn.addEventListener("click", () => {
-          window.location.href = "/open/new.html";
+          window.location.href = "https://www.rna-pathology.com/open/new.html";
         });
       }
     }
