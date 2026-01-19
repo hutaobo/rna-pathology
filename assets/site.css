@@ -153,7 +153,7 @@ button:disabled,
   width: 1px;
   height: 1px;
   padding: 0;
-  margin: -1px;
+  margin: 0;
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
@@ -972,6 +972,156 @@ p {
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 12px;
+}
+
+/* =========================
+   9.5) Open Submissions (forms + prose + Quill dark tune)
+   ========================= */
+
+/* Simple vertical stack utility used on /open/ and /access/profile.html */
+.stack {
+  display: grid;
+  gap: 12px;
+}
+
+/* Small label helper used in our new pages */
+.label {
+  font-weight: 760;
+  letter-spacing: 0.15px;
+  margin-bottom: 6px;
+}
+
+/* Global-ish text inputs/textarea to match the site (used by Open Submissions) */
+input[type="text"],
+textarea {
+  width: 100%;
+  padding: 12px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  outline: none;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 92px;
+  line-height: 1.55;
+}
+
+input[type="text"]:focus,
+textarea:focus {
+  border-color: rgba(110, 231, 255, 0.35);
+  box-shadow: 0 0 0 4px rgba(110, 231, 255, 0.12);
+}
+
+/* Rich article body (rendered HTML) */
+.prose {
+  margin-top: 12px;
+  max-width: 900px;
+}
+
+.prose h1,
+.prose h2,
+.prose h3 {
+  margin-top: 1.1em;
+}
+
+.prose p {
+  margin: 0.55em 0;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.25em;
+  margin: 0.55em 0 0.85em;
+}
+
+.prose li {
+  margin: 0.25em 0;
+}
+
+.prose blockquote {
+  margin: 0.9em 0;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(110, 231, 255, 0.18);
+  background: rgba(110, 231, 255, 0.07);
+}
+
+.prose pre {
+  margin: 0.9em 0;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  overflow: auto;
+}
+
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+}
+
+.prose a {
+  text-decoration: underline;
+  text-decoration-color: rgba(110, 231, 255, 0.35);
+  text-underline-offset: 3px;
+}
+
+.prose img {
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Quill “Snow” theme: make it look native in dark UI */
+.ql-toolbar.ql-snow,
+.ql-container.ql-snow {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.ql-toolbar.ql-snow {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 14px 14px 0 0;
+}
+
+.ql-container.ql-snow {
+  background: rgba(0, 0, 0, 0.18);
+  border-radius: 0 0 14px 14px;
+}
+
+.ql-snow .ql-editor {
+  color: var(--text);
+}
+
+.ql-snow .ql-editor.ql-blank::before {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Toolbar icons/text to light */
+.ql-snow .ql-stroke {
+  stroke: rgba(255, 255, 255, 0.82) !important;
+}
+.ql-snow .ql-fill {
+  fill: rgba(255, 255, 255, 0.82) !important;
+}
+.ql-snow .ql-picker {
+  color: rgba(255, 255, 255, 0.86);
+}
+.ql-snow .ql-picker-options {
+  background: rgba(10, 12, 22, 0.98);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+}
+.ql-snow .ql-picker-item:hover,
+.ql-snow .ql-picker-label:hover,
+.ql-snow .ql-toolbar button:hover {
+  color: rgba(255, 255, 255, 0.95);
+}
+.ql-snow.ql-toolbar button.ql-active,
+.ql-snow .ql-toolbar button.ql-active {
+  background: rgba(110, 231, 255, 0.12);
+  border-radius: 10px;
 }
 
 /* =========================
