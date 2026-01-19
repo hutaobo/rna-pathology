@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-base-path="/rna-pathology">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -270,7 +270,8 @@
         <div class="brand">
           <h1>RNA-Pathology<span class="tm">™</span></h1>
         </div>
-        <a class="home-link" href="/">Back to Home</a>
+        <!-- 使用相对路径，支持 GitHub Pages 子目录部署 -->
+        <a class="home-link" href="./">Back to Home</a>
       </div>
       <p class="tagline">
         Sign in to access member features. New here? Create an account in under a minute.
@@ -309,7 +310,7 @@
       <div id="msg" class="status">Loading…</div>
 
       <div class="fineprint">
-        By signing in, you agree to the project’s <a href="/access/">Legal / Usage</a> terms.
+        By signing in, you agree to the project’s <a href="access/">Legal / Usage</a> terms.
       </div>
     </div>
   </div>
@@ -334,9 +335,9 @@
     let btnUpdatePassword = null;
     let inRecovery = false;
 
-    // Absolute URL builder for Supabase redirectTo/emailRedirectTo (must be absolute)
-    function appUrl(path = "/login.html") {
-      return new URL(path, location.origin).toString();
+    // 构建重定向/邮件链接的绝对 URL。默认值使用相对路径，支持子目录部署。
+    function appUrl(path = "login.html") {
+      return new URL(path, location.href).toString();
     }
 
     function setStatus(text, level = "info") {
@@ -370,17 +371,18 @@
       return (qType === "recovery" || hType === "recovery");
     }
 
-    // Only allow same-origin next, and avoid redirecting back to login itself
+    // 只允许同源的“next”，并避免重定向回 login 本身
     function getSafeNextPath() {
       const u = new URL(window.location.href);
       const raw = u.searchParams.get("next");
       if (!raw) return null;
 
       try {
-        const dest = new URL(raw, location.origin); // resolves relative paths against same origin
+        const dest = new URL(raw, location.origin);
         if (dest.origin !== location.origin) return null;
 
-        if (dest.pathname === "/login.html") return null; // prevent loops
+        // 如果目标是登录页，则拒绝，防止循环
+        if (dest.pathname.endsWith("login.html")) return null;
 
         return dest.pathname + dest.search + dest.hash;
       } catch (_) {
@@ -389,7 +391,8 @@
     }
 
     function buildLoginReturnUrl(extraParams = {}) {
-      const u = new URL("/login.html", location.origin);
+      // 使用当前页面作为基准构建 URL，支持子目录部署
+      const u = new URL("login.html", location.href);
       const next = getSafeNextPath();
       if (next) u.searchParams.set("next", next);
 
@@ -402,7 +405,6 @@
 
     function redirectTo(path, { replace = true } = {}) {
       if (replace) {
-        // replace avoids back-button loops :contentReference[oaicite:4]{index=4}
         window.location.replace(path);
       } else {
         window.location.href = path;
@@ -417,7 +419,7 @@
       if (btnUpdatePassword) btnUpdatePassword.disabled = disabled;
     }
 
-    // ---- Initial mode & status ----
+    // ---- 初始模式和状态 ----
     const signupFlag = getQueryFlag("signup");
     const signedOutFlag = getQueryFlag("signed_out");
     const passwordResetFlag = getQueryFlag("password_reset");
@@ -438,6 +440,7 @@
     }
 
     try {
+      // 动态引入 Supabase（如遇网络问题，会进入 catch）
       const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
       const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
         auth: {
@@ -449,10 +452,8 @@
 
       async function refreshUI() {
         try {
-          // getUser() is network-validated and authentic :contentReference[oaicite:5]{index=5}
           const { data, error } = await supabase.auth.getUser();
 
-          // If there's simply no session, treat as signed out (don't show as an error)
           const missing =
             error &&
             (error.name === "AuthSessionMissingError" ||
@@ -480,13 +481,11 @@
         }
       }
 
-      // ---- If we land here with ?code=..., exchange it for a session (PKCE) ----
-      // exchangeCodeForSession is used in PKCE flows :contentReference[oaicite:6]{index=6}
+      // 如果带有授权 code，则交换 session（用于 PKCE）
       try {
         const u = new URL(window.location.href);
         const code = u.searchParams.get("code");
         if (code) {
-          // Avoid exchanging twice if a session already exists
           const { data: sessData } = await supabase.auth.getSession();
           if (!sessData?.session) {
             const { error } = await supabase.auth.exchangeCodeForSession(code);
@@ -495,13 +494,12 @@
             }
           }
 
-          // Clean URL (remove ?code=...)
           u.searchParams.delete("code");
           window.history.replaceState({}, document.title, u.toString());
         }
       } catch (_) {}
 
-      // ---- Recovery UI (Step 2 of password reset) ----
+      // ---- 密码恢复 UI ----
       function ensureRecoveryUI() {
         if (inRecovery) return;
         inRecovery = true;
@@ -563,11 +561,10 @@
               const { error } = await supabase.auth.updateUser({ password: newPass });
               if (error) throw error;
 
-              // Optional but helps avoid weird states: sign out after password change
               try { await supabase.auth.signOut(); } catch (_) {}
 
               setStatus("Password updated successfully. Please sign in with your new password.", "ok");
-              redirectTo("/login.html?password_reset=1", { replace: true });
+              redirectTo("login.html?password_reset=1", { replace: true });
             } catch (e) {
               setStatus("Password update failed:\n" + (e?.message || String(e)), "err");
             } finally {
@@ -581,7 +578,7 @@
         ensureRecoveryUI();
       }
 
-      // Listen to auth events :contentReference[oaicite:7]{index=7}
+      // 监听认证事件
       supabase.auth.onAuthStateChange((event) => {
         if (event === "PASSWORD_RECOVERY") {
           ensureRecoveryUI();
@@ -590,7 +587,7 @@
         refreshUI();
       });
 
-      // If already signed in and there is an explicit safe `next`, go there (but not in recovery flow)
+      // 如果已经登陆且指定了安全 next，则跳转
       try {
         const recoveryIntent = isRecoveryIntentFromUrl();
         const next = getSafeNextPath();
@@ -602,6 +599,7 @@
         }
       } catch (_) {}
 
+      // 注册
       btnSignUp.addEventListener("click", async () => {
         if (inRecovery) return;
 
@@ -620,7 +618,6 @@
             email,
             password,
             options: {
-              // Keep user on same origin; include `next` if present
               emailRedirectTo: buildLoginReturnUrl()
             }
           });
@@ -639,6 +636,7 @@
         }
       });
 
+      // 登录
       btnSignIn.addEventListener("click", async () => {
         if (inRecovery) return;
 
@@ -657,7 +655,8 @@
           if (error) throw error;
 
           const next = getSafeNextPath();
-          redirectTo(next || "/?signed_in=1", { replace: true });
+          // 没有 next 时返回根目录（相对路径）
+          redirectTo(next || "./?signed_in=1", { replace: true });
         } catch (e) {
           setStatus("Sign in failed:\n" + (e?.message || String(e)), "err");
         } finally {
@@ -665,7 +664,7 @@
         }
       });
 
-      // Forgot password: sends email; actual reset happens after return + updateUser :contentReference[oaicite:8]{index=8}
+      // 忘记密码
       btnForgot.addEventListener("click", async () => {
         if (inRecovery) return;
 
@@ -692,6 +691,7 @@
         }
       });
 
+      // 登出
       btnSignOut.addEventListener("click", async () => {
         disableAuthButtons(true);
         setStatus("Signing out…", "warn");
@@ -701,7 +701,7 @@
           if (error) throw error;
 
           setStatus("Signed out.", "ok");
-          redirectTo("/login.html?signed_out=1", { replace: true });
+          redirectTo("login.html?signed_out=1", { replace: true });
         } catch (e) {
           setStatus("Sign out failed:\n" + (e?.message || String(e)), "err");
         } finally {
