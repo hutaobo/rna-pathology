@@ -21,7 +21,6 @@
   }
 
   async function loadSupabase() {
-    // Robust load: ESM first, then UMD fallback (avoids jsDelivr +esm pitfalls)
     const errors = [];
     const esmCandidates = [
       "https://esm.sh/@supabase/supabase-js@2",
@@ -40,7 +39,6 @@
       }
     }
 
-    // UMD fallback
     const umdCandidates = [
       "https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js",
       "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"
@@ -81,8 +79,6 @@
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
     });
 
-    // Client-side: getUser is “secure” (validates token); on client it’s fine.
-    // Docs note: getSession is low-level; getUser recommended when you need validated user. :contentReference[oaicite:5]{index=5}
     let currentUserId = null;
     try {
       const { data } = await supabase.auth.getUser();
@@ -93,9 +89,11 @@
       listEl.innerHTML = "";
       setMsg("");
 
+      // Pull author display_name via joins/nesting + view_count
+      // Supabase joins & nesting docs: select("..., profiles(display_name)") :contentReference[oaicite:6]{index=6}
       const { data, error } = await supabase
         .from("articles")
-        .select("id, title, content, created_at, user_id, deleted_at")
+        .select("id, title, content, created_at, user_id, deleted_at, view_count, profiles:profiles(display_name)")
         .is("deleted_at", null)
         .order("created_at", { ascending: false });
 
@@ -119,6 +117,8 @@
         const title = escapeHtml(a.title || "Untitled");
         const created = a.created_at ? new Date(a.created_at).toLocaleString() : "";
         const snippet = (a.content || "").replace(/<[^>]*>/g, "").slice(0, 180);
+        const author = escapeHtml(a.profiles?.display_name || "Anonymous");
+        const views = Number.isFinite(a.view_count) ? a.view_count : 0;
 
         card.innerHTML = `
           <div style="display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;">
@@ -126,7 +126,9 @@
               <a href="/open/article.html?id=${encodeURIComponent(a.id)}" style="font-weight:800;text-decoration:none;">
                 ${title}
               </a>
-              <div class="muted" style="margin-top:4px;">${created}</div>
+              <div class="muted" style="margin-top:4px;">
+                ${created} · By ${author} · ${views} views
+              </div>
             </div>
             ${canDelete ? `<button class="btn" data-del="${a.id}" style="background:rgba(185,28,28,0.10);border:1px solid rgba(185,28,28,0.25);">Delete</button>` : ""}
           </div>
@@ -140,7 +142,6 @@
 
             btn.disabled = true;
             try {
-              // Soft delete via update deleted_at (official update API) :contentReference[oaicite:6]{index=6}
               const { error: uerr } = await supabase
                 .from("articles")
                 .update({ deleted_at: new Date().toISOString() })
@@ -148,7 +149,7 @@
 
               if (uerr) throw uerr;
 
-              card.remove(); // instant UI feedback
+              card.remove();
             } catch (e) {
               btn.disabled = false;
               alert("Delete failed: " + (e?.message || String(e)));
@@ -162,7 +163,6 @@
 
     await render();
 
-    // Keep list fresh if auth state changes
     supabase.auth.onAuthStateChange(async () => {
       try {
         const { data } = await supabase.auth.getUser();
