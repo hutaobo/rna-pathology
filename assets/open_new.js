@@ -117,8 +117,12 @@ function selectLocalImage(quill) {
 
       // Sanitize HTML
       const cleanHtml = window.DOMPurify
-        ? window.DOMPurify.sanitize(rawHtml, { USE_PROFILES: { html: true } })
-        : rawHtml;
+  ? window.DOMPurify.sanitize(rawHtml, {
+      USE_PROFILES: { html: true },
+      ADD_TAGS: ["img"],
+      ADD_ATTR: ["src", "alt", "title"]
+    })
+  : rawHtml;
 
       setMsg("Publishing…");
 
