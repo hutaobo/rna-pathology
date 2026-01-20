@@ -50,11 +50,46 @@
   async function main() {
     if (!form) return;
 
-    // Quill init
-    const quill = new Quill("#editor", {
-      theme: "snow",
-      modules: { toolbar: "#editorToolbar" }
-    });
+// Quill init + custom image handler
+const quill = new Quill("#editor", {
+  theme: "snow",
+  modules: {
+    toolbar: {
+      container: "#editorToolbar",
+      handlers: {
+        image: () => selectLocalImage(quill)
+      }
+    }
+  }
+});
+
+function selectLocalImage(quill) {
+  const input = document.createElement("input");
+  input.setAttribute("type", "file");
+  input.setAttribute("accept", "image/*");
+  input.click();
+
+  input.onchange = async () => {
+    const file = input.files && input.files[0];
+    if (!file) return;
+
+    // 你可以加大小限制，比如 2MB
+    if (file.size > 2 * 1024 * 1024) {
+      setMsg("Image too large. Please use an image under 2MB (for now).");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result;
+      const range = quill.getSelection(true);
+      const index = range ? range.index : quill.getLength();
+      quill.insertEmbed(index, "image", base64, "user");
+      quill.setSelection(index + 1);
+    };
+    reader.readAsDataURL(file);
+  };
+}
 
     const createClient = await loadSupabaseCreateClient();
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
