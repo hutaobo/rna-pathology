@@ -1,120 +1,180 @@
+// assets/open_list.js
 (function () {
-  async function waitForSupabaseClient() {
-    // Wait for site.js to set window.__supabaseClient; fallback to timeout
-    await new Promise((resolve) => {
-      if (window.__supabaseClient) return resolve();
-      const t = setTimeout(resolve, 4000);
-      window.addEventListener(
-        "rp:auth",
-        () => {
-          clearTimeout(t);
-          resolve();
-        },
-        { once: true }
-      );
+  "use strict";
+
+  const SUPABASE_URL = "https://xxlkxorwprtynemmbeya.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_ZzCo8J6b6y0xVkExiOtHyg_gOpGEJFv";
+
+  const listEl = document.getElementById("articlesList");
+  const msgEl = document.getElementById("listMsg");
+  const newBtn = document.getElementById("newArticleBtn");
+
+  function setMsg(text) {
+    if (!msgEl) return;
+    msgEl.textContent = text || "";
+  }
+
+  function escapeHtml(s) {
+    return String(s || "").replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+  }
+
+  async function loadSupabase() {
+    // Robust load: ESM first, then UMD fallback (avoids jsDelivr +esm pitfalls)
+    const errors = [];
+    const esmCandidates = [
+      "https://esm.sh/@supabase/supabase-js@2",
+      "https://cdn.skypack.dev/@supabase/supabase-js@2",
+      "https://jspm.dev/@supabase/supabase-js@2"
+    ];
+
+    for (const url of esmCandidates) {
+      try {
+        const mod = await import(url);
+        const createClient = mod?.createClient || mod?.default?.createClient;
+        if (typeof createClient !== "function") throw new Error("createClient not found");
+        return createClient;
+      } catch (e) {
+        errors.push(e);
+      }
+    }
+
+    // UMD fallback
+    const umdCandidates = [
+      "https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js",
+      "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"
+    ];
+
+    for (const src of umdCandidates) {
+      try {
+        await new Promise((resolve, reject) => {
+          const s = document.createElement("script");
+          s.src = src;
+          s.async = true;
+          s.onload = resolve;
+          s.onerror = () => reject(new Error("Failed to load " + src));
+          document.head.appendChild(s);
+        });
+        const createClient = globalThis.supabase?.createClient;
+        if (typeof createClient !== "function") throw new Error("globalThis.supabase.createClient missing");
+        return createClient;
+      } catch (e) {
+        errors.push(e);
+      }
+    }
+
+    throw new Error("Cannot load Supabase SDK. " + errors.map(x => x.message).join(" | "));
+  }
+
+  async function main() {
+    if (!listEl) return;
+
+    newBtn?.addEventListener("click", () => {
+      window.location.href = "/open/new.html";
     });
-  }
 
-  function stripHtml(html) {
-    const d = document.createElement("div");
-    d.innerHTML = html || "";
-    return (d.textContent || d.innerText || "").trim();
-  }
+    setMsg("Loading…");
 
-  async function detectSignedIn(supabase) {
-    // Preferred: getUser() is authentic (network-validated)
+    const createClient = await loadSupabase();
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+    });
+
+    // Client-side: getUser is “secure” (validates token); on client it’s fine.
+    // Docs note: getSession is low-level; getUser recommended when you need validated user. :contentReference[oaicite:5]{index=5}
+    let currentUserId = null;
     try {
-      const { data, error } = await supabase.auth.getUser();
-      if (!error && data?.user) return true;
-    } catch (e) {
-      // ignore and fallback
+      const { data } = await supabase.auth.getUser();
+      currentUserId = data?.user?.id || null;
+    } catch (_) {}
+
+    async function render() {
+      listEl.innerHTML = "";
+      setMsg("");
+
+      const { data, error } = await supabase
+        .from("articles")
+        .select("id, title, content, created_at, user_id, deleted_at")
+        .is("deleted_at", null)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        setMsg("Failed to load articles: " + (error.message || String(error)));
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        setMsg("No submissions yet.");
+        return;
+      }
+
+      for (const a of data) {
+        const canDelete = currentUserId && a.user_id && (a.user_id === currentUserId);
+
+        const card = document.createElement("div");
+        card.className = "card";
+        card.style.padding = "14px 16px";
+
+        const title = escapeHtml(a.title || "Untitled");
+        const created = a.created_at ? new Date(a.created_at).toLocaleString() : "";
+        const snippet = (a.content || "").replace(/<[^>]*>/g, "").slice(0, 180);
+
+        card.innerHTML = `
+          <div style="display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;">
+            <div>
+              <a href="/open/article.html?id=${encodeURIComponent(a.id)}" style="font-weight:800;text-decoration:none;">
+                ${title}
+              </a>
+              <div class="muted" style="margin-top:4px;">${created}</div>
+            </div>
+            ${canDelete ? `<button class="btn" data-del="${a.id}" style="background:rgba(185,28,28,0.10);border:1px solid rgba(185,28,28,0.25);">Delete</button>` : ""}
+          </div>
+          <div class="muted" style="margin-top:10px;">${escapeHtml(snippet)}${snippet.length >= 180 ? "…" : ""}</div>
+        `;
+
+        if (canDelete) {
+          const btn = card.querySelector(`[data-del="${a.id}"]`);
+          btn?.addEventListener("click", async () => {
+            if (!confirm("Soft-delete this article? (It will disappear from the list)")) return;
+
+            btn.disabled = true;
+            try {
+              // Soft delete via update deleted_at (official update API) :contentReference[oaicite:6]{index=6}
+              const { error: uerr } = await supabase
+                .from("articles")
+                .update({ deleted_at: new Date().toISOString() })
+                .eq("id", a.id);
+
+              if (uerr) throw uerr;
+
+              card.remove(); // instant UI feedback
+            } catch (e) {
+              btn.disabled = false;
+              alert("Delete failed: " + (e?.message || String(e)));
+            }
+          });
+        }
+
+        listEl.appendChild(card);
+      }
     }
-    // Fallback: getSession() reads from storage (fast client-side)
-    try {
-      const { data } = await supabase.auth.getSession();
-      return !!data?.session?.user;
-    } catch (e) {
-      return false;
-    }
+
+    await render();
+
+    // Keep list fresh if auth state changes
+    supabase.auth.onAuthStateChange(async () => {
+      try {
+        const { data } = await supabase.auth.getUser();
+        currentUserId = data?.user?.id || null;
+      } catch (_) {
+        currentUserId = null;
+      }
+      await render();
+    });
   }
 
-  function setNewArticleButton(btn, signedIn) {
-    if (!btn) return;
-
-    if (signedIn) {
-      btn.textContent = "+ New Article";
-      btn.onclick = () => {
-        window.location.href = "/open/new.html";
-      };
-    } else {
-      btn.textContent = "Log in to submit";
-      // 如果你的登录页不是 /login.html，就改这里（比如 /access/login.html）
-      btn.onclick = () => {
-        window.location.href = "/login.html?next=/open/new.html";
-      };
-    }
-  }
-
-  window.addEventListener("DOMContentLoaded", async () => {
-    await waitForSupabaseClient();
-
-    const supabase = window.__supabaseClient;
-    const btn = document.getElementById("newArticleBtn");
-
-    const list = document.getElementById("articlesList");
-    if (!list) return;
-
-    if (!supabase) {
-      list.innerHTML =
-        "<p>Supabase client not ready. Please check assets/site.js.</p>";
-      return;
-    }
-
-    // 1) 初次渲染按钮（别抢跑读 window.__isSignedIn）
-    const signedIn = await detectSignedIn(supabase);
-    setNewArticleButton(btn, signedIn);
-
-    // 2) 监听登录/登出事件，实时更新按钮
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setNewArticleButton(btn, !!session?.user);
-    });
-
-    // ===== 原来的文章列表逻辑（基本不动） =====
-    const { data, error } = await supabase
-      .from("articles")
-      .select("id,title,content,created_at, author:profiles(display_name)")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error(error);
-      list.innerHTML = "<p>Failed to load articles.</p>";
-      return;
-    }
-
-    if (!data || data.length === 0) {
-      list.innerHTML = "<p>No articles yet. Be the first to publish!</p>";
-      return;
-    }
-
-    list.innerHTML = "";
-    data.forEach((a) => {
-      const author = a.author?.display_name || "User";
-      const date = new Date(a.created_at).toLocaleString();
-
-      const plain = stripHtml(a.content);
-      const snippet =
-        plain.slice(0, 180) + (plain.length > 180 ? "…" : "");
-
-      const el = document.createElement("div");
-      el.className = "card";
-      el.innerHTML = `
-        <h3 style="margin:0 0 6px 0;">
-          <a href="/open/article.html?id=${a.id}">${a.title}</a>
-        </h3>
-        <div class="muted" style="margin-bottom:10px;">By <strong>${author}</strong> · ${date}</div>
-        <div>${snippet}</div>
-      `;
-      list.appendChild(el);
-    });
+  main().catch((e) => {
+    setMsg("Startup error: " + (e?.message || String(e)));
   });
 })();
