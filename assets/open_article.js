@@ -78,14 +78,15 @@
 
     let currentUserId = null;
     try {
-      const { data } = await supabase.auth.getUser(); // validated user :contentReference[oaicite:8]{index=8}
+      const { data } = await supabase.auth.getUser();
       currentUserId = data?.user?.id || null;
     } catch (_) {}
 
-    // Load article (RLS should already hide deleted rows; extra guard is fine)
+    // Load article + author display_name + view_count
+    // joins/nesting syntax: profiles(display_name) :contentReference[oaicite:7]{index=7}
     const { data: article, error } = await supabase
       .from("articles")
-      .select("id, title, content, created_at, user_id, deleted_at")
+      .select("id, title, content, created_at, user_id, deleted_at, view_count, profiles:profiles(display_name)")
       .eq("id", id)
       .single();
 
@@ -95,8 +96,20 @@
       return;
     }
 
+    // Increment view count (fire-and-forget) via RPC
+    // Supabase rpc() docs :contentReference[oaicite:8]{index=8}
+    supabase.rpc("increment_article_view", { p_article_id: article.id }).catch(() => {});
+
+    const author = article.profiles?.display_name || "Anonymous";
+    const views = Number.isFinite(article.view_count) ? article.view_count : 0;
+
     setText(titleEl, article.title || "Untitled");
-    setText(metaEl, article.created_at ? new Date(article.created_at).toLocaleString() : "");
+    setText(
+      metaEl,
+      (article.created_at ? new Date(article.created_at).toLocaleString() : "") +
+        " · By " + author +
+        " · " + views + " views"
+    );
 
     // Render HTML safely
     const clean = window.DOMPurify
@@ -135,8 +148,6 @@
       }
     }
 
-    // ---- Comments (basic) ----
-    // If you already implemented comments elsewhere, keep yours and only retain Delete logic above.
     async function loadComments() {
       if (!commentsList) return;
       commentsList.innerHTML = "";
@@ -174,7 +185,6 @@
     commentSubmit?.addEventListener("click", async () => {
       setText(commentMsg, "");
 
-      // Require login to comment
       const { data: ud } = await supabase.auth.getUser();
       const user = ud?.user;
       if (!user) {
