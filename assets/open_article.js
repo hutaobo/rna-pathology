@@ -1,190 +1,215 @@
+// assets/open_article.js
 (function () {
-  async function waitForSupabaseClient() {
-    await new Promise((resolve) => {
-      if (window.__supabaseClient) return resolve();
-      const t = setTimeout(resolve, 4000);
-      window.addEventListener(
-        "rp:auth",
-        () => {
-          clearTimeout(t);
-          resolve();
-        },
-        { once: true }
-      );
+  "use strict";
+
+  const SUPABASE_URL = "https://xxlkxorwprtynemmbeya.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_ZzCo8J6b6y0xVkExiOtHyg_gOpGEJFv";
+
+  const titleEl = document.getElementById("articleTitle");
+  const metaEl = document.getElementById("articleMeta");
+  const contentEl = document.getElementById("articleContent");
+  const actionsEl = document.getElementById("articleActions");
+
+  const commentsList = document.getElementById("commentsList");
+  const commentText = document.getElementById("commentText");
+  const commentSubmit = document.getElementById("commentSubmit");
+  const commentMsg = document.getElementById("commentMsg");
+
+  function setText(el, t) { if (el) el.textContent = t || ""; }
+
+  function escapeHtml(s) {
+    return String(s || "").replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+  }
+
+  async function loadSupabaseCreateClient() {
+    const esmCandidates = [
+      "https://esm.sh/@supabase/supabase-js@2",
+      "https://cdn.skypack.dev/@supabase/supabase-js@2",
+      "https://jspm.dev/@supabase/supabase-js@2"
+    ];
+    for (const url of esmCandidates) {
+      try {
+        const mod = await import(url);
+        const createClient = mod?.createClient || mod?.default?.createClient;
+        if (typeof createClient !== "function") throw new Error("createClient not found");
+        return createClient;
+      } catch (_) {}
+    }
+    const umdCandidates = [
+      "https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js",
+      "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"
+    ];
+    for (const src of umdCandidates) {
+      try {
+        await new Promise((resolve, reject) => {
+          const s = document.createElement("script");
+          s.src = src;
+          s.async = true;
+          s.onload = resolve;
+          s.onerror = () => reject(new Error("Failed to load " + src));
+          document.head.appendChild(s);
+        });
+        const createClient = globalThis.supabase?.createClient;
+        if (typeof createClient !== "function") throw new Error("global createClient missing");
+        return createClient;
+      } catch (_) {}
+    }
+    throw new Error("Cannot load Supabase SDK");
+  }
+
+  function getArticleId() {
+    const u = new URL(location.href);
+    return u.searchParams.get("id");
+  }
+
+  async function main() {
+    const id = getArticleId();
+    if (!id) {
+      setText(titleEl, "Missing article id.");
+      return;
+    }
+
+    const createClient = await loadSupabaseCreateClient();
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
     });
-  }
 
-  function qs(key) {
-    return new URLSearchParams(location.search).get(key);
-  }
+    let currentUserId = null;
+    try {
+      const { data } = await supabase.auth.getUser(); // validated user :contentReference[oaicite:8]{index=8}
+      currentUserId = data?.user?.id || null;
+    } catch (_) {}
 
-  function setCommentUI({ signedIn, textEl, submitBtn, msgEl }) {
-    if (!textEl || !submitBtn || !msgEl) return;
-
-    if (signedIn) {
-      textEl.disabled = false;
-      submitBtn.disabled = false;
-      textEl.placeholder = "Write a comment";
-      msgEl.textContent = "";
-    } else {
-      textEl.disabled = true;
-      submitBtn.disabled = true;
-      textEl.placeholder = "Write a comment (login required)";
-      msgEl.textContent = "Please sign in to comment.";
-    }
-  }
-
-  async function getSignedInUser(supabase) {
-    // getUser() performs a network request; the returned user is authentic. :contentReference[oaicite:2]{index=2}
-    const { data, error } = await supabase.auth.getUser();
-    if (error) return null;
-    return data?.user || null;
-  }
-
-  window.addEventListener("DOMContentLoaded", async () => {
-    await waitForSupabaseClient();
-
-    const supabase = window.__supabaseClient;
-
-    const articleId = qs("id");
-    const titleEl = document.getElementById("articleTitle");
-    const metaEl = document.getElementById("articleMeta");
-    const contentEl = document.getElementById("articleContent");
-    const commentsEl = document.getElementById("commentsList");
-
-    // Comment box elements
-    const textEl = document.getElementById("commentText");
-    const submitBtn = document.getElementById("commentSubmit");
-    const msgEl = document.getElementById("commentMsg");
-
-    if (!articleId) {
-      if (titleEl) titleEl.textContent = "Article not found";
-      return;
-    }
-    if (!supabase) {
-      if (titleEl) titleEl.textContent = "Supabase client not ready. Check assets/site.js.";
-      return;
-    }
-
-    // ---- Load article ----
-    const { data: article, error: aErr } = await supabase
+    // Load article (RLS should already hide deleted rows; extra guard is fine)
+    const { data: article, error } = await supabase
       .from("articles")
-      .select("id,title,content,created_at, author:profiles(display_name)")
-      .eq("id", articleId)
+      .select("id, title, content, created_at, user_id, deleted_at")
+      .eq("id", id)
       .single();
 
-    if (aErr || !article) {
-      console.error(aErr);
-      if (titleEl) titleEl.textContent = "Failed to load article.";
+    if (error || !article) {
+      setText(titleEl, "Article not found (or removed).");
+      setText(metaEl, error?.message || "");
       return;
     }
 
-    if (titleEl) titleEl.textContent = article.title;
-    if (metaEl) {
-      metaEl.textContent = `By ${article.author?.display_name || "User"} · ${new Date(
-        article.created_at
-      ).toLocaleString()}`;
+    setText(titleEl, article.title || "Untitled");
+    setText(metaEl, article.created_at ? new Date(article.created_at).toLocaleString() : "");
+
+    // Render HTML safely
+    const clean = window.DOMPurify
+      ? window.DOMPurify.sanitize(article.content || "", { USE_PROFILES: { html: true } })
+      : (article.content || "");
+    if (contentEl) contentEl.innerHTML = clean;
+
+    // Author-only Delete button
+    const canDelete = currentUserId && article.user_id && (article.user_id === currentUserId);
+    if (actionsEl) {
+      actionsEl.innerHTML = "";
+      if (canDelete) {
+        const btn = document.createElement("button");
+        btn.className = "btn";
+        btn.style.background = "rgba(185,28,28,0.10)";
+        btn.style.border = "1px solid rgba(185,28,28,0.25)";
+        btn.textContent = "Delete";
+        btn.addEventListener("click", async () => {
+          if (!confirm("Soft-delete this article?")) return;
+          btn.disabled = true;
+          try {
+            const { error: uerr } = await supabase
+              .from("articles")
+              .update({ deleted_at: new Date().toISOString() })
+              .eq("id", article.id);
+
+            if (uerr) throw uerr;
+
+            window.location.href = "/open/";
+          } catch (e) {
+            btn.disabled = false;
+            alert("Delete failed: " + (e?.message || String(e)));
+          }
+        });
+        actionsEl.appendChild(btn);
+      }
     }
 
-    // Sanitize on render too (defense in depth)
-    if (contentEl) contentEl.innerHTML = DOMPurify.sanitize(article.content || "");
-
-    // ---- Load comments ----
+    // ---- Comments (basic) ----
+    // If you already implemented comments elsewhere, keep yours and only retain Delete logic above.
     async function loadComments() {
-      const { data: comments, error: cErr } = await supabase
+      if (!commentsList) return;
+      commentsList.innerHTML = "";
+
+      const { data, error } = await supabase
         .from("comments")
-        .select("id,content,created_at, author:profiles(display_name)")
-        .eq("article_id", articleId)
+        .select("id, content, created_at, user_id")
+        .eq("article_id", article.id)
         .order("created_at", { ascending: true });
 
-      if (cErr) {
-        console.error(cErr);
-        if (commentsEl) commentsEl.innerHTML = "<p>Failed to load comments.</p>";
-        return;
-      }
-      if (!comments || comments.length === 0) {
-        if (commentsEl) commentsEl.innerHTML = "<p class='muted'>No comments yet.</p>";
+      if (error) {
+        commentsList.innerHTML = `<div class="muted">Failed to load comments: ${escapeHtml(error.message)}</div>`;
         return;
       }
 
-      if (!commentsEl) return;
-      commentsEl.innerHTML = "";
-      comments.forEach((c) => {
-        const el = document.createElement("div");
-        el.className = "card";
-        el.innerHTML = `
-          <div class="muted" style="margin-bottom:8px;">
-            <strong>${c.author?.display_name || "User"}</strong> · ${new Date(
-              c.created_at
-            ).toLocaleString()}
-          </div>
-          <div>${DOMPurify.sanitize(c.content || "")}</div>
+      if (!data || data.length === 0) {
+        commentsList.innerHTML = `<div class="muted">No comments yet.</div>`;
+        return;
+      }
+
+      for (const c of data) {
+        const div = document.createElement("div");
+        div.className = "card";
+        div.style.padding = "10px 12px";
+        div.innerHTML = `
+          <div class="muted" style="font-size:12px;">${c.created_at ? new Date(c.created_at).toLocaleString() : ""}</div>
+          <div style="margin-top:6px;">${escapeHtml(c.content || "")}</div>
         `;
-        commentsEl.appendChild(el);
-      });
+        commentsList.appendChild(div);
+      }
     }
+
     await loadComments();
 
-    // ---- Auth-aware comment UI ----
-    let currentUser = await getSignedInUser(supabase);
-    setCommentUI({
-      signedIn: !!currentUser,
-      textEl,
-      submitBtn,
-      msgEl
-    });
+    commentSubmit?.addEventListener("click", async () => {
+      setText(commentMsg, "");
 
-    // Listen for auth changes and update UI live. :contentReference[oaicite:3]{index=3}
-    supabase.auth.onAuthStateChange(async (_event, _session) => {
-      currentUser = await getSignedInUser(supabase);
-      setCommentUI({
-        signedIn: !!currentUser,
-        textEl,
-        submitBtn,
-        msgEl
-      });
-    });
+      // Require login to comment
+      const { data: ud } = await supabase.auth.getUser();
+      const user = ud?.user;
+      if (!user) {
+        setText(commentMsg, "Login required to comment.");
+        return;
+      }
 
-    // ---- Post comment ----
-    if (submitBtn) {
-      submitBtn.addEventListener("click", async () => {
-        if (!msgEl || !textEl) return;
+      const text = (commentText?.value || "").trim();
+      if (!text) { setText(commentMsg, "Please write something."); return; }
 
-        msgEl.textContent = "";
+      commentSubmit.disabled = true;
+      try {
+        const { error: ierr } = await supabase
+          .from("comments")
+          .insert({
+            article_id: article.id,
+            content: text,
+            user_id: user.id
+          });
 
-        // Re-check user right before posting (avoid stale state)
-        if (!currentUser) {
-          currentUser = await getSignedInUser(supabase);
-        }
-        if (!currentUser) {
-          setCommentUI({ signedIn: false, textEl, submitBtn, msgEl });
-          // 用相对路径，避免 www/non-www 切换造成会话“看不见”:contentReference[oaicite:4]{index=4}
-          const next = encodeURIComponent(location.pathname + location.search);
-          msgEl.innerHTML = `Not signed in. <a href="/login.html?next=${next}">Sign in</a>`;
-          return;
-        }
+        if (ierr) throw ierr;
 
-        const content = (textEl.value || "").trim();
-        if (!content) return;
-
-        const clean = DOMPurify.sanitize(content);
-
-        const { error } = await supabase.from("comments").insert({
-          article_id: articleId,
-          author_id: currentUser.id,
-          content: clean
-        });
-
-        if (error) {
-          console.error(error);
-          msgEl.textContent = "Failed to post comment.";
-          return;
-        }
-
-        textEl.value = "";
-        msgEl.textContent = "Comment posted.";
+        if (commentText) commentText.value = "";
         await loadComments();
-      });
-    }
+        setText(commentMsg, "Posted.");
+      } catch (e) {
+        setText(commentMsg, "Post failed: " + (e?.message || String(e)));
+      } finally {
+        commentSubmit.disabled = false;
+      }
+    });
+  }
+
+  main().catch((e) => {
+    setText(titleEl, "Startup error");
+    setText(metaEl, e?.message || String(e));
   });
 })();
