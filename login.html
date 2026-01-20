@@ -270,8 +270,9 @@
         <div class="brand">
           <h1>RNA-Pathology<span class="tm">™</span></h1>
         </div>
-        <!-- 使用相对路径，支持 GitHub Pages 子目录部署 -->
-        <a class="home-link" href="./">Back to Home</a>
+
+        <!-- ✅ 改：给一个 id，脚本里会自动算出正确的 Home（兼容 /login 和 GitHub Pages 子目录） -->
+        <a class="home-link" id="homeLink" href="/">Back to Home</a>
       </div>
       <p class="tagline">
         Sign in to access member features. New here? Create an account in under a minute.
@@ -310,17 +311,66 @@
       <div id="msg" class="status">Loading…</div>
 
       <div class="fineprint">
-        By signing in, you agree to the project’s <a href="access/">Legal / Usage</a> terms.
+        By signing in, you agree to the project’s
+        <!-- ✅ 改：同样给 id，脚本里拼出正确的 /access/ -->
+        <a id="legalLink" href="/access/">Legal / Usage</a>
+        terms.
       </div>
     </div>
   </div>
 
   <script type="module">
+    // =============================
+    // Supabase config
+    // =============================
     const SUPABASE_URL = "https://xxlkxorwprtynemmbeya.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_ZzCo8J6b6y0xVkExiOtHyg_gOpGEJFv";
 
     const $ = (id) => document.getElementById(id);
 
+    // =============================
+    // Path / base-path helpers
+    //   - supports custom domain root: https://www.rna-pathology.com/...
+    //   - supports GitHub Pages subdir: https://xxx.github.io/rna-pathology/...
+    // =============================
+    function normalizePath(p) {
+      const s = (p || "/").trim();
+      const noTrail = s.replace(/\/+$/g, "");
+      return noTrail || "/";
+    }
+
+    function detectBasePath() {
+      // If html[data-base-path] exists AND current pathname starts with it, we use it.
+      // Otherwise we ignore it (prevents wrong base-path on custom domain).
+      const raw = (document.documentElement.dataset.basePath || "").trim();
+      if (!raw) return "";
+      const bp = "/" + raw.replace(/^\/+|\/+$/g, "");
+      if (bp === "/") return "";
+      const pn = location.pathname || "/";
+      if (pn === bp || pn.startsWith(bp + "/")) return bp;
+      return "";
+    }
+
+    const BASE_PATH = detectBasePath();              // "" or "/rna-pathology"
+    const LOGIN_PATH = location.pathname || "/";     // current path: /login OR /login.html OR /rna-pathology/login.html ...
+    const LOGIN_PATH_NORM = normalizePath(LOGIN_PATH);
+
+    function homePath() {
+      return (BASE_PATH || "") + "/";
+    }
+    function accessPath() {
+      return (BASE_PATH || "") + "/access/";
+    }
+
+    // Fix top links so they work even when this page is /login/ (directory URL)
+    const homeLink = $("homeLink");
+    if (homeLink) homeLink.href = homePath();
+    const legalLink = $("legalLink");
+    if (legalLink) legalLink.href = accessPath();
+
+    // =============================
+    // DOM refs
+    // =============================
     const statusEl = $("msg");
     const modeHintEl = $("modeHint");
     const btnSignUp = $("signup");
@@ -335,11 +385,14 @@
     let btnUpdatePassword = null;
     let inRecovery = false;
 
-    // 构建重定向/邮件链接的绝对 URL。默认值使用相对路径，支持子目录部署。
-    function appUrl(path = "login.html") {
-      return new URL(path, location.href).toString();
-    }
+    // Supabase runtime vars (so click handlers always exist)
+    let supabase = null;
+    let startupError = null;
+    let sdkLoadedFrom = null;
 
+    // =============================
+    // UI helpers
+    // =============================
     function setStatus(text, level = "info") {
       statusEl.className = "status";
       if (level === "ok") statusEl.classList.add("ok");
@@ -355,6 +408,54 @@
       if (mode === "signin") modeHintEl.textContent = "Tip: Click “Sign In” to use an existing account.";
     }
 
+    function disableAuthButtons(disabled) {
+      btnSignUp.disabled = disabled;
+      btnSignIn.disabled = disabled;
+      btnSignOut.disabled = disabled;
+      btnForgot.disabled = disabled;
+      if (btnUpdatePassword) btnUpdatePassword.disabled = disabled;
+    }
+
+    function authReadyOrExplain() {
+      if (supabase) return true;
+
+      if (startupError) {
+        setStatus(
+          "Auth startup error (SDK failed to load):\n" +
+          (startupError?.stack || startupError?.message || String(startupError)),
+          "err"
+        );
+      } else {
+        setStatus(
+          "Authentication system is still loading.\n\n" +
+          "If this does not finish, it usually means the browser cannot load the Supabase SDK CDN scripts.\n" +
+          "Try a different network / disable aggressive blockers / check Console for errors.",
+          "warn"
+        );
+      }
+      return false;
+    }
+
+    // Make sure we never end up with “dead click”
+    window.addEventListener("error", (evt) => {
+      try {
+        const msg = evt?.error?.stack || evt?.message || "Unknown script error";
+        console.error(evt);
+        setStatus("JavaScript error:\n" + msg, "err");
+      } catch (_) {}
+    });
+    window.addEventListener("unhandledrejection", (evt) => {
+      try {
+        const r = evt?.reason;
+        const msg = r?.stack || r?.message || String(r || "Unknown rejection");
+        console.error(evt);
+        setStatus("Unhandled promise rejection:\n" + msg, "err");
+      } catch (_) {}
+    });
+
+    // =============================
+    // URL helpers
+    // =============================
     function getQueryFlag(name) {
       return new URL(window.location.href).searchParams.get(name);
     }
@@ -371,18 +472,26 @@
       return (qType === "recovery" || hType === "recovery");
     }
 
-    // 只允许同源的“next”，并避免重定向回 login 本身
+    // Only allow same-origin next. If BASE_PATH is used (GitHub Pages subdir),
+    // keep redirects within that base-path to avoid 404s.
     function getSafeNextPath() {
       const u = new URL(window.location.href);
       const raw = u.searchParams.get("next");
       if (!raw) return null;
 
       try {
-        const dest = new URL(raw, location.origin);
+        const baseForRelative = new URL((BASE_PATH || "") + "/", location.origin);
+        const dest = new URL(raw, baseForRelative);
+
         if (dest.origin !== location.origin) return null;
 
-        // 如果目标是登录页，则拒绝，防止循环
-        if (dest.pathname.endsWith("login.html")) return null;
+        if (BASE_PATH) {
+          const pn = dest.pathname;
+          if (!(pn === BASE_PATH || pn.startsWith(BASE_PATH + "/"))) return null;
+        }
+
+        // Avoid redirect loop back to login itself
+        if (normalizePath(dest.pathname) === LOGIN_PATH_NORM) return null;
 
         return dest.pathname + dest.search + dest.hash;
       } catch (_) {
@@ -391,8 +500,12 @@
     }
 
     function buildLoginReturnUrl(extraParams = {}) {
-      // 使用当前页面作为基准构建 URL，支持子目录部署
-      const u = new URL("login.html", location.href);
+      // Use the current path as the login callback path, so it works for:
+      // - /login
+      // - /login.html
+      // - /rna-pathology/login.html
+      const u = new URL(location.origin + (LOGIN_PATH || "/"));
+
       const next = getSafeNextPath();
       if (next) u.searchParams.set("next", next);
 
@@ -400,26 +513,23 @@
         if (v === undefined || v === null) continue;
         u.searchParams.set(k, String(v));
       }
+
       return u.toString();
     }
 
-    function redirectTo(path, { replace = true } = {}) {
-      if (replace) {
-        window.location.replace(path);
-      } else {
-        window.location.href = path;
-      }
+    function redirectTo(target, { replace = true } = {}) {
+      // target is expected to be a path like "/xxx" or an absolute URL
+      let url = target;
+      try {
+        url = new URL(target, location.origin).toString();
+      } catch (_) {}
+      if (replace) window.location.replace(url);
+      else window.location.href = url;
     }
 
-    function disableAuthButtons(disabled) {
-      btnSignUp.disabled = disabled;
-      btnSignIn.disabled = disabled;
-      btnSignOut.disabled = disabled;
-      btnForgot.disabled = disabled;
-      if (btnUpdatePassword) btnUpdatePassword.disabled = disabled;
-    }
-
-    // ---- 初始模式和状态 ----
+    // =============================
+    // Initial mode + message (same behavior as your original)
+    // =============================
     const signupFlag = getQueryFlag("signup");
     const signedOutFlag = getQueryFlag("signed_out");
     const passwordResetFlag = getQueryFlag("password_reset");
@@ -439,281 +549,384 @@
       setStatus("Ready to sign in. Enter your email + password, then click “Sign In”.");
     }
 
-    try {
-      // 动态引入 Supabase（如遇网络问题，会进入 catch）
-      const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
-      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-        auth: {
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: true
-        }
+    // Enter key convenience (optional but helps UX)
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter") return;
+      const el = document.activeElement;
+      if (!el) return;
+      const tag = (el.tagName || "").toLowerCase();
+      if (tag !== "input") return;
+
+      e.preventDefault();
+
+      if (inRecovery && btnUpdatePassword) {
+        btnUpdatePassword.click();
+        return;
+      }
+      if (btnSignUp.classList.contains("is-active")) btnSignUp.click();
+      else btnSignIn.click();
+    });
+
+    // =============================
+    // Robust Supabase SDK loader:
+    //   - Prefer ESM CDNs (esm.sh, skypack, jspm)
+    //   - Fallback to UMD script (unpkg/jsdelivr) -> globalThis.supabase.createClient
+    // =============================
+    const _loadedScripts = new Map();
+    function loadScript(src) {
+      if (_loadedScripts.has(src)) return _loadedScripts.get(src);
+
+      const p = new Promise((resolve, reject) => {
+        const s = document.createElement("script");
+        s.src = src;
+        s.async = true;
+        s.crossOrigin = "anonymous";
+        s.onload = () => resolve();
+        s.onerror = () => reject(new Error("Failed to load script: " + src));
+        document.head.appendChild(s);
       });
 
-      async function refreshUI() {
+      _loadedScripts.set(src, p);
+      return p;
+    }
+
+    async function loadSupabaseCreateClient() {
+      const errors = [];
+
+      // ESM (recommended)
+      const esmCandidates = [
+        "https://esm.sh/@supabase/supabase-js@2",
+        "https://cdn.skypack.dev/@supabase/supabase-js@2",
+        "https://jspm.dev/@supabase/supabase-js@2"
+      ];
+
+      for (const url of esmCandidates) {
         try {
-          const { data, error } = await supabase.auth.getUser();
+          const mod = await import(url);
+          const createClient = mod?.createClient || mod?.default?.createClient;
+          if (typeof createClient !== "function") {
+            throw new Error("createClient export not found from: " + url);
+          }
+          return { createClient, source: url, kind: "esm" };
+        } catch (e) {
+          errors.push({ url, e });
+        }
+      }
 
-          const missing =
-            error &&
-            (error.name === "AuthSessionMissingError" ||
-             /auth session missing/i.test(error.message || ""));
+      // UMD fallback (no bare-import rewrite needed)
+      const umdCandidates = [
+        "https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js",
+        "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"
+      ];
 
-          if (missing) {
-            btnSignOut.style.display = "none";
+      for (const url of umdCandidates) {
+        try {
+          await loadScript(url);
+          const createClient = globalThis.supabase?.createClient;
+          if (typeof createClient !== "function") {
+            throw new Error("globalThis.supabase.createClient not found after loading: " + url);
+          }
+          return { createClient, source: url, kind: "umd" };
+        } catch (e) {
+          errors.push({ url, e });
+        }
+      }
+
+      const detail = errors
+        .map(({ url, e }) => `- ${url}\n  ${(e && (e.message || e.toString())) || "unknown error"}`)
+        .join("\n");
+
+      throw new Error("Unable to load Supabase JS SDK from any CDN.\n" + detail);
+    }
+
+    // =============================
+    // Auth logic (mostly your original, but now resilient)
+    // =============================
+    async function refreshUI() {
+      if (!supabase) return;
+
+      try {
+        const { data, error } = await supabase.auth.getUser();
+
+        const missing =
+          error &&
+          (error.name === "AuthSessionMissingError" ||
+           /auth session missing/i.test(error.message || ""));
+
+        if (missing) {
+          btnSignOut.style.display = "none";
+          return;
+        }
+        if (error) throw error;
+
+        const user = data?.user;
+        if (user) {
+          btnSignOut.style.display = "inline-flex";
+          setStatus(
+            "Signed in as: " + (user.email || "(no email)") + "\nuser_id: " + user.id +
+            (sdkLoadedFrom ? ("\n\nSDK: " + sdkLoadedFrom) : ""),
+            "ok"
+          );
+        } else {
+          btnSignOut.style.display = "none";
+        }
+      } catch (e) {
+        btnSignOut.style.display = "none";
+        setStatus("Session check failed:\n" + (e?.message || String(e)), "err");
+      }
+    }
+
+    function ensureRecoveryUI() {
+      if (inRecovery) return;
+      inRecovery = true;
+
+      setMode("signin");
+      modeHintEl.textContent = "Password recovery mode.";
+      setStatus("Password recovery detected. Please set a new password below.", "warn");
+
+      authButtonsRow.style.display = "none";
+      forgotRow.style.display = "none";
+      btnSignOut.style.display = "none";
+
+      const pw = $("password");
+      pw.value = "";
+      pw.placeholder = "New password (at least 6 characters)";
+      pw.autocomplete = "new-password";
+
+      if (!$("password2")) {
+        const lab2 = document.createElement("label");
+        lab2.setAttribute("for", "password2");
+        lab2.textContent = "Confirm new password";
+
+        const pw2 = document.createElement("input");
+        pw2.id = "password2";
+        pw2.type = "password";
+        pw2.placeholder = "Repeat new password";
+        pw2.autocomplete = "new-password";
+        pw2.style.marginTop = "10px";
+
+        passwordField.appendChild(lab2);
+        passwordField.appendChild(pw2);
+
+        const row = document.createElement("div");
+        row.className = "row";
+        row.style.marginTop = "12px";
+
+        const btn = document.createElement("button");
+        btn.className = "btn is-active";
+        btn.type = "button";
+        btn.id = "updatePassword";
+        btn.textContent = "Update Password";
+
+        row.appendChild(btn);
+        statusEl.parentElement.insertBefore(row, statusEl);
+
+        btnUpdatePassword = btn;
+
+        btn.addEventListener("click", async () => {
+          if (!authReadyOrExplain()) return;
+
+          const newPass = pw.value;
+          const newPass2 = pw2.value;
+
+          if (!newPass || newPass.length < 6) return setStatus("New password must be at least 6 characters.", "warn");
+          if (newPass !== newPass2) return setStatus("Passwords do not match.", "warn");
+
+          disableAuthButtons(true);
+          setStatus("Updating password…", "warn");
+
+          try {
+            const { error } = await supabase.auth.updateUser({ password: newPass });
+            if (error) throw error;
+
+            try { await supabase.auth.signOut(); } catch (_) {}
+
+            setStatus("Password updated successfully. Please sign in with your new password.", "ok");
+            redirectTo(buildLoginReturnUrl({ password_reset: 1 }), { replace: true });
+          } catch (e) {
+            setStatus("Password update failed:\n" + (e?.message || String(e)), "err");
+          } finally {
+            disableAuthButtons(false);
+          }
+        });
+      }
+    }
+
+    // =============================
+    // Bind button handlers EARLY
+    //   so even if SDK fails, user never gets “no response”
+    // =============================
+    btnSignUp.addEventListener("click", async () => {
+      if (inRecovery) return;
+      if (!authReadyOrExplain()) return;
+
+      setMode("signup");
+      const email = $("email").value.trim();
+      const password = $("password").value;
+
+      if (!email) return setStatus("Please enter an email.", "warn");
+      if (!password || password.length < 6) return setStatus("Password must be at least 6 characters.", "warn");
+
+      disableAuthButtons(true);
+      setStatus("Signing up…", "warn");
+
+      try {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { emailRedirectTo: buildLoginReturnUrl() }
+        });
+        if (error) throw error;
+
+        setStatus(
+          "Sign up request sent.\n\nIf email confirmation is enabled, please check your inbox and click the confirmation link.\n" +
+          (data.user?.email ?? ""),
+          "ok"
+        );
+        await refreshUI();
+      } catch (e) {
+        setStatus("Sign up failed:\n" + (e?.message || String(e)), "err");
+      } finally {
+        disableAuthButtons(false);
+      }
+    });
+
+    btnSignIn.addEventListener("click", async () => {
+      if (inRecovery) return;
+      if (!authReadyOrExplain()) return;
+
+      setMode("signin");
+      const email = $("email").value.trim();
+      const password = $("password").value;
+
+      if (!email) return setStatus("Please enter an email.", "warn");
+      if (!password) return setStatus("Please enter a password.", "warn");
+
+      disableAuthButtons(true);
+      setStatus("Signing in…", "warn");
+
+      try {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+
+        const next = getSafeNextPath();
+        redirectTo(next || (homePath() + "?signed_in=1"), { replace: true });
+      } catch (e) {
+        setStatus("Sign in failed:\n" + (e?.message || String(e)), "err");
+      } finally {
+        disableAuthButtons(false);
+      }
+    });
+
+    btnForgot.addEventListener("click", async () => {
+      if (inRecovery) return;
+      if (!authReadyOrExplain()) return;
+
+      const email = $("email").value.trim();
+      if (!email) return setStatus("Please enter your email first, then click “Forgot password?”.", "warn");
+
+      disableAuthButtons(true);
+      setStatus("Sending reset email…", "warn");
+
+      try {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: buildLoginReturnUrl()
+        });
+        if (error) throw error;
+
+        setStatus(
+          "Reset email sent.\n\nPlease check your inbox and follow the link to set a new password.",
+          "ok"
+        );
+      } catch (e) {
+        setStatus("Reset failed:\n" + (e?.message || String(e)), "err");
+      } finally {
+        disableAuthButtons(false);
+      }
+    });
+
+    btnSignOut.addEventListener("click", async () => {
+      if (!authReadyOrExplain()) return;
+
+      disableAuthButtons(true);
+      setStatus("Signing out…", "warn");
+
+      try {
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+
+        setStatus("Signed out.", "ok");
+        redirectTo(buildLoginReturnUrl({ signed_out: 1 }), { replace: true });
+      } catch (e) {
+        setStatus("Sign out failed:\n" + (e?.message || String(e)), "err");
+      } finally {
+        disableAuthButtons(false);
+      }
+    });
+
+    // =============================
+    // Boot: load SDK + init client
+    // =============================
+    (async () => {
+      try {
+        const sdk = await loadSupabaseCreateClient();
+        sdkLoadedFrom = sdk.source;
+
+        supabase = sdk.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true
+          }
+        });
+
+        // If URL has ?code=..., exchange it for a session (PKCE)
+        try {
+          const u = new URL(window.location.href);
+          const code = u.searchParams.get("code");
+          if (code) {
+            const { data: sessData } = await supabase.auth.getSession();
+            if (!sessData?.session) {
+              const { error } = await supabase.auth.exchangeCodeForSession(code);
+              if (error) {
+                setStatus("Auth code exchange warning:\n" + (error?.message || String(error)), "warn");
+              }
+            }
+            u.searchParams.delete("code");
+            window.history.replaceState({}, document.title, u.toString());
+          }
+        } catch (_) {}
+
+        // Recovery mode detection
+        if (isRecoveryIntentFromUrl()) ensureRecoveryUI();
+
+        // Auth state listener
+        supabase.auth.onAuthStateChange((event) => {
+          if (event === "PASSWORD_RECOVERY") {
+            ensureRecoveryUI();
             return;
           }
-          if (error) throw error;
+          refreshUI();
+        });
 
-          const user = data?.user;
-          if (user) {
-            btnSignOut.style.display = "inline-flex";
-            setStatus(
-              "Signed in as: " + (user.email || "(no email)") + "\nuser_id: " + user.id,
-              "ok"
-            );
-          } else {
-            btnSignOut.style.display = "none";
-          }
-        } catch (e) {
-          btnSignOut.style.display = "none";
-          setStatus("Session check failed:\n" + (e?.message || String(e)), "err");
-        }
-      }
-
-      // 如果带有授权 code，则交换 session（用于 PKCE）
-      try {
-        const u = new URL(window.location.href);
-        const code = u.searchParams.get("code");
-        if (code) {
-          const { data: sessData } = await supabase.auth.getSession();
-          if (!sessData?.session) {
-            const { error } = await supabase.auth.exchangeCodeForSession(code);
-            if (error) {
-              setStatus("Auth code exchange warning:\n" + (error?.message || String(error)), "warn");
-            }
-          }
-
-          u.searchParams.delete("code");
-          window.history.replaceState({}, document.title, u.toString());
-        }
-      } catch (_) {}
-
-      // ---- 密码恢复 UI ----
-      function ensureRecoveryUI() {
-        if (inRecovery) return;
-        inRecovery = true;
-
-        setMode("signin");
-        modeHintEl.textContent = "Password recovery mode.";
-        setStatus("Password recovery detected. Please set a new password below.", "warn");
-
-        authButtonsRow.style.display = "none";
-        forgotRow.style.display = "none";
-        btnSignOut.style.display = "none";
-
-        const pw = $("password");
-        pw.value = "";
-        pw.placeholder = "New password (at least 6 characters)";
-        pw.autocomplete = "new-password";
-
-        if (!$("password2")) {
-          const lab2 = document.createElement("label");
-          lab2.setAttribute("for", "password2");
-          lab2.textContent = "Confirm new password";
-
-          const pw2 = document.createElement("input");
-          pw2.id = "password2";
-          pw2.type = "password";
-          pw2.placeholder = "Repeat new password";
-          pw2.autocomplete = "new-password";
-          pw2.style.marginTop = "10px";
-
-          passwordField.appendChild(lab2);
-          passwordField.appendChild(pw2);
-
-          const row = document.createElement("div");
-          row.className = "row";
-          row.style.marginTop = "12px";
-
-          const btn = document.createElement("button");
-          btn.className = "btn is-active";
-          btn.type = "button";
-          btn.id = "updatePassword";
-          btn.textContent = "Update Password";
-
-          row.appendChild(btn);
-          statusEl.parentElement.insertBefore(row, statusEl);
-
-          btnUpdatePassword = btn;
-
-          btn.addEventListener("click", async () => {
-            const newPass = pw.value;
-            const newPass2 = pw2.value;
-
-            if (!newPass || newPass.length < 6) return setStatus("New password must be at least 6 characters.", "warn");
-            if (newPass !== newPass2) return setStatus("Passwords do not match.", "warn");
-
-            disableAuthButtons(true);
-            setStatus("Updating password…", "warn");
-
-            try {
-              const { error } = await supabase.auth.updateUser({ password: newPass });
-              if (error) throw error;
-
-              try { await supabase.auth.signOut(); } catch (_) {}
-
-              setStatus("Password updated successfully. Please sign in with your new password.", "ok");
-              redirectTo("login.html?password_reset=1", { replace: true });
-            } catch (e) {
-              setStatus("Password update failed:\n" + (e?.message || String(e)), "err");
-            } finally {
-              disableAuthButtons(false);
-            }
-          });
-        }
-      }
-
-      if (isRecoveryIntentFromUrl()) {
-        ensureRecoveryUI();
-      }
-
-      // 监听认证事件
-      supabase.auth.onAuthStateChange((event) => {
-        if (event === "PASSWORD_RECOVERY") {
-          ensureRecoveryUI();
-          return;
-        }
-        refreshUI();
-      });
-
-      // 如果已经登陆且指定了安全 next，则跳转
-      try {
-        const recoveryIntent = isRecoveryIntentFromUrl();
-        const next = getSafeNextPath();
-        const { data: { session } } = await supabase.auth.getSession();
-
-        if (session && next && !recoveryIntent && !inRecovery) {
-          redirectTo(next, { replace: true });
-          return;
-        }
-      } catch (_) {}
-
-      // 注册
-      btnSignUp.addEventListener("click", async () => {
-        if (inRecovery) return;
-
-        setMode("signup");
-        const email = $("email").value.trim();
-        const password = $("password").value;
-
-        if (!email) return setStatus("Please enter an email.", "warn");
-        if (!password || password.length < 6) return setStatus("Password must be at least 6 characters.", "warn");
-
-        disableAuthButtons(true);
-        setStatus("Signing up…", "warn");
-
+        // If already logged in and has safe next, redirect
         try {
-          const { data, error } = await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-              emailRedirectTo: buildLoginReturnUrl()
-            }
-          });
-          if (error) throw error;
-
-          setStatus(
-            "Sign up request sent.\n\nIf email confirmation is enabled, please check your inbox and click the confirmation link.\n" +
-            (data.user?.email ?? ""),
-            "ok"
-          );
-          await refreshUI();
-        } catch (e) {
-          setStatus("Sign up failed:\n" + (e?.message || String(e)), "err");
-        } finally {
-          disableAuthButtons(false);
-        }
-      });
-
-      // 登录
-      btnSignIn.addEventListener("click", async () => {
-        if (inRecovery) return;
-
-        setMode("signin");
-        const email = $("email").value.trim();
-        const password = $("password").value;
-
-        if (!email) return setStatus("Please enter an email.", "warn");
-        if (!password) return setStatus("Please enter a password.", "warn");
-
-        disableAuthButtons(true);
-        setStatus("Signing in…", "warn");
-
-        try {
-          const { error } = await supabase.auth.signInWithPassword({ email, password });
-          if (error) throw error;
-
+          const recoveryIntent = isRecoveryIntentFromUrl();
           const next = getSafeNextPath();
-          // 没有 next 时返回根目录（相对路径）
-          redirectTo(next || "./?signed_in=1", { replace: true });
-        } catch (e) {
-          setStatus("Sign in failed:\n" + (e?.message || String(e)), "err");
-        } finally {
-          disableAuthButtons(false);
-        }
-      });
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session && next && !recoveryIntent && !inRecovery) {
+            redirectTo(next, { replace: true });
+            return;
+          }
+        } catch (_) {}
 
-      // 忘记密码
-      btnForgot.addEventListener("click", async () => {
-        if (inRecovery) return;
+        await refreshUI();
 
-        const email = $("email").value.trim();
-        if (!email) return setStatus("Please enter your email first, then click “Forgot password?”.", "warn");
-
-        disableAuthButtons(true);
-        setStatus("Sending reset email…", "warn");
-
-        try {
-          const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: buildLoginReturnUrl()
-          });
-          if (error) throw error;
-
-          setStatus(
-            "Reset email sent.\n\nPlease check your inbox and follow the link to set a new password.",
-            "ok"
-          );
-        } catch (e) {
-          setStatus("Reset failed:\n" + (e?.message || String(e)), "err");
-        } finally {
-          disableAuthButtons(false);
-        }
-      });
-
-      // 登出
-      btnSignOut.addEventListener("click", async () => {
-        disableAuthButtons(true);
-        setStatus("Signing out…", "warn");
-
-        try {
-          const { error } = await supabase.auth.signOut();
-          if (error) throw error;
-
-          setStatus("Signed out.", "ok");
-          redirectTo("login.html?signed_out=1", { replace: true });
-        } catch (e) {
-          setStatus("Sign out failed:\n" + (e?.message || String(e)), "err");
-        } finally {
-          disableAuthButtons(false);
-        }
-      });
-
-      await refreshUI();
-
-    } catch (e) {
-      setStatus("Startup error:\n" + (e?.stack || e?.message || String(e)), "err");
-    }
+      } catch (e) {
+        startupError = e;
+        setStatus("Startup error:\n" + (e?.stack || e?.message || String(e)), "err");
+      }
+    })();
   </script>
 </body>
 </html>
