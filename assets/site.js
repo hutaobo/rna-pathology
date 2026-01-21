@@ -233,6 +233,11 @@
         <a class="footer-qr-link" href="${qrImgUrl}" download>Download QR</a>
       </div>
     </div>
+
+    <!-- NEW: Operator / maintainer note -->
+    <div class="muted footer-note" style="margin-top:10px; font-size:12px; line-height:1.4;">
+      This website is maintained and operated by <strong>SPATHO AB</strong>.
+    </div>
   </div>
 </footer>
 `;
