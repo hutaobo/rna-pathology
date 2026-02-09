@@ -1,0 +1,218 @@
+/* assets/home.css
+   Home page layout upgrade:
+   - Full-screen "cover image" hero (Arcstone-style)
+   - Fixed transparent nav over hero; becomes solid on scroll
+   - Scroll cue
+   - Minimal risk: scoped to body.home only
+*/
+
+:root {
+  /* You can replace this with a photo later, e.g.
+     url("/assets/img/your-photo.webp") */
+  --home-hero-image: url("/assets/img/home-hero.svg");
+
+  /* Dark overlays for legibility */
+  --home-hero-overlay-top: rgba(6, 8, 18, 0.35);
+  --home-hero-overlay-bottom: rgba(6, 8, 18, 0.88);
+
+  /* Header background states (home only) */
+  --home-header-bg-top: rgba(6, 8, 18, 0.18);
+  --home-header-bg-scrolled: rgba(6, 8, 18, 0.78);
+
+  /* Tweak if your header becomes taller after future edits */
+  --home-header-safe-top: 92px;
+}
+
+/* Slightly calm the global grid overlay on the hero */
+body.home::before {
+  opacity: 0.028;
+}
+
+/* Make header float above hero like a modern landing page */
+body.home .site-header {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+
+  /* Keep existing blur (site.css), just make it more transparent on top */
+  background: var(--home-header-bg-top);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+
+  transition: background 180ms ease, border-color 180ms ease;
+}
+
+/* When scrolled, make header more solid for legibility */
+body.home.rp-scrolled .site-header {
+  background: var(--home-header-bg-scrolled);
+  border-bottom-color: rgba(255, 255, 255, 0.10);
+}
+
+/* Fullscreen hero cover */
+body.home .home-hero {
+  position: relative;
+  min-height: 100vh;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Cover image + overlays */
+body.home .home-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background-image:
+    linear-gradient(180deg, var(--home-hero-overlay-top), var(--home-hero-overlay-bottom)),
+    var(--home-hero-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  transform: scale(1.03);
+  filter: saturate(1.05) contrast(1.02);
+  z-index: 0;
+}
+
+body.home .home-hero::after {
+  /* Soft vignette */
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(closest-side at 50% 35%, rgba(0,0,0,0.0), rgba(0,0,0,0.35));
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Ensure hero content is above background */
+body.home .home-hero > .container {
+  position: relative;
+  z-index: 1;
+
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+
+  /* Because header is fixed now, create breathing room */
+  padding-top: var(--home-header-safe-top);
+  padding-bottom: 90px;
+}
+
+/* Make the hero card feel more like "glass" over an image */
+body.home .home-hero .hero-surface {
+  width: 100%;
+  padding: 34px;
+
+  background:
+    radial-gradient(900px 280px at 18% 0%, rgba(110, 231, 255, 0.16), transparent 55%),
+    radial-gradient(900px 280px at 85% 10%, rgba(167, 139, 250, 0.14), transparent 58%),
+    rgba(6, 8, 18, 0.44);
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 26px 86px rgba(0, 0, 0, 0.60);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+@media (max-width: 520px) {
+  body.home .home-hero > .container {
+    padding-top: 86px;
+    padding-bottom: 70px;
+  }
+
+  body.home .home-hero .hero-surface {
+    padding: 20px;
+  }
+}
+
+/* Scroll cue (Arcstone-style landing page hint) */
+body.home .home-scroll-cue {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 2;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 14px;
+  border-radius: 999px;
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  color: rgba(255, 255, 255, 0.86);
+  text-decoration: none;
+
+  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+body.home .home-scroll-cue:hover {
+  text-decoration: none;
+  background: rgba(0, 0, 0, 0.30);
+  border-color: rgba(110, 231, 255, 0.22);
+  transform: translateX(-50%) translateY(-1px);
+}
+
+/* A tiny "mouse" icon */
+body.home .home-scroll-cue__mouse {
+  width: 16px;
+  height: 22px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  position: relative;
+  opacity: 0.9;
+}
+
+body.home .home-scroll-cue__mouse::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 5px;
+  width: 3px;
+  height: 3px;
+  border-radius: 99px;
+  background: rgba(110, 231, 255, 0.95);
+  transform: translateX(-50%);
+
+  animation: rpScrollDot 1.25s ease-in-out infinite;
+}
+
+body.home .home-scroll-cue__text {
+  font-size: 0.92rem;
+  letter-spacing: 0.2px;
+  opacity: 0.9;
+}
+
+/* Animation (disabled by prefers-reduced-motion in site.css already) */
+@keyframes rpScrollDot {
+  0%   { transform: translateX(-50%) translateY(0); opacity: 0.75; }
+  50%  { transform: translateX(-50%) translateY(7px); opacity: 0.95; }
+  100% { transform: translateX(-50%) translateY(0); opacity: 0.75; }
+}
+
+/* Optional: give the main content a subtle "card edge" separator from the hero */
+body.home .home-main {
+  position: relative;
+  z-index: 1;
+
+  /* Slight overlap for a modern transition */
+  margin-top: -30px;
+  padding-top: 30px;
+}
+
+body.home .home-main::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+
+  height: 1px;
+  background: rgba(255, 255, 255, 0.10);
+  opacity: 0.8;
+}
