@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1600" height="900" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#060812"/>
+      <stop offset="1" stop-color="#060812"/>
+    </linearGradient>
+
+    <radialGradient id="cyan" cx="25%" cy="10%" r="55%">
+      <stop offset="0" stop-color="#6ee7ff" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#6ee7ff" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="violet" cx="85%" cy="12%" r="55%">
+      <stop offset="0" stop-color="#a78bfa" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#a78bfa" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="green" cx="45%" cy="115%" r="60%">
+      <stop offset="0" stop-color="#59d39e" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#59d39e" stop-opacity="0"/>
+    </radialGradient>
+
+    <filter id="softNoise">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch" />
+      <feColorMatrix type="matrix"
+        values="0 0 0 0 1
+                0 0 0 0 1
+                0 0 0 0 1
+                0 0 0 0.10 0"/>
+    </filter>
+
+    <filter id="blur40" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="40"/>
+    </filter>
+
+    <linearGradient id="line" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#6ee7ff" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#6ee7ff" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#a78bfa" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Base -->
+  <rect width="1600" height="900" fill="url(#bg)"/>
+
+  <!-- Glows -->
+  <circle cx="360" cy="90" r="520" fill="url(#cyan)" filter="url(#blur40)"/>
+  <circle cx="1380" cy="120" r="560" fill="url(#violet)" filter="url(#blur40)"/>
+  <circle cx="820" cy="980" r="680" fill="url(#green)" filter="url(#blur40)"/>
+
+  <!-- Soft diagonal ribbons -->
+  <path d="M-120 620 C 220 520, 520 560, 840 430 C 1160 300, 1400 260, 1720 220"
+        fill="none" stroke="url(#line)" stroke-width="2" stroke-opacity="0.7"/>
+  <path d="M-140 700 C 180 640, 520 720, 860 560 C 1200 400, 1440 360, 1760 320"
+        fill="none" stroke="url(#line)" stroke-width="2" stroke-opacity="0.55"/>
+
+  <!-- Subtle grid hints -->
+  <g opacity="0.10">
+    <path d="M0 120 H1600" stroke="#ffffff" stroke-opacity="0.08"/>
+    <path d="M0 240 H1600" stroke="#ffffff" stroke-opacity="0.06"/>
+    <path d="M0 360 H1600" stroke="#ffffff" stroke-opacity="0.05"/>
+    <path d="M0 480 H1600" stroke="#ffffff" stroke-opacity="0.04"/>
+    <path d="M0 600 H1600" stroke="#ffffff" stroke-opacity="0.035"/>
+    <path d="M0 720 H1600" stroke="#ffffff" stroke-opacity="0.03"/>
+
+    <path d="M160 0 V900" stroke="#ffffff" stroke-opacity="0.04"/>
+    <path d="M320 0 V900" stroke="#ffffff" stroke-opacity="0.03"/>
+    <path d="M480 0 V900" stroke="#ffffff" stroke-opacity="0.027"/>
+    <path d="M640 0 V900" stroke="#ffffff" stroke-opacity="0.024"/>
+    <path d="M800 0 V900" stroke="#ffffff" stroke-opacity="0.022"/>
+    <path d="M960 0 V900" stroke="#ffffff" stroke-opacity="0.020"/>
+    <path d="M1120 0 V900" stroke="#ffffff" stroke-opacity="0.018"/>
+    <path d="M1280 0 V900" stroke="#ffffff" stroke-opacity="0.016"/>
+    <path d="M1440 0 V900" stroke="#ffffff" stroke-opacity="0.014"/>
+  </g>
+
+  <!-- Noise overlay (very subtle) -->
+  <rect width="1600" height="900" filter="url(#softNoise)" opacity="0.035"/>
+</svg>
