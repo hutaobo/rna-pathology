@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: default
 title: RNA-Pathology Schema v0.2
 permalink: /schema/
 ---

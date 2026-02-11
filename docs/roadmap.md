@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: default
 title: RNA-Pathology Roadmap
 permalink: /roadmap/
 ---
