@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI-Driven Spatial Pathologist | RNA Pathology</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI-Driven Spatial Pathologist is the product layer for spatial transcriptomics-driven pathology review, structure discovery, and AI-assisted reporting.">
+  <style>
+    :root {
+      --ink: #1f2937;
+      --muted: #566070;
+      --link: #0b63ce;
+      --line: #d8e0ea;
+      --panel: #f7fafc;
+      --accent: #dbeafe;
+    }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      max-width: 1040px;
+      margin: 40px auto;
+      padding: 0 20px 60px;
+      line-height: 1.65;
+      color: var(--ink);
+      background: #ffffff;
+    }
+    header {
+      margin-bottom: 36px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+    nav {
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    nav a {
+      text-decoration: none;
+      color: var(--link);
+      font-weight: 600;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    h1, h2, h3 {
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.84rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .lead {
+      font-size: 1.15rem;
+      color: var(--muted);
+      max-width: 860px;
+    }
+    section {
+      margin: 34px 0 42px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px 18px 16px;
+      background: var(--panel);
+    }
+    .card h3 {
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+    .chip {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: var(--accent);
+      font-size: 0.9rem;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+    ul {
+      padding-left: 20px;
+    }
+    .cta-row a {
+      display: inline-block;
+      margin-right: 14px;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+    footer {
+      margin-top: 60px;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">RNA Pathology Product Site</div>
+  <h1>AI-Driven Spatial Pathologist</h1>
+  <p class="lead">
+    AI-Driven Spatial Pathologist is a product layer for spatial transcriptomics-driven
+    pathology review. It combines cell type annotation, dendrogram-guided structure discovery,
+    H&amp;E-aware tissue interpretation, and AI-assisted report generation into a single workflow.
+  </p>
+  <nav>
+    <a href="/ai/index.html">Overview</a>
+    <a href="/ai/sitemap.html">Sitemap</a>
+    <a href="/ai/docs/index.html">Docs</a>
+    <a href="/ai/pricing.html">Pricing</a>
+    <a href="/ai/commercial.html">Commercial</a>
+    <a href="/ai/security.html">Security</a>
+    <a href="/ai/contact.html">Contact</a>
+    <a href="https://pypi.org/project/spatho/" target="_blank" rel="noopener">PyPI</a>
+    <a href="https://github.com/hutaobo/AI-Driven-Spatial-Pathologist" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+</header>
+
+<section>
+  <h2>What the product does</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Cluster Annotation</h3>
+      <p>
+        Builds evidence packs from differential expression and neighborhood context,
+        then runs OpenAI-assisted or heuristic annotation with confidence, alternatives,
+        and review priorities.
+      </p>
+    </div>
+    <div class="card">
+      <h3>Structure Discovery</h3>
+      <p>
+        Propagates cluster annotations through dendrogram-guided tissue structure assignment,
+        contour generation, clustermaps, and validation-ready spatial overlays.
+      </p>
+    </div>
+    <div class="card">
+      <h3>Pathology Review</h3>
+      <p>
+        Produces case summaries, structure-level pathology interpretations,
+        cluster reviews, HTML reports, and machine-readable artifact manifests.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Who it is for</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Academic labs</h3>
+      <p>
+        Run local analyses on Xenium cases, compare tissue structures across samples,
+        and generate review-ready reports for translational research.
+      </p>
+    </div>
+    <div class="card">
+      <h3>Biotech and pharma teams</h3>
+      <p>
+        Use SPatho as a service or managed workflow for rapid pathology-focused
+        interpretation of spatial transcriptomics studies.
+      </p>
+    </div>
+    <div class="card">
+      <h3>Pathology and computational biology collaborators</h3>
+      <p>
+        Create a shared output contract across annotation, structure discovery,
+        AI interpretation, and human review.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Edition model</h2>
+  <p>
+    The product is being positioned with two outward-facing tracks and one enterprise track:
+  </p>
+  <p>
+    <span class="chip">Community Edition</span>
+    <span class="chip">Commercial Team Edition</span>
+    <span class="chip">Enterprise / Private Deployment</span>
+  </p>
+  <ul>
+    <li><strong>Community Edition</strong>: local package, non-commercial research use, bring-your-own OpenAI key or heuristic mode.</li>
+    <li><strong>Commercial Team Edition</strong>: paid usage for customer projects, support, curated workflows, and managed delivery options.</li>
+    <li><strong>Enterprise</strong>: private deployment, customer-managed credentials, and stricter governance for sensitive environments.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Current built-in organ packs</h2>
+  <ul>
+    <li><strong>Lung</strong>: lung cancer Xenium workflows with lung-specific annotation taxonomy and review defaults.</li>
+    <li><strong>Breast</strong>: breast cancer Xenium workflows with breast-specific annotation taxonomy and structure interpretation defaults.</li>
+  </ul>
+  <p>
+    More organ packs will follow as the public workflow contract stabilizes.
+  </p>
+</section>
+
+<section>
+  <h2>Start here</h2>
+  <div class="cta-row">
+    <a href="/ai/docs/index.html">Read the documentation</a>
+    <a href="/ai/docs/quickstart.html">Follow the quickstart</a>
+    <a href="/ai/pricing.html">See pricing directions</a>
+    <a href="/ai/contact.html">Book a discussion</a>
+  </div>
+  <p>
+    The first public Python package is already available on
+    <a href="https://pypi.org/project/spatho/" target="_blank" rel="noopener">PyPI</a>.
+  </p>
+</section>
+
+<section>
+  <h2>Relationship to RNA Pathology</h2>
+  <p>
+    RNA Pathology is the broader scientific and infrastructure vision.
+    AI-Driven Spatial Pathologist is the product layer focused on reproducible
+    case analysis, structured outputs, and deployable workflows.
+  </p>
+  <p>
+    Return to the main site: <a href="/">www.rna-pathology.com</a>
+  </p>
+</section>
+
+<footer>
+  <p>
+    This section can be served from <code>/ai/</code> today and later mapped directly to
+    <code>ai.rna-pathology.com</code> depending on your final DNS and hosting setup.
+  </p>
+</footer>
+
+</body>
+</html>
