@@ -30,7 +30,7 @@
     // NEW: Open Submissions
     { href: "/open/", label: "Open Submissions" },
 
-    { href: "/access/", label: "Access / Legal" },
+    { href: "/ai/", label: "AI Product" },
   ];
 
   // ---- Supabase Auth (shared) ----
