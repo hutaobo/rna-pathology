@@ -12,6 +12,8 @@ These are the main user-facing entry points.
   - Database overview / public-facing entry to datasets & schema.
 - `/challenge.html`
   - Interactive quiz/challenge page (cell type guessing).
+- `/book/`
+  - Preview landing page for the future online RNA Pathology book.
 - `/favicon.ico`
   - Site icon used by browsers and search engines.
 - `/robots.txt` (optional)
@@ -54,6 +56,15 @@ Typical contents:
 Rules:
 - Keep all auth/account UI here.
 - Any Supabase auth callbacks or redirects should be documented in MAINTENANCE.md.
+
+### `/book/`
+Landing page for the future online RNA Pathology book.
+Typical contents:
+- `index.html` - book preview, chapter map, and reading direction
+
+Rules:
+- Keep this section visitor-facing and non-empty even before the full book ships.
+- Use it to summarize current teaching themes and link back into the Database, Challenge, and AI sections.
 
 ### `/assets/` (recommended if not already present)
 Static assets: images, icons, css, js.

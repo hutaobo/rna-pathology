@@ -25,6 +25,7 @@
   const NAV_ITEMS = [
     { href: "/database.html", label: "Database" },
     { href: "/challenge.html", label: "Challenge" },
+    { href: "/book/", label: "Book" },
     { href: "/#start-here", label: "Start here" },
 
     // NEW: Open Submissions
@@ -209,11 +210,12 @@
       <div class="footer-links">
         <a href="${joinUrl(basePath, "/database.html")}">Database</a>
         <a href="${joinUrl(basePath, "/challenge.html")}">Challenge</a>
+        <a href="${joinUrl(basePath, "/book/")}">Book</a>
 
         <!-- NEW: Open Submissions -->
         <a href="${joinUrl(basePath, "/open/")}">Open Submissions</a>
 
-        <a href="${joinUrl(basePath, "/docs/roadmap.html")}">Roadmap</a>
+        <a href="${joinUrl(basePath, "/roadmap/")}">Roadmap</a>
         <a href="${joinUrl(basePath, "/access/")}">Access / Legal</a>
         <a href="${joinUrl(basePath, "/legal/privacy.html")}">Privacy</a>
         <a href="${joinUrl(basePath, "/")}">Home</a>

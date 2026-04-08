@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>RNA Pathology Book | RNA-Pathology</title>
+  <meta
+    name="description"
+    content="Preview page for the future RNA Pathology online book: a pathology-first guide to RNA-based pathology, spatial interpretation, QC, pitfalls, and organ-based examples."
+  />
+  <meta name="theme-color" content="#060812" />
+  <link rel="canonical" href="https://www.rna-pathology.com/book/" />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+
+  <meta property="og:title" content="RNA Pathology Book | RNA-Pathology" />
+  <meta
+    property="og:description"
+    content="A live preview of the future online RNA Pathology book, built around pathology-first learning, interpretation, and practical workflow guidance."
+  />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.rna-pathology.com/book/" />
+  <meta property="og:image" content="https://www.rna-pathology.com/images/qr/rna-pathology-home.png" />
+
+  <link rel="stylesheet" href="/assets/site.css" />
+  <script defer src="/assets/site.js"></script>
+
+  <style>
+    .book-page {
+      padding: 28px 0 44px;
+    }
+
+    .book-hero {
+      overflow: hidden;
+      padding: 26px;
+      background:
+        radial-gradient(760px 240px at 15% 0%, rgba(110, 231, 255, 0.16), transparent 55%),
+        radial-gradient(680px 260px at 95% 10%, rgba(167, 139, 250, 0.14), transparent 52%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.025));
+    }
+
+    .book-hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.9fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .book-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 0.86rem;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+
+    .book-title {
+      margin: 0;
+      font-size: clamp(2.2rem, 3vw, 3.1rem);
+      letter-spacing: -0.6px;
+    }
+
+    .book-lead {
+      margin-top: 12px;
+      max-width: 760px;
+      font-size: 1.08rem;
+      color: rgba(255, 255, 255, 0.86);
+    }
+
+    .book-actions,
+    .book-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .book-actions {
+      margin-top: 18px;
+    }
+
+    .book-pills {
+      margin-top: 14px;
+    }
+
+    .book-side {
+      display: grid;
+      gap: 14px;
+    }
+
+    .book-side-card {
+      padding: 18px;
+      background: rgba(0, 0, 0, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .book-side-card h2,
+    .book-side-card h3 {
+      margin-top: 0;
+    }
+
+    .book-list {
+      margin: 10px 0 0;
+      padding-left: 18px;
+    }
+
+    .book-list li {
+      margin: 0 0 8px;
+      color: rgba(255, 255, 255, 0.84);
+    }
+
+    .chapter-card,
+    .reader-card {
+      padding: 20px;
+    }
+
+    .chapter-label {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(110, 231, 255, 0.18);
+      background: rgba(110, 231, 255, 0.08);
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 0.8rem;
+      letter-spacing: 0.25px;
+      text-transform: uppercase;
+    }
+
+    .chapter-card p,
+    .reader-card p {
+      margin-bottom: 0;
+    }
+
+    .book-columns {
+      columns: 2;
+      column-gap: 22px;
+    }
+
+    .book-columns li {
+      break-inside: avoid;
+    }
+
+    .status-note {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(110, 231, 255, 0.18);
+      background: rgba(110, 231, 255, 0.08);
+      color: rgba(255, 255, 255, 0.88);
+    }
+
+    @media (max-width: 960px) {
+      .book-hero-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .book-page {
+        padding-top: 22px;
+      }
+
+      .book-hero {
+        padding: 20px;
+      }
+
+      .book-columns {
+        columns: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="book-page">
+    <div class="container">
+      <section class="card book-hero" aria-labelledby="book-title">
+        <div class="book-hero-grid">
+          <div>
+            <div class="book-kicker">Book Preview • In planning • Pathology-first</div>
+            <h1 id="book-title" class="book-title">RNA Pathology Book</h1>
+            <p class="book-lead">
+              This page is an early home for the future online RNA Pathology book: a structured,
+              practical guide to RNA-based pathology for pathologists, translational researchers,
+              and teams working with tissue-aware molecular interpretation.
+            </p>
+            <p class="muted">
+              The full book is not published yet, but the core themes are already visible across
+              RNA-Pathology today: assay selection, tissue context, interpretation boundaries,
+              QC checkpoints, pathology-facing workflows, and case-based learning.
+            </p>
+
+            <div class="book-actions" aria-label="Book preview actions">
+              <a class="btn primary" href="/database.html">Explore current material</a>
+              <a class="btn" href="/challenge.html">Practice in the Challenge</a>
+              <a class="btn" href="/ai/">See the AI Product</a>
+            </div>
+
+            <div class="book-pills" aria-label="Book preview tags">
+              <span class="pill">Preview live</span>
+              <span class="pill">Book in progress</span>
+              <span class="pill">Clinical reasoning focused</span>
+              <span class="pill">Built from current site content</span>
+            </div>
+          </div>
+
+          <aside class="book-side" aria-label="Current draft status">
+            <div class="book-side-card">
+              <h2>What this page is today</h2>
+              <p class="muted">
+                A non-empty placeholder for a future online textbook, with the first teaching
+                arc outlined from the work already visible on RNA-Pathology.com.
+              </p>
+              <ul class="book-list">
+                <li>Fundamentals of RNA-based pathology</li>
+                <li>Assay selection and question framing</li>
+                <li>Spatial and tissue-context interpretation</li>
+                <li>QC, pitfalls, and practical reporting limits</li>
+              </ul>
+            </div>
+
+            <div class="book-side-card">
+              <h3>Likely first source material</h3>
+              <ul class="book-list">
+                <li>Database overviews and dataset galleries</li>
+                <li>Challenge-based recall and interpretation practice</li>
+                <li>AI-driven spatial pathology workflow notes</li>
+                <li>Roadmap themes around clarity, reproducibility, and scale</li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Why build a book here</h2>
+          <p class="muted">
+            RNA Pathology already has the pieces of a learning system. The book will turn those
+            pieces into a more continuous reading path for real-world pathology use.
+          </p>
+        </div>
+
+        <div class="grid cols-3">
+          <div class="card feature-card">
+            <div class="badge accent">Reason 1</div>
+            <h3>Pathology-first framing</h3>
+            <p class="muted">
+              The goal is not to explain RNA technologies in the abstract, but to connect them to
+              tissue architecture, morphologic context, and practical interpretation choices.
+            </p>
+          </div>
+
+          <div class="card feature-card">
+            <div class="badge">Reason 2</div>
+            <h3>From scattered concepts to sequence</h3>
+            <p class="muted">
+              Today the site already covers datasets, challenge questions, and AI workflows. A book
+              will sequence those ideas from fundamentals to advanced case reasoning.
+            </p>
+          </div>
+
+          <div class="card feature-card">
+            <div class="badge">Reason 3</div>
+            <h3>Less ambiguity, more decision support</h3>
+            <p class="muted">
+              The strongest chapters will focus on what a result supports, what it does not support,
+              and where pathologists should slow down before making a claim.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Planned chapter map</h2>
+          <p class="muted">
+            This is the current draft structure for the online book. The exact chapter order may
+            change as the dataset library and teaching material grow.
+          </p>
+        </div>
+
+        <div class="grid cols-2">
+          <div class="card chapter-card">
+            <div class="chapter-label">Chapter 1</div>
+            <h3>What RNA-based pathology adds</h3>
+            <p class="muted">
+              A practical orientation to RNA signals in tissue, why molecular readouts need context,
+              and how RNA-based workflows complement routine pathology rather than replace it.
+            </p>
+          </div>
+
+          <div class="card chapter-card">
+            <div class="chapter-label">Chapter 2</div>
+            <h3>Assay selection and question design</h3>
+            <p class="muted">
+              When to think in terms of targeted in situ assays, spatial transcriptomics, or broader
+              RNA workflows, and how to match method choice to the actual pathology question.
+            </p>
+          </div>
+
+          <div class="card chapter-card">
+            <div class="chapter-label">Chapter 3</div>
+            <h3>Reading signals in tissue context</h3>
+            <p class="muted">
+              How morphology, compartment boundaries, gradients, and neighborhood effects should
+              influence interpretation of RNA findings.
+            </p>
+          </div>
+
+          <div class="card chapter-card">
+            <div class="chapter-label">Chapter 4</div>
+            <h3>QC checkpoints and common pitfalls</h3>
+            <p class="muted">
+              What to watch for before over-calling a signal: technical noise, sampling bias,
+              annotation shortcuts, over-interpretation, and false certainty.
+            </p>
+          </div>
+
+          <div class="card chapter-card">
+            <div class="chapter-label">Chapter 5</div>
+            <h3>Organ-based examples</h3>
+            <p class="muted">
+              Early examples will likely build on the site's current lung and breast material,
+              expanding from reference galleries toward richer comparative case teaching.
+            </p>
+          </div>
+
+          <div class="card chapter-card">
+            <div class="chapter-label">Chapter 6</div>
+            <h3>AI-assisted spatial pathology workflows</h3>
+            <p class="muted">
+              A forward-looking section on annotation support, structure discovery, report
+              generation, and where human pathology review remains essential.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>What RNA Pathology already covers today</h2>
+          <p class="muted">
+            The book will grow from existing material rather than starting from zero.
+          </p>
+        </div>
+
+        <div class="grid cols-2">
+          <a class="card action-card" href="/database.html" aria-label="Go to Database overview">
+            <div class="action-top">
+              <div class="action-title-row">
+                <h3>Database</h3>
+                <span class="action-arrow">→</span>
+              </div>
+              <p class="muted">
+                Public-facing overviews, dataset browsing, and the current site-level framing of
+                RNA-Pathology as a schema-driven framework for spatial molecular pathology data.
+              </p>
+            </div>
+            <div class="action-meta">
+              <span class="pill">Overview</span>
+              <span class="pill">Datasets</span>
+              <span class="pill">Framework</span>
+            </div>
+          </a>
+
+          <a class="card action-card" href="/challenge.html" aria-label="Go to Challenge">
+            <div class="action-top">
+              <div class="action-title-row">
+                <h3>Challenge</h3>
+                <span class="action-arrow">→</span>
+              </div>
+              <p class="muted">
+                A practice layer for recall and interpretation. This helps the future book move from
+                passive reading into active checking of understanding.
+              </p>
+            </div>
+            <div class="action-meta">
+              <span class="pill">Practice</span>
+              <span class="pill">Feedback</span>
+              <span class="pill">Recall</span>
+            </div>
+          </a>
+
+          <a class="card action-card" href="/ai/" aria-label="Go to AI Product">
+            <div class="action-top">
+              <div class="action-title-row">
+                <h3>AI Product</h3>
+                <span class="action-arrow">→</span>
+              </div>
+              <p class="muted">
+                The AI-driven spatial pathology section already sketches a more advanced layer of the
+                story: annotation, structure discovery, interpretation, and machine-readable outputs.
+              </p>
+            </div>
+            <div class="action-meta">
+              <span class="pill">Spatial</span>
+              <span class="pill">AI</span>
+              <span class="pill">Workflow</span>
+            </div>
+          </a>
+
+          <a class="card action-card" href="/roadmap/" aria-label="Go to Roadmap">
+            <div class="action-top">
+              <div class="action-title-row">
+                <h3>Roadmap</h3>
+                <span class="action-arrow">→</span>
+              </div>
+              <p class="muted">
+                The roadmap already emphasizes a careful sequence: architecture, pilot datasets, and
+                stable scaling. The online book can follow the same philosophy.
+              </p>
+            </div>
+            <div class="action-meta">
+              <span class="pill">Roadmap</span>
+              <span class="pill">Clarity</span>
+              <span class="pill">Reproducibility</span>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="card callout">
+          <div class="section-head compact">
+            <h2>Current draft themes</h2>
+            <p class="muted">
+              Based on the site as it exists today, these are the themes most ready to become
+              book chapters or short teaching modules.
+            </p>
+          </div>
+
+          <ul class="book-list book-columns">
+            <li>How to think about RNA signals as pathology evidence rather than isolated molecular output</li>
+            <li>Assay selection: targeted in situ methods, spatial transcriptomics, and broader RNA workflows</li>
+            <li>Normal reference patterns versus disease-associated shifts in tissue organization</li>
+            <li>Lung and breast as early organ-based examples for structured case teaching</li>
+            <li>Interpretation boundaries: what a result can suggest versus what it cannot prove alone</li>
+            <li>QC checkpoints before reporting or escalating a finding</li>
+            <li>Pathologist-facing summaries, decision aids, and review-friendly output structure</li>
+            <li>How AI-assisted annotation and structure discovery can support, but not replace, pathology review</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="grid cols-2">
+          <div class="card reader-card">
+            <div class="section-head compact">
+              <h2>Who the book is for</h2>
+              <p class="muted">The first edition is likely to stay tightly scoped.</p>
+            </div>
+
+            <ul class="book-list">
+              <li>Pathologists moving into RNA-based and spatially resolved interpretation</li>
+              <li>Trainees who need a clearer bridge between morphology and molecular readouts</li>
+              <li>Translational teams who want a shared language across pathology, wet lab, and computation</li>
+              <li>Groups using RNA data in tissue settings and wanting a more pathology-grade framing</li>
+            </ul>
+          </div>
+
+          <div class="card reader-card">
+            <div class="section-head compact">
+              <h2>Current status</h2>
+              <p class="muted">This page is intentionally live before the full book exists.</p>
+            </div>
+
+            <p>
+              The future online book is still being assembled, but this page now marks the direction:
+              a structured RNA pathology text that grows directly out of the current database,
+              challenge, and spatial pathology workflow material on the site.
+            </p>
+
+            <div class="status-note">
+              Educational resource only. This site does not provide clinical advice or replace
+              pathology review in real patient care settings.
+            </div>
+
+            <div class="callout-actions" style="margin-top:16px;">
+              <a class="btn primary" href="/database.html">Start with the Database</a>
+              <a class="btn" href="mailto:connect@rna-pathology.com">Suggest a topic</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
